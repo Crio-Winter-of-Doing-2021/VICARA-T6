@@ -33,6 +33,8 @@
         "extensions": [".js", ".jsx", ".ts", ".tsx"]
       }
     ],
-    "react/jsx-one-expression-per-line": "off"
+    "react/jsx-one-expression-per-line": "off",
+    "semi": 0,
+    "space-before-function-paren": 0
   }
 }
