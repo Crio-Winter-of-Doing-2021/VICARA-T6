@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Dropzone.js Example</title>
+    <meta name="csrf-token" content="XYZ123">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>Dropzone.js Example</h1>
+        </header>
+
+        <div>
+            <form method="POST" action="/upload" enctype="multipart/form-data">
+                <div>
+                    <label>Select multiple images:</label>
+                    <input type="file" webkitdirectory name="multiple_images" multiple />
+                </div>
+                <div>
+                    <input type="submit" name="btn_upload_multiple_images" value="Upload" />
+                </div>
+            </form>
+        </div>
+
+        <footer style="margin-top:500px;">
+            <p>This demo is designed to accompany <a href="http://www.sitepoint.com/ARTICLE-URL">this article</a>.</p>
+        </footer>
+
+    </div>
+
+</body>
+
+</html>
