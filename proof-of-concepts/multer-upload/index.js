@@ -3,15 +3,16 @@ const multer = require('multer');
 const path = require('path');
 const exphbs = require('express-handlebars');
 const AWS = require("aws-sdk");
+const cors = require('cors')
 
 const app = express();
+app.use(cors());
+// app.use(express.static(__dirname + '/public'));
 
-app.use(express.static(__dirname + '/public'));
+// app.engine('.hbs', exphbs({ extname: '.hbs' }));
+// app.set('view engine', '.hbs');
 
-app.engine('.hbs', exphbs({ extname: '.hbs' }));
-app.set('view engine', '.hbs');
-
-AWS.config.loadFromPath('./config.json');
+// AWS.config.loadFromPath('./config.json');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -31,11 +32,16 @@ app.get('/', (req, res) => {
 });
 
 app.post('/upload', (req, res) => {
-    console.log(req.files);
-    let upload = multer({ storage: storage }).array('multiple_images');
+    let upload = multer({ storage: storage }).array('file')
 
     upload(req, res, function (err) {
-        console.log(req.files);
+        console.log("HERE", req.files)
+        if (err instanceof multer.MulterError) {
+            return res.status(500).json(err)
+        } else if (err) {
+            return res.status(500).json(err)
+        }
+
         const files = req.files;
 
         // Loop through all the uploaded images and display them on frontend

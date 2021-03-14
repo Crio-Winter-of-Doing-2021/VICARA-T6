@@ -13,6 +13,7 @@
   "dependencies": {
     "aws-sdk": "^2.863.0",
     "connect-busboy": "^0.0.2",
+    "cors": "^2.8.5",
     "dropzone": "^5.8.1",
     "express": "^4.17.1",
     "express-handlebars": "^5.2.1",
