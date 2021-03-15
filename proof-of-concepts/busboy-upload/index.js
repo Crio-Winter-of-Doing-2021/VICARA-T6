@@ -21,12 +21,12 @@ fs.ensureDir(uploadPath); // Make sure that he upload path exits
  * Create route /upload which handles the post request
  */
 app.route('/upload').post((req, res, next) => {
+    console.log(req.files);
     req.pipe(req.busboy); // Pipe it trough busboy
 
-    req.busboy.on('file', (fieldname, file, filename) => {
-        console.log(`Upload of '${filename}' started`);
+    req.busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+        console.log(`Upload of '${filename, fieldname}' started`);
         // Create a write stream of the new file
-
 
         if (fieldname.includes("blob")) {
             console.log(fieldname)
@@ -51,9 +51,6 @@ app.route('/upload').post((req, res, next) => {
         }
 
     });
-
-
-
 
     req.busboy.on('finish', function () {
         console.log("DONE PARSING FORM")

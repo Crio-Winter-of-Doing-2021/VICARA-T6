@@ -3,10 +3,11 @@ import jszip from 'jszip';
 import Dropzone from 'react-dropzone';
 import axios from 'axios';
 
-async function zipMeSenpai(files) {
+async function sendMeAway(files) {
   //Initialize jsZip
+  // console.log(files);
   let zip = new jszip();
-
+  console.log(files);
   let formData = new FormData()
 
   for (let i = 0; i < files.length; i++) {
@@ -14,11 +15,11 @@ async function zipMeSenpai(files) {
 
     if (fileNameArr.length === 1) {
       //It's a file
-      await formData.append(files[i].name, files[i])
+
     }
     else {
       //It's a folder
-
+      console.log(fileNameArr);
       //Remove last element if it's a file
       if (fileNameArr[fileNameArr.length - 1].includes(".")) {
         fileNameArr.pop();
@@ -38,8 +39,8 @@ async function zipMeSenpai(files) {
   await zip.generateAsync({
     type: 'blob'
   }).then(async content => {
-
     await formData.append("blob", content)
+
     axios
       .post("http://localhost:3001/upload", formData)
       .then((data) => {
@@ -51,7 +52,7 @@ async function zipMeSenpai(files) {
 function App() {
 
   return (
-    <Dropzone onDrop={acceptedFiles => zipMeSenpai(acceptedFiles)}>
+    <Dropzone onDrop={acceptedFiles => sendMeAway(acceptedFiles)}>
       {({ getRootProps, getInputProps }) => (
         <section>
           <div {...getRootProps()}>

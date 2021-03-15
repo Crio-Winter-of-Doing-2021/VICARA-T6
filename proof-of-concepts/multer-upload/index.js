@@ -7,10 +7,10 @@ const cors = require('cors')
 
 const app = express();
 app.use(cors());
-// app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/public'));
 
-// app.engine('.hbs', exphbs({ extname: '.hbs' }));
-// app.set('view engine', '.hbs');
+app.engine('.hbs', exphbs({ extname: '.hbs' }));
+app.set('view engine', '.hbs');
 
 // AWS.config.loadFromPath('./config.json');
 
@@ -32,10 +32,14 @@ app.get('/', (req, res) => {
 });
 
 app.post('/upload', (req, res) => {
-    let upload = multer({ storage: storage }).array('file')
+    console.log("HERE", req.files)
+
+    let upload = multer({ storage: storage, preservePath: true }).array('multiple_images')
 
     upload(req, res, function (err) {
-        console.log("HERE", req.files)
+
+        console.log("HERE", req.files.path)
+
         if (err instanceof multer.MulterError) {
             return res.status(500).json(err)
         } else if (err) {
