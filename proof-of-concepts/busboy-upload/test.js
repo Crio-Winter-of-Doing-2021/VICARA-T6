@@ -4,6 +4,7 @@ const path = require('path');               // Used for manipulation with path
 const fs = require('fs-extra');             // Classic fs
 const cors = require('cors')
 const AWS = require("aws-sdk");
+const PQueue = require("p-queue");
 
 AWS.config.loadFromPath('./config.json');
 
@@ -11,7 +12,7 @@ const app = express(); // Initialize the express web server
 app.use(cors());
 
 app.use(busboy({
-    highWaterMark: 5 * 1024 * 1024, // Set 20 MB buffer
+    highWaterMark: 10 * 1024 * 1024, // Set 20 MB buffer
 })); // Insert the busboy middle-ware
 
 const uploadPath = path.join(__dirname, 'fu/'); // Register the upload path
@@ -23,54 +24,79 @@ fs.ensureDir(uploadPath); // Make sure that he upload path exits
  */
 app.route('/upload').post((req, res, next) => {
 
+    const workQueue = new PQueue({ concurrency: 1 });
+
+    async function handleError(fn) {
+        workQueue.add(async () => {
+            try {
+                await fn();
+            } catch (e) {
+                console.log("REQUEST GOT CANCELLED")
+                req.unpipe(busboy);
+                workQueue.pause();
+                next(e);
+            }
+        });
+    }
+
     var uploadStartTime = new Date(),
         busboyFinishTime = null,
         s3UploadFinishTime = null;
 
     req.busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-        console.log(`Upload of '${filename}' started`);
+        handleError(() => {
+            // process files
+            console.log(`Upload of '${filename}' started`);
 
-        console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
+            console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
 
-        let s3 = new AWS.S3({
-            params: { Bucket: 'vicara-t6', Key: filename, Body: file },
-            options: { partSize: 5 * 1024 * 1024, queueSize: 10 }   // 5 MB
+            let s3 = new AWS.S3({
+                params: { Bucket: 'vicara-t6', Key: filename, Body: file },
+                options: { partSize: 5 * 1024 * 1024, queueSize: 1 }   // 5 MB
+            });
+
+            s3.upload().on('httpUploadProgress', function (evt) {
+                console.log(evt);
+            }).send(function (err, data) {
+
+                s3UploadFinishTime = new Date();
+
+                if (busboyFinishTime && s3UploadFinishTime) {
+                    console.log("FINAL CALL HERE");
+                    res.json({
+                        uploadStartTime: uploadStartTime,
+                        busboyFinishTime: busboyFinishTime,
+                        s3UploadFinishTime: s3UploadFinishTime
+                    });
+                }
+                console.log(err, data);
+            });
         });
+    });
 
-        s3.upload().on('httpUploadProgress', function (evt) {
-            console.log(evt);
-        }).send(function (err, data) {
+    req.busboy.on('field', function (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
+        handleError(() => {
+            console.log('Field [' + fieldname + ']: value: ' + inspect(val));
+        })
+    });
 
-            s3UploadFinishTime = new Date();
+    req.busboy.on('finish', function () {
+        handleError(() => {
+            // send response
+
+            console.log('Done parsing form!');
+
+            busboyFinishTime = new Date();
 
             if (busboyFinishTime && s3UploadFinishTime) {
-                res.json({
+                console.log({
                     uploadStartTime: uploadStartTime,
                     busboyFinishTime: busboyFinishTime,
                     s3UploadFinishTime: s3UploadFinishTime
                 });
             }
-            console.log(err, data);
-        });
 
-    });
-
-    req.busboy.on('field', function (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
-        console.log('Field [' + fieldname + ']: value: ' + inspect(val));
-    });
-
-    req.busboy.on('finish', function () {
-        console.log('Done parsing form!');
-
-        busboyFinishTime = new Date();
-
-        if (busboyFinishTime && s3UploadFinishTime) {
-            res.json({
-                uploadStartTime: uploadStartTime,
-                busboyFinishTime: busboyFinishTime,
-                s3UploadFinishTime: s3UploadFinishTime
-            });
-        }
+        })
     });
 
     req.pipe(req.busboy); // Pipe it trough busboy
