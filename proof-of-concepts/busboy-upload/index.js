@@ -3,14 +3,16 @@ const busboy = require('connect-busboy');   // Middleware to handle the file upl
 const path = require('path');               // Used for manipulation with path
 const fs = require('fs-extra');             // Classic fs
 const cors = require('cors')
-const readBlob = require('read-blob');
+const AWS = require("aws-sdk");
+const PQueue = require("p-queue");
 
+AWS.config.loadFromPath('./config.json');
 
 const app = express(); // Initialize the express web server
 app.use(cors());
 
 app.use(busboy({
-    highWaterMark: 2 * 1024 * 1024, // Set 2MiB buffer
+    highWaterMark: 10 * 1024 * 1024, // Set 20 MB buffer
 })); // Insert the busboy middle-ware
 
 const uploadPath = path.join(__dirname, 'fu/'); // Register the upload path
@@ -21,41 +23,83 @@ fs.ensureDir(uploadPath); // Make sure that he upload path exits
  * Create route /upload which handles the post request
  */
 app.route('/upload').post((req, res, next) => {
-    console.log(req.files);
-    req.pipe(req.busboy); // Pipe it trough busboy
+
+    const workQueue = new PQueue({ concurrency: 1 });
+
+    async function handleError(fn) {
+        workQueue.add(async () => {
+            try {
+                await fn();
+            } catch (e) {
+                console.log("REQUEST GOT CANCELLED")
+                req.unpipe(busboy);
+                workQueue.pause();
+                next(e);
+            }
+        });
+    }
+
+    var uploadStartTime = new Date(),
+        busboyFinishTime = null,
+        s3UploadFinishTime = null;
 
     req.busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-        console.log(`Upload of '${filename, fieldname}' started`);
-        // Create a write stream of the new file
+        handleError(() => {
+            // process files
+            console.log(`Upload of '${filename}' started`);
 
-        if (fieldname.includes("blob")) {
-            console.log(fieldname)
-            const fstream = fs.createWriteStream(path.join(uploadPath, fieldname + ".zip"));
-            // Pipe it trough
-            file.pipe(fstream);
+            console.log('File [' + fieldname + ']: filename: ' + filename + ', encoding: ' + encoding + ', mimetype: ' + mimetype);
 
-            // On finish of the upload
-            fstream.on('close', () => {
-
+            let s3 = new AWS.S3({
+                params: { Bucket: 'vicara-t6', Key: filename, Body: file },
+                options: { partSize: 5 * 1024 * 1024, queueSize: 1 }   // 5 MB
             });
-        }
-        else {
-            const fstream = fs.createWriteStream(path.join(uploadPath, filename));
-            // Pipe it trough
-            file.pipe(fstream);
 
-            // On finish of the upload
-            fstream.on('close', () => {
+            s3.upload().on('httpUploadProgress', function (evt) {
+                console.log(evt);
+            }).send(function (err, data) {
 
+                s3UploadFinishTime = new Date();
+
+                if (busboyFinishTime && s3UploadFinishTime) {
+                    console.log("FINAL CALL HERE");
+                    res.json({
+                        uploadStartTime: uploadStartTime,
+                        busboyFinishTime: busboyFinishTime,
+                        s3UploadFinishTime: s3UploadFinishTime
+                    });
+                }
+                console.log(err, data);
             });
-        }
+        });
+    });
 
+    req.busboy.on('field', function (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
+        handleError(() => {
+            console.log('Field [' + fieldname + ']: value: ' + inspect(val));
+        })
     });
 
     req.busboy.on('finish', function () {
-        console.log("DONE PARSING FORM")
-        res.sendStatus(200);
+        handleError(() => {
+            // send response
+
+            console.log('Done parsing form!');
+
+            busboyFinishTime = new Date();
+
+            if (busboyFinishTime && s3UploadFinishTime) {
+                console.log({
+                    uploadStartTime: uploadStartTime,
+                    busboyFinishTime: busboyFinishTime,
+                    s3UploadFinishTime: s3UploadFinishTime
+                });
+            }
+
+        })
     });
+
+    req.pipe(req.busboy); // Pipe it trough busboy
 });
 
 
@@ -65,7 +109,7 @@ app.route('/upload').post((req, res, next) => {
 app.route('/').get((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.write('<form action="upload" method="post" enctype="multipart/form-data">');
-    res.write('<input type="file" webkitdirectory name="fileToUpload"><br>');
+    res.write('<input type="file" multiple name="fileToUpload"><br>');
     res.write('<input type="submit">');
     res.write('</form>');
     return res.end();
