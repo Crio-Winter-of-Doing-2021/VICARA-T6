@@ -2,8 +2,9 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const exphbs = require('express-handlebars');
-const AWS = require("aws-sdk");
+// const AWS = require("aws-sdk");
 const cors = require('cors')
+const upload = require('./upload');
 
 const app = express();
 app.use(cors());
@@ -14,44 +15,53 @@ app.set('view engine', '.hbs');
 
 // AWS.config.loadFromPath('./config.json');
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'fu/');
-    },
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, 'fu/');
+//     },
 
-    // By default, multer removes file extensions so let's add them back
-    filename: function (req, file, cb) {
-        console.log(file)
-        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-    }
-});
+//     // By default, multer removes file extensions so let's add them back
+//     filename: function (req, file, cb) {
+//         console.log(file)
+//         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+//     }
+// });
 
 
 app.get('/', (req, res) => {
     return res.render('index', { layout: false });
 });
 
-app.post('/upload', (req, res) => {
-    console.log("HERE", req.files)
-
-    let upload = multer({ storage: storage, preservePath: true }).array('multiple_images')
-
-    upload(req, res, function (err) {
-
-        console.log("HERE", req.files.path)
-
-        if (err instanceof multer.MulterError) {
-            return res.status(500).json(err)
-        } else if (err) {
-            return res.status(500).json(err)
-        }
-
-        const files = req.files;
-
-        // Loop through all the uploaded images and display them on frontend
-        res.json({ files }).status(200)
+app.post('/upload', upload.array('uploadedFiles', 10), async (req, res) => {
+    console.log(req.files);
+    await req.files.forEach(async file => {
+        console.log(file);
     });
+
+    res.json(req.files).status(200);
 });
+
+// app.post('/upload', (req, res) => {
+//     console.log("HERE", req.files)
+
+//     let upload = multer({ storage: storage, preservePath: true }).array('multiple_images')
+
+//     upload(req, res, function (err) {
+
+//         console.log("HERE", req.files.path)
+
+//         if (err instanceof multer.MulterError) {
+//             return res.status(500).json(err)
+//         } else if (err) {
+//             return res.status(500).json(err)
+//         }
+
+//         const files = req.files;
+
+//         // Loop through all the uploaded images and display them on frontend
+//         res.json({ files }).status(200)
+//     });
+// });
 
 app.listen(3001, () => {
     console.log('Express server listening on port 3001');
