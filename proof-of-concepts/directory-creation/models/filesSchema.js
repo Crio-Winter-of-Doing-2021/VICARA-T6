@@ -14,9 +14,6 @@ const FilesSchema = new mongoose.Schema({
     owner: {
         type: mongoose.ObjectId
     },
-    children: {
-        type: [mongoose.ObjectId]
-    },
     type: {
         type: String,
     },

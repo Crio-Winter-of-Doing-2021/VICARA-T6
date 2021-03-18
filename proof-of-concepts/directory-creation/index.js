@@ -4,10 +4,13 @@ const busboy = require('connect-busboy');   // Middleware to handle the file upl
 const path = require('path');               // Used for manipulation with path
 const fs = require('fs-extra');             // Classic fs
 const cors = require('cors')
+const bodyParser = require('body-parser')
 const Files = require("./models/filesSchema");
 const app = express(); // Initialize the express web server
 app.use(cors());
-
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+const ObjectId = require('mongoose').Types.ObjectId;
 app.use(busboy({
     highWaterMark: 10 * 1024 * 1024, // Set 20 MB buffer
 })); // Insert the busboy middle-ware
@@ -15,6 +18,13 @@ app.use(busboy({
 const uploadPath = path.join(__dirname, 'fu/'); // Register the upload path
 
 fs.ensureDir(uploadPath); // Make sure that he upload path exits
+
+app.post('/folders', async (req, res, next) => {
+    let { ownerID, parentID } = req.body;
+
+    const result = await Files.find({ owner: ownerID, parent: parentID })
+    res.json(result);
+})
 
 /**
  * Create route /upload which handles the post request
@@ -33,8 +43,17 @@ app.post('/upload', async (req, res, next) => {
 
     req.busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
         // process files
-        console.log(`Upload of '${filename}' started`);
-        console.log(fieldname)
+        // console.log(`Upload of '${filename}' started`);
+        console.log(fieldname, filename)
+
+        file.on('end', function () {
+            // console.log("LOL I'm ended")
+            // res.json({ msg: "ENDED" })
+        })
+
+        file.on('data', function (data) {
+        })
+
         let path = fieldname.replace(filename, "")?.split("/")?.filter(e => e.length)
 
         const ownerID = "605256109934f80db98712ea";
@@ -42,9 +61,17 @@ app.post('/upload', async (req, res, next) => {
         const url = "https://google.com"
 
         if (path?.length) {
+
+            if (ObjectId.isValid(path[0])) {
+                parentID = path[0];
+                path.shift()
+            }
+
+            console.log(path);
+
             //It's a folder
 
-            const result = await Files.find({ name: filename });
+            const result = await Files.find({ name: filename, parent: parentID });
 
             if (result.length) {
                 await Files.findByIdAndUpdate(result._id, { size: 1025 });
@@ -52,11 +79,12 @@ app.post('/upload', async (req, res, next) => {
             else {
 
                 for (let i = 0; i < path.length; i++) {
-                    const result = await Files.find({ name: path[i], parent: parentID });
+                    const result = await Files.findOne({ name: path[i], parent: parentID });
 
-                    if (result.length) {
+                    if (result) {
+                        console.log(result);
                         console.log("Folder already exists")
-                        continue;
+                        parentID = result._id;
                     }
                     else {
                         console.log("Create new folder entry")
@@ -69,7 +97,7 @@ app.post('/upload', async (req, res, next) => {
                         })
 
                         const { _id: childFolderID } = await folder.save();
-                        await Files.findByIdAndUpdate(parentID, { children: [childFolderID] });
+                        // await Files.findByIdAndUpdate(parentID, { children: [childFolderID] });
                         parentID = childFolderID;
                     }
                 }
@@ -85,9 +113,10 @@ app.post('/upload', async (req, res, next) => {
                     url
                 })
 
-                const { _id: fileID } = await file.save();
+                await file.save();
+                // const { _id: fileID, children: childrens } = await file.save();
 
-                await Files.findByIdAndUpdate(parentID, { children: [fileID] })
+                // await Files.findByIdAndUpdate(parentID, { children: [...childrens, fileID] })
             }
         }
         else {
@@ -118,11 +147,11 @@ app.post('/upload', async (req, res, next) => {
         // });
     });
 
-
     req.busboy.on('finish', function () {
         // send response
-
         console.log('Done parsing form!');
+        res.status(200).json({ msg: "FINISHED" });
+
 
         busboyFinishTime = new Date();
 
@@ -136,7 +165,7 @@ app.post('/upload', async (req, res, next) => {
 
     });
 
-    req.pipe(req.busboy); // Pipe it trough busboy
+    return req.pipe(req.busboy); // Pipe it trough busboy
 });
 
 
