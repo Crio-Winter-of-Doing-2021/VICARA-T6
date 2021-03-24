@@ -28,14 +28,10 @@ export default function FilesComponent() {
         setFolderID(newID)
     }
 
-    async function sendTheFiles(files) {
-        //Initialize jsZip
+    async function postFolders(folders) {
         let directoryStructure = {}
-
-        // console.log(files);
-
         let formData = new FormData()
-        formData.append(files, JSON.stringify(files))
+        formData.append(folders, JSON.stringify(folders))
 
         try {
             const { data } = await axios.post("http://localhost:3001/create_directory", formData)
@@ -49,11 +45,46 @@ export default function FilesComponent() {
             console.log(err.message)
         }
 
-        for (let i = 0; i < files.length; i++) {
-            let file_path_arr = files[i].path.split("/")
+        for (let i = 0; i < folders.length; i++) {
+            let file_path_arr = folders[i].path.split("/")
             file_path_arr.pop()
             let file_path = file_path_arr.join("/")
             const parent_id = directoryStructure[file_path]
+            const parent = parent_id;
+
+            formData.append(parent, folders[i])
+        }
+
+        const options = {
+            cancelToken: source.token,
+            onUploadProgress: (progressEvent) => {
+                const { loaded, total } = progressEvent;
+                let percent = Math.floor(loaded * 100 / total);
+                // console.log(`${loaded}kb of ${total} | ${percent}%`);
+            }
+        }
+
+        try {
+            const { data } = await axios.post("http://localhost:3001/upload", formData, options)
+
+            console.log(data);
+
+            await new Promise(resolve => setTimeout(resolve, 50));
+        } catch (err) {
+            if (axios.isCancel(err)) {
+                console.log(err.message);
+            }
+            console.log(err.message)
+        }
+
+    }
+
+    async function postFiles(files) {
+
+        let formData = new FormData()
+
+        for (let i = 0; i < files.length; i++) {
+            const parent_id = folderID
             const parent = parent_id;
 
             formData.append(parent, files[i])
@@ -79,6 +110,27 @@ export default function FilesComponent() {
                 console.log(err.message);
             }
             console.log(err.message)
+        }
+    }
+
+    async function sendTheFiles(files) {
+        //Initialize jsZip
+
+        console.log(files);
+
+        const listOfFolders = files.filter((e) => e.path !== e.name)
+        const listOfFiles = files.filter((e) => e.path === e.name)
+
+        if (listOfFolders.length) {
+            console.log("FOLDERS FOUND : ", listOfFolders.length);
+            await postFolders(listOfFolders)
+            console.log("FOLDERS SENT");
+        }
+
+        if (listOfFiles.length) {
+            console.log("FILES FOUND : ", listOfFiles.length);
+            await postFiles(listOfFiles)
+            console.log("FILES SENT");
         }
     }
 
