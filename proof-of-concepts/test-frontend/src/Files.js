@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 export default function FilesComponent() {
     const [source, setSource] = useState(null)
     const [folderID, setFolderID] = useState('605256109934f80db98712ea');
+    // const [pathHashMap, setPathHashMap] = useState(null)
     const ownerID = '605256109934f80db98712ea';
     const [files, setFiles] = useState([]);
 
@@ -27,33 +28,52 @@ export default function FilesComponent() {
         setFolderID(newID)
     }
 
-    async function sendMeAway(files) {
+    async function sendTheFiles(files) {
         //Initialize jsZip
-        // let formData = new FormData()
-        console.log(files.length);
+
+        let pathHashMap = {}
+
+        console.log(files);
 
         for (let i = 0; i < files.length; i++) {
+            // console.log({ pathHashMap })
             // let fileNameArr = files[i].path.split("/").filter(e => e !== "")
             let formData = new FormData()
             // if (fileNameArr.length === 1) {
             //It's a file
-            const { path } = files[i];
-            console.log(path)
+            let path = files[i].path.split("/").filter(e => e !== "").join("/");
 
-            // try {
-            //   const result = await axios
-            //     .post("http://localhost:3001/upload", JSON.stringify({ name, path, size }))
-            //     .then((data) => {
-            //       console.log(data)
-            //     })
+            console.log({ path });
+            let path_split_arr = path.split("/").filter(e => e !== "")
+            path_split_arr.pop();
 
-            //   console.log(result)
+            console.log(path_split_arr)
 
-            // } catch (err) {
-            //   console.log(err)
-            // }
+            let absolute_path_of_folder = path_split_arr.join("/");
 
-            formData.append(folderID + path, files[i])
+            for (let j = path_split_arr.length - 1; j >= 0; j--) {
+                let tempPath = path_split_arr.slice(0, j + 1).join("/")
+                console.log({ tempPath });
+                let relative_path_of_folder = pathHashMap[tempPath];
+
+                if (relative_path_of_folder !== undefined) {
+                    console.log("FOLDER FOUND");
+                    let leftOutPath = path_split_arr.slice(j + 1, path_split_arr.length).join("/");
+                    path = relative_path_of_folder + "/" + (leftOutPath !== "" ? (leftOutPath + "/") : "") + files[i].name
+                    console.log({ path, relative_path_of_folder, leftOutPath })
+                    break;
+                }
+            }
+
+            let json_obj = {
+                pathHashMap,
+                absolute_path_of_folder,
+                path,
+            }
+
+            console.log(json_obj);
+
+            formData.append(JSON.stringify(json_obj), files[i])
 
             const options = {
                 cancelToken: source.token,
@@ -65,24 +85,21 @@ export default function FilesComponent() {
             }
 
             try {
-                const result = await axios
-                    .post("http://localhost:3001/upload", formData, options)
-                    .then((data) => {
-                        // console.log(data)
-                    })
+                const { data } = await axios.post("http://localhost:3001/upload", formData, options)
 
-                // console.log(result)
-                await new Promise(resolve => setTimeout(resolve, 100));
+                let temp = data.path;
+                pathHashMap = { ...pathHashMap, ...temp }
 
-
+                await new Promise(resolve => setTimeout(resolve, 50));
             } catch (err) {
                 if (axios.isCancel(err)) {
                     console.log(err.message);
                 }
                 console.log(err.message)
             }
-
         }
+
+        console.log(pathHashMap);
     }
 
     return (
@@ -100,7 +117,7 @@ export default function FilesComponent() {
                 ) : null
             }
 
-            <Dropzone onDrop={acceptedFiles => sendMeAway(acceptedFiles)}>
+            <Dropzone onDrop={acceptedFiles => sendTheFiles(acceptedFiles)}>
                 {({ getRootProps, getInputProps }) => (
                     <section>
                         <div {...getRootProps()} className="drop-zone">

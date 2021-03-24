@@ -3,7 +3,7 @@ import Dropzone from 'react-dropzone';
 import axios from 'axios';
 import { useState, useEffect } from "react";
 import './index.css';
-import Files from './Files'
+import Files from './Files2'
 
 function App() {
 
@@ -76,7 +76,7 @@ function App() {
     }
   }
 
-  function cancelMeSenpai() {
+  function cancelTheRequest() {
     if (source) {
       console.log("CANCELLING REQUEST")
       source.cancel("REQUEST CANCELLED")
@@ -96,7 +96,7 @@ function App() {
           </section>
         )}
       </Dropzone> */}
-      <button onClick={() => cancelMeSenpai()}>CANCEL REQUEST</button>
+      <button onClick={() => cancelTheRequest()}>CANCEL REQUEST</button>
     </>
   );
 }
