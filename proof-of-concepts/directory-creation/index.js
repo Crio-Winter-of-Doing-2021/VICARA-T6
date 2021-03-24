@@ -35,16 +35,26 @@ app.post('/upload', async (req, res, next) => {
         busboyFinishTime = null,
         s3UploadFinishTime = null;
 
+    let newFieldName;
+
     req.busboy.on('field', function (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
         console.log('Field [' + fieldname + ']: value: ' + val);
         console.log(fieldnameTruncated, valTruncated, encoding, mimetype)
     });
 
+    let folderStructure = {};
+
 
     req.busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
         // process files
         // console.log(`Upload of '${filename}' started`);
-        console.log(fieldname, filename)
+        newFieldName = JSON.parse(decodeURI(fieldname))
+
+        const { pathHashMap } = newFieldName
+        let directoryStructure = newFieldName.path;
+        let absolutePath = newFieldName.absolute_path_of_folder;
+        console.log(55, newFieldName, filename)
+
 
         file.on('end', function () {
             // console.log("LOL I'm ended")
@@ -54,7 +64,7 @@ app.post('/upload', async (req, res, next) => {
         file.on('data', function (data) {
         })
 
-        let path = fieldname.replace(filename, "")?.split("/")?.filter(e => e.length)
+        let path = directoryStructure.replace(filename, "")?.split("/")?.filter(e => e.length)
 
         const ownerID = "605256109934f80db98712ea";
         let parentID = "605256109934f80db98712ea";
@@ -66,62 +76,98 @@ app.post('/upload', async (req, res, next) => {
                 parentID = path[0];
                 path.shift()
             }
-
-            console.log(path);
+            console.log(79, path);
 
             //It's a folder
 
-            const result = await Files.find({ name: filename, parent: parentID });
+            // const result = await Files.find({ name: filename, parent: parentID });
 
-            if (result.length) {
-                await Files.findByIdAndUpdate(result._id, { size: 1025 });
-            }
-            else {
+            // if (result.length) {
+            //     await Files.findByIdAndUpdate(result._id, { size: 1025 });
+            // }
+            // else {
+            //     let newPath = "";
+            //     for (let i = 0; i < path.length; i++) {
+            //         const result = await Files.findOne({ name: path[i], parent: parentID });
 
-                for (let i = 0; i < path.length; i++) {
-                    const result = await Files.findOne({ name: path[i], parent: parentID });
+            //         if (result) {
+            //             // console.log(94, result);
+            //             console.log(95, "Folder already exists")
+            //             // const data = JSON.parse(fs.readFileSync("./info.json", 'utf8'))
+            //             // let count = data.count + 1;
+            //             // fs.writeFileSync('./info.json', JSON.stringify({ count }))
+            //             parentID = result._id;
+            //         }
+            //         else {
+            //             console.log(102, "Create new folder entry", path[i])
 
-                    if (result) {
-                        console.log(result);
-                        console.log("Folder already exists")
-                        parentID = result._id;
-                    }
-                    else {
-                        console.log("Create new folder entry")
+            //             const folder = new Files({
+            //                 name: path[i],
+            //                 directory: true,
+            //                 parent: parentID,
+            //                 owner: ownerID
+            //             })
 
-                        const folder = new Files({
-                            name: path[i],
-                            directory: true,
-                            parent: parentID,
-                            owner: ownerID
-                        })
+            //             const { _id: childFolderID } = await folder.save();
+            //             newPath = newPath + (newPath !== "" ? ("/") : "") + path[i];
+            //             console.log(113, { folderStructure, directoryStructure, [newPath]: childFolderID })
+            //             folderStructure = { ...folderStructure, [newPath]: childFolderID }
+            //             // await Files.findByIdAndUpdate(parentID, { children: [childFolderID] });
+            //             console.log(116, folderStructure);
+            //             parentID = childFolderID;
+            //         }
+            //     }
+            // }
 
-                        const { _id: childFolderID } = await folder.save();
-                        // await Files.findByIdAndUpdate(parentID, { children: [childFolderID] });
-                        parentID = childFolderID;
-                    }
+            let absolutePath_split = absolutePath.split("/")
+
+            for (let i = absolutePath_split.length - 1; i >= 0; i--) {
+                let tempPath = absolutePath_split.slice(0, i + 1).join("/")
+
+                if (pathHashMap[tempPath] !== undefined) {
+                    console.log("Folder hash map found")
+                    parentID = pathHashMap[tempPath];
+                    break;
                 }
+                else {
+                    console.log(102, "Create new folder entry", absolutePath_split[i])
+                    const folder = new Files({
+                        name: absolutePath_split[i],
+                        directory: true,
+                        parent: parentID,
+                        owner: ownerID
+                    })
 
-                const file = new Files({
-                    name: filename,
-                    directory: false,
-                    owner: ownerID,
-                    parent: parentID,
-                    type: 'image',
-                    extension: 'jpeg',
-                    size: '1024',
-                    url
-                })
-
-                await file.save();
-                // const { _id: fileID, children: childrens } = await file.save();
-
-                // await Files.findByIdAndUpdate(parentID, { children: [...childrens, fileID] })
+                    const { _id: childFolderID } = await folder.save();
+                    let newPath = absolutePath_split.slice(0, i + 1).join("/")
+                    console.log(113, { folderStructure, directoryStructure, [newPath]: childFolderID })
+                    folderStructure = { ...folderStructure, [newPath]: childFolderID }
+                    // await Files.findByIdAndUpdate(parentID, { children: [childFolderID] });
+                    console.log(116, folderStructure);
+                    parentID = childFolderID;
+                }
             }
+
+            const file = new Files({
+                name: filename,
+                directory: false,
+                owner: ownerID,
+                parent: parentID,
+                type: 'image',
+                extension: 'jpeg',
+                size: '1024',
+                url
+            })
+
+            await file.save();
+            res.status(200).json({ path: folderStructure });
+            // const { _id: fileID, children: childrens } = await file.save();
+
+            // await Files.findByIdAndUpdate(parentID, { children: [...childrens, fileID] })
         }
         else {
             //It's a file
-            console.log("FILE FOUNDED")
+            console.log(141, "FILE FOUNDED")
         }
 
         // let s3 = new AWS.S3({
@@ -150,7 +196,7 @@ app.post('/upload', async (req, res, next) => {
     req.busboy.on('finish', function () {
         // send response
         console.log('Done parsing form!');
-        res.status(200).json({ msg: "FINISHED" });
+        // res.status(200).json({ path: folderStructure });
 
 
         busboyFinishTime = new Date();
