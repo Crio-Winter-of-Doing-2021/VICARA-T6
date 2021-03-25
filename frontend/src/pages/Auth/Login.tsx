@@ -82,7 +82,7 @@ function SignUp() {
         <div>
           <p className="text-sm">
             Don&apos;t have an account?{' '}
-            <Link to="/signup" className="text-blue-700">
+            <Link to="/auth/signup" className="text-blue-700">
               Create One
             </Link>
           </p>

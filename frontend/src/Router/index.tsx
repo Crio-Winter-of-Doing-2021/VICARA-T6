@@ -10,7 +10,7 @@ export default function App() {
         <Route exact path="/">
           <Home />
         </Route>
-        <Route exact path="/auth">
+        <Route path="/auth/:state">
           <Auth />
         </Route>
       </Switch>

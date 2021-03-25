@@ -105,7 +105,7 @@ function SignUp() {
         <div>
           <p className="text-sm">
             Already have an account?{' '}
-            <Link to="/login" className="text-blue-700">
+            <Link to="/auth/login" className="text-blue-700">
               Login in
             </Link>
           </p>
