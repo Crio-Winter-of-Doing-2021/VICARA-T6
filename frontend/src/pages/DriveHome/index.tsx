@@ -1,10 +1,11 @@
 import Navbar from '../../components/Helper/Navbar';
+import FolderTable from '../../components/DriveHome/FolderTable';
 
 function DriveHome() {
   return (
     <>
       <Navbar />
-      <div className="bg-black text-white max-h-full">Hello</div>
+      <FolderTable />
     </>
   );
 }
