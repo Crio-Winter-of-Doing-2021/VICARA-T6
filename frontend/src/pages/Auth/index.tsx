@@ -1,5 +1,5 @@
-import Login from './Login';
-import SignUp from './SignUp';
+import Login from '../../components/Auth/Login';
+import SignUp from '../../components/Auth/SignUp';
 import { useParams } from 'react-router-dom';
 
 interface RouterParams {

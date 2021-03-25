@@ -2,6 +2,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
 import Home from '../pages/Home';
 import Auth from '../pages/Auth/index';
+import DriveHome from '../pages/DriveHome/index';
 
 export default function App() {
   return (
@@ -12,6 +13,9 @@ export default function App() {
         </Route>
         <Route path="/auth/:state">
           <Auth />
+        </Route>
+        <Route path="/:id">
+          <DriveHome />
         </Route>
       </Switch>
     </BrowserRouter>
