@@ -10,7 +10,10 @@ listDirectory.get("/", async (req, res, next) => {
 
   try {
     //Find the folder with the owner and parent folder id as url
-    const result = await Files.find({ owner, parent });
+    const result = await Files.find({ owner, parent }).sort({
+      directory: -1,
+      name: 1,
+    });
 
     res.send({
       currentFolderData: fileDetails,
