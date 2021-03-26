@@ -4,6 +4,7 @@ import { withRouter, useHistory } from 'react-router-dom';
 
 import Axios from '../../config/axios';
 
+import DirectoryRouter from './DirectoryRoute';
 import FolderTable from './FolderTable';
 
 interface FileProps {
@@ -22,9 +23,6 @@ function useFiles({ ownerID, currentFolderID }: FileProps) {
 
 function DriveMain() {
   const history = useHistory();
-
-  console.log(process.env.REACT_APP_BACKEND_URL);
-
   const ownerID = '605256109934f80db98712ea';
 
   // Get the folder ID from the URL
@@ -51,7 +49,11 @@ function DriveMain() {
 
   return (
     <>
-      <FolderTable setDirectory={changeParentFolder} files={data} />
+      <DirectoryRouter
+        setDirectory={changeParentFolder}
+        currentFolderID={currentFolderID}
+      />
+      <FolderTable setDirectory={changeParentFolder} files={data.children} />
     </>
   );
 }

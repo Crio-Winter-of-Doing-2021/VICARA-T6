@@ -1,4 +1,4 @@
-import FilesSchmea from '../../utils/interfaces/FilesSchmea';
+import FilesSchmea from '../../utils/interfaces/FilesSchema';
 
 interface FolderRowProps {
   file: FilesSchmea;
@@ -60,6 +60,14 @@ function FolderRow({ file, setDirectory }: FolderRowProps) {
 }
 
 export default function FolderTable({ files, setDirectory }: FolderTableProps) {
+  if (files?.length === 0) {
+    return (
+      <div className="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        No files and folders
+      </div>
+    );
+  }
+
   return (
     <div className="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
       <div className="align-middle inline-block min-w-full shadow overflow-hidden bg-white shadow-dashboard px-8 pt-3 rounded-bl-lg rounded-br-lg">

@@ -1,4 +1,4 @@
-interface FilesSchmea {
+interface FilesSchema {
   _id: string;
   directory: boolean;
   name: string;
@@ -9,4 +9,4 @@ interface FilesSchmea {
   createdAt: string;
 }
 
-export default FilesSchmea;
+export default FilesSchema;
