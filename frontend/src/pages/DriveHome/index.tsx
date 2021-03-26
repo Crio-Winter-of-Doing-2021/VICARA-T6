@@ -1,11 +1,17 @@
 import Navbar from '../../components/Helper/Navbar';
-import FolderTable from '../../components/DriveHome/FolderTable';
+import DriveMain from '../../components/DriveHome';
+
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+const queryClient = new QueryClient();
 
 function DriveHome() {
   return (
     <>
       <Navbar />
-      <FolderTable />
+      <QueryClientProvider client={queryClient}>
+        <DriveMain />
+      </QueryClientProvider>
     </>
   );
 }
