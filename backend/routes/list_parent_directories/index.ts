@@ -28,25 +28,25 @@ listParentDirectories.get("/", async (req, res, next) => {
           name: name,
         });
       }
-    }
 
-    //Update the parent of folder
-    parent = leafFileDetails?.parent;
+      //Update the parent of folder
+      parent = leafFileDetails?.parent;
 
-    //Find till the root parent is found
-    while (leafFileDetails !== null) {
-      leafFileDetails = await Files.findOne({ _id: parent });
+      //Find till the root parent is found
+      while (leafFileDetails !== null) {
+        leafFileDetails = await Files.findOne({ _id: parent });
 
-      if (leafFileDetails) {
-        const { _id, name } = leafFileDetails;
+        if (leafFileDetails) {
+          const { _id, name } = leafFileDetails;
 
-        if (name && _id) {
-          directoryRoutes.push({
-            id: _id,
-            name: name,
-          });
+          if (name && _id) {
+            directoryRoutes.push({
+              id: _id,
+              name: name,
+            });
+          }
+          parent = leafFileDetails?.parent;
         }
-        parent = leafFileDetails?.parent;
       }
     }
 
