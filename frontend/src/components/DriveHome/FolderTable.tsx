@@ -15,7 +15,7 @@ interface FolderTableProps {
 }
 
 function downloadFile(toastId: any, id: string, name: string) {
-  const notify = () => (toastId.current = toast('Downloading ' + name));
+  const notify = () => (toastId.current = toast.warn('Downloading ' + name));
 
   const update = () =>
     toast.update(toastId.current, {
@@ -29,6 +29,24 @@ function downloadFile(toastId: any, id: string, name: string) {
   Axios.get(`/download_file?file=${id}`, { responseType: 'blob' })
     .then((response) => new Blob([response.data], { type: 'application/png' }))
     .then((blob) => saveAs(blob, name))
+    .then(() => update());
+}
+
+function downloadFolder(toastId: any, id: string, name: string) {
+  const notify = () => (toastId.current = toast.warn('Downloading ' + name));
+
+  const update = () =>
+    toast.update(toastId.current, {
+      render: 'Download successfull',
+      type: toast.TYPE.INFO,
+      autoClose: 1000
+    });
+
+  notify();
+
+  Axios.get(`/download_folder?folder=${id}`, { responseType: 'blob' })
+    .then((response) => new Blob([response.data]))
+    .then((blob) => saveAs(blob, `${name}.zip`))
     .then(() => update());
 }
 
@@ -67,18 +85,29 @@ function FolderRow({ file, setDirectory }: FolderRowProps) {
         {updatedAt}
       </td>
       <td className="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-500 text-sm leading-5">
-        <button
-          className="mr-4 px-5 py-2 border-green-500 border text-green-500 rounded transition duration-300 hover:bg-green-700 hover:text-white focus:outline-none"
-          onClick={() => downloadFile(toastId, id, name)}
-        >
-          Download
-        </button>
         {isDirectory && (
+          <>
+            <button
+              className="mr-4 px-5 py-2 border-green-500 border text-green-500 rounded transition duration-300 hover:bg-green-700 hover:text-white focus:outline-none"
+              onClick={() => downloadFolder(toastId, id, name)}
+            >
+              Download
+            </button>
+            <button
+              className="px-5 py-2 border-yellow-500 border text-yellow-500 rounded transition duration-300 hover:bg-yellow-500 hover:text-white focus:outline-none"
+              onClick={() => setDirectory(id)}
+            >
+              View Folder
+            </button>
+          </>
+        )}
+
+        {!isDirectory && (
           <button
-            className="px-5 py-2 border-yellow-500 border text-yellow-500 rounded transition duration-300 hover:bg-yellow-500 hover:text-white focus:outline-none"
-            onClick={() => setDirectory(id)}
+            className="mr-4 px-5 py-2 border-green-500 border text-green-500 rounded transition duration-300 hover:bg-green-700 hover:text-white focus:outline-none"
+            onClick={() => downloadFile(toastId, id, name)}
           >
-            View Folder
+            Download
           </button>
         )}
       </td>
