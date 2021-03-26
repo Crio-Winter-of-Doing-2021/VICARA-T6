@@ -1,3 +1,8 @@
+import { useRef } from 'react';
+import { saveAs } from 'file-saver';
+import { toast } from 'react-toastify';
+
+import Axios from '../../config/axios';
 import FilesSchmea from '../../utils/interfaces/FilesSchema';
 
 interface FolderRowProps {
@@ -9,24 +14,45 @@ interface FolderTableProps {
   setDirectory(folderID: string): void;
 }
 
+function downloadFile(toastId: any, id: string, name: string) {
+  const notify = () => (toastId.current = toast('Downloading ' + name));
+
+  const update = () =>
+    toast.update(toastId.current, {
+      render: 'Download successfull',
+      type: toast.TYPE.INFO,
+      autoClose: 1000
+    });
+
+  notify();
+
+  Axios.get(`/download_file?file=${id}`, { responseType: 'blob' })
+    .then((response) => new Blob([response.data], { type: 'application/png' }))
+    .then((blob) => saveAs(blob, name))
+    .then(() => update());
+}
+
 function FolderRow({ file, setDirectory }: FolderRowProps) {
+  const { _id: id, name, directory: isDirectory, size, updatedAt } = file;
+  const toastId: any = useRef(null);
+
   return (
     <tr>
       <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
         <div className="flex items-center">
           <div>
-            <div className="text-sm leading-5 text-gray-800">{file._id}</div>
+            <div className="text-sm leading-5 text-gray-800">{id}</div>
           </div>
         </div>
       </td>
       <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-        <div className="text-sm leading-5 text-blue-900">{file.name}</div>
+        <div className="text-sm leading-5 text-blue-900">{name}</div>
       </td>
       <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-500 text-sm leading-5">
-        {file.directory ? 'Directory' : 'File'}
+        {isDirectory ? 'Directory' : 'File'}
       </td>
       <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-500 text-sm leading-5">
-        {file?.size ?? '-'}
+        {size ?? '-'}
       </td>
       {/* <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-500 text-sm leading-5">
         <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
@@ -38,20 +64,21 @@ function FolderRow({ file, setDirectory }: FolderRowProps) {
         </span>
       </td> */}
       <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500 text-blue-900 text-sm leading-5">
-        {file.updatedAt}
+        {updatedAt}
       </td>
       <td className="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-500 text-sm leading-5">
-        {file.directory && (
+        <button
+          className="mr-4 px-5 py-2 border-green-500 border text-green-500 rounded transition duration-300 hover:bg-green-700 hover:text-white focus:outline-none"
+          onClick={() => downloadFile(toastId, id, name)}
+        >
+          Download
+        </button>
+        {isDirectory && (
           <button
             className="px-5 py-2 border-yellow-500 border text-yellow-500 rounded transition duration-300 hover:bg-yellow-500 hover:text-white focus:outline-none"
-            onClick={() => setDirectory(file._id)}
+            onClick={() => setDirectory(id)}
           >
             View Folder
-          </button>
-        )}
-        {!file.directory && (
-          <button className="px-5 py-2 border-green-500 border text-green-500 rounded transition duration-300 hover:bg-green-700 hover:text-white focus:outline-none">
-            Download
           </button>
         )}
       </td>
