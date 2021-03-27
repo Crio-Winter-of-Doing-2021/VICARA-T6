@@ -102,10 +102,9 @@ uploadFolder.post("/", async (req, res, next) => {
     }
   );
 
-  req.busboy.on("finish", function (data) {
+  req.busboy.on("finish", function () {
     // send response
     console.log("Done parsing form!");
-    console.log(data);
     finished = true;
 
     if (busboyFinishTime && s3UploadFinishTime) {

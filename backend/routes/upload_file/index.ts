@@ -25,6 +25,8 @@ async function upload(filename, file) {
 }
 
 uploadFile.post("/", async (req, res, next) => {
+  let { owner: ownerID } = req.query;
+
   let uploadStartTime = new Date(),
     busboyFinishTime = null,
     s3UploadFinishTime = null;
@@ -36,7 +38,6 @@ uploadFile.post("/", async (req, res, next) => {
     "file",
     async (fieldname, file, filename, encoding, mimetype) => {
       const parentID = fieldname;
-      const ownerID = "605256109934f80db98712ea";
 
       //Check if file already exists
       const result = await Files.findOne({
@@ -50,10 +51,13 @@ uploadFile.post("/", async (req, res, next) => {
       }
 
       file.on("end", function () {
+        // console.log("ENDED");
         // res.json({ msg: "ENDED" })
       });
 
-      file.on("data", function (data) {});
+      file.on("data", function (data) {
+        // console.log("DATA FOUND");
+      });
 
       if (result === null) {
         const new_file = new Files({
@@ -101,10 +105,9 @@ uploadFile.post("/", async (req, res, next) => {
     }
   );
 
-  req.busboy.on("finish", function (data) {
+  req.busboy.on("finish", function () {
     // send response
     console.log("Done parsing form!");
-    console.log(data);
     finished = true;
 
     if (busboyFinishTime && s3UploadFinishTime) {

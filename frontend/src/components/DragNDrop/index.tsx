@@ -116,7 +116,11 @@ function DragAndDrop(props: any) {
     };
 
     try {
-      const { data } = await Axios.post('/upload_file', formData, options);
+      const { data } = await Axios.post(
+        `/upload_file?owner=${ownerID}`,
+        formData,
+        options
+      );
 
       console.log(data);
 

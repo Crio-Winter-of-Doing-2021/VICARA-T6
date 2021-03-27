@@ -31,13 +31,18 @@ createDirectoryStructure.post("/", async (req, res, next) => {
         let files_string = "";
 
         for (const segment of path.split("/")) {
+          //If segment not empty and not a File
           if (segment !== "" && !segment.includes(".")) {
+            //If segment already in our HashMap we update the IDs
             if (segment in current) {
               files_string = files_string + "/" + segment;
               parentID = file_structure[segment];
               childID = parentID;
             }
 
+            //If segment doesn't exist in our HashMap we create the
+            //folder in moongodb and append the file_String variable
+            //And also update the hashmap
             if (!(segment in current)) {
               current[segment] = {};
 
@@ -46,6 +51,8 @@ createDirectoryStructure.post("/", async (req, res, next) => {
                 parent: parentID,
               });
 
+              //If folder already exists in our DB
+              //Update the files_string, child and parent IDs
               if (result) {
                 db_calls += 1;
                 files_string = files_string + "/" + segment;
@@ -53,6 +60,7 @@ createDirectoryStructure.post("/", async (req, res, next) => {
                 parentID = result._id;
                 childID = parentID;
               } else {
+                //Else create it and update the data
                 const folder = new Files({
                   name: segment,
                   directory: true,
