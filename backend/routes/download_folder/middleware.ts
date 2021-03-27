@@ -1,28 +1,8 @@
-const Files = require("../../db/models/filesSchema");
 const AWS = require("aws-sdk");
+const Files = require("../../db/models/filesSchema");
+const traverseDirectory = require("../../utils/helper/db_traversal");
 
 export {};
-
-async function traverseDirectory(parentID, folderString, directoryStructure) {
-  const result = await Files.find({ parent: parentID });
-
-  for (let i = 0; i < result.length; i++) {
-    const file = result[i];
-    if (file.directory) {
-      await traverseDirectory(
-        file._id,
-        folderString + file.name + "/",
-        directoryStructure
-      );
-    } else {
-      directoryStructure.push({
-        folderPath: folderString,
-        fileName: file.name,
-        fileKey: file._id.toString(),
-      });
-    }
-  }
-}
 
 const createMiddleware = {
   directory: async function (req, res, next) {

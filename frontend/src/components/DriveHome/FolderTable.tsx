@@ -16,7 +16,7 @@ interface FolderTableProps {
 }
 
 function downloadFile(toastId: any, id: string, name: string) {
-  const notify = () => (toastId.current = toast('Downloading ' + name));
+  toastId.current = toast('Downloading ' + name);
 
   const update = () =>
     toast.update(toastId.current, {
@@ -24,8 +24,6 @@ function downloadFile(toastId: any, id: string, name: string) {
       type: toast.TYPE.INFO,
       autoClose: 1000
     });
-
-  notify();
 
   Axios.get(`/download_file?file=${id}`, { responseType: 'blob' })
     .then((response) => new Blob([response.data], { type: 'application/png' }))
@@ -34,7 +32,7 @@ function downloadFile(toastId: any, id: string, name: string) {
 }
 
 function downloadFolder(toastId: any, id: string, name: string) {
-  const notify = () => (toastId.current = toast('Downloading ' + name));
+  toastId.current = toast('Downloading ' + name);
 
   const update = () =>
     toast.update(toastId.current, {
@@ -43,11 +41,39 @@ function downloadFolder(toastId: any, id: string, name: string) {
       autoClose: 1000
     });
 
-  notify();
-
   Axios.get(`/download_folder?folder=${id}`, { responseType: 'blob' })
     .then((response) => new Blob([response.data]))
     .then((blob) => saveAs(blob, `${name}.zip`))
+    .then(() => update());
+}
+
+function deleteFile(toastId: any, id: string, name: string) {
+  toastId.current = toast.error('Deleting ' + name);
+
+  const update = () =>
+    toast.update(toastId.current, {
+      render: 'Deletion successfull',
+      type: toast.TYPE.INFO,
+      autoClose: 1000
+    });
+
+  Axios.delete('/delete_file', { data: { file: id } })
+    .then((response) => console.log(response))
+    .then(() => update());
+}
+
+function deleteFolder(toastId: any, id: string, name: string) {
+  toastId.current = toast.error('Deleting ' + name);
+
+  const update = () =>
+    toast.update(toastId.current, {
+      render: 'Deletion successfull',
+      type: toast.TYPE.INFO,
+      autoClose: 1000
+    });
+
+  Axios.delete('/delete_folder', { data: { file: id } })
+    .then((response) => console.log(response))
     .then(() => update());
 }
 
@@ -95,6 +121,12 @@ function FolderRow({ file, setDirectory }: FolderRowProps) {
               Download
             </button>
             <button
+              className="mr-4 px-5 py-2 border-red-500 border text-red-500 rounded transition duration-300 hover:bg-red-700 hover:text-white focus:outline-none"
+              onClick={() => deleteFolder(toastId, id, name)}
+            >
+              Delete
+            </button>
+            <button
               className="px-5 py-2 border-yellow-500 border text-yellow-500 rounded transition duration-300 hover:bg-yellow-500 hover:text-white focus:outline-none"
               onClick={() => setDirectory(id)}
             >
@@ -104,12 +136,20 @@ function FolderRow({ file, setDirectory }: FolderRowProps) {
         )}
 
         {!isDirectory && (
-          <button
-            className="mr-4 px-5 py-2 border-green-500 border text-green-500 rounded transition duration-300 hover:bg-green-700 hover:text-white focus:outline-none"
-            onClick={() => downloadFile(toastId, id, name)}
-          >
-            Download
-          </button>
+          <>
+            <button
+              className="mr-4 px-5 py-2 border-green-500 border text-green-500 rounded transition duration-300 hover:bg-green-700 hover:text-white focus:outline-none"
+              onClick={() => downloadFile(toastId, id, name)}
+            >
+              Download
+            </button>
+            <button
+              className="mr-4 px-5 py-2 border-red-500 border text-red-500 rounded transition duration-300 hover:bg-red-700 hover:text-white focus:outline-none"
+              onClick={() => deleteFile(toastId, id, name)}
+            >
+              Delete
+            </button>
+          </>
         )}
       </td>
     </tr>

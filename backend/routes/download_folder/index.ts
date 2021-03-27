@@ -17,7 +17,7 @@ downloadFolder.get("/", createMiddleware.directory, async (req, res, next) => {
   //Get folderName from middleware
   const { folderName } = req;
 
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 5000));
 
   try {
     res.set("content-type", "application/zip"); // optional

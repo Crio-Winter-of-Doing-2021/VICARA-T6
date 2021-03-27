@@ -6,6 +6,8 @@ const uploadFolder = require("./upload_folder");
 const createDirectoryStucture = require("./create_directory_stucture");
 const downloadFile = require("./download_file");
 const downloadFolder = require("./download_folder");
+const deleteFile = require("./delete_file");
+const deleteFolder = require("./delete_folder");
 
 router.use("/list_directory", listDirectory);
 router.use("/list_parent_directories", listParentDirectories);
@@ -13,6 +15,8 @@ router.use("/upload_file", uploadFile);
 router.use("/upload_folder", uploadFolder);
 router.use("/download_file", downloadFile);
 router.use("/download_folder", downloadFolder);
+router.use("/delete_file", deleteFile);
+router.use("/delete_folder", deleteFolder);
 router.use("/create_directory_stucture", createDirectoryStucture);
 
 router.get("/", (req, res) => {

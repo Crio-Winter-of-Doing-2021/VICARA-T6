@@ -5,13 +5,15 @@ require("./db/connection.ts");
 const express = require("express");
 const busboy = require("connect-busboy");
 const cors = require("cors");
-const Files = require("./db/models/filesSchema");
 const app = express();
 const AWS = require("aws-sdk");
+const bodyParser = require("body-parser");
 
+const Files = require("./db/models/filesSchema");
 const routes = require("./routes");
 
 app.use(cors());
+app.use(bodyParser.json());
 app.use(
   busboy({
     highWaterMark: 10 * 1024 * 1024, // Set 10 MB buffer
