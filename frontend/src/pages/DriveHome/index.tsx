@@ -16,7 +16,6 @@ function DriveHome() {
           position="bottom-right"
           newestOnTop={true}
           transition={Flip}
-          hideProgressBar={true}
           closeOnClick
           autoClose={false}
         />

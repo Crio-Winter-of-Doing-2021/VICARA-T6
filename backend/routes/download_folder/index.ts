@@ -14,10 +14,10 @@ const zipper = new S3Zipper(config);
 export {};
 
 downloadFolder.get("/", createMiddleware.directory, async (req, res, next) => {
-  let { folder: folderID } = req.query;
-
   //Get folderName from middleware
   const { folderName } = req;
+
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   try {
     res.set("content-type", "application/zip"); // optional

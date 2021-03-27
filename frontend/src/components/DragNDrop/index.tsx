@@ -54,6 +54,7 @@ function DragAndDrop(props: any) {
           });
         } else {
           toast.update(toastId.current, {
+            render: `Upload in Progress ${percent}`,
             progress: percent
           });
         }
@@ -68,7 +69,13 @@ function DragAndDrop(props: any) {
       );
 
       console.log(data);
-      toast.done(toastId.current);
+
+      toast.update(toastId.current, {
+        render: 'Upload successfull',
+        type: toast.TYPE.INFO,
+        autoClose: 1000
+      });
+
       refetch();
 
       await new Promise((resolve) => setTimeout(resolve, 50));
@@ -101,6 +108,7 @@ function DragAndDrop(props: any) {
           });
         } else {
           toast.update(toastId.current, {
+            render: `Upload in Progress ${percent}`,
             progress: percent
           });
         }
@@ -111,7 +119,13 @@ function DragAndDrop(props: any) {
       const { data } = await Axios.post('/upload_file', formData, options);
 
       console.log(data);
-      toast.done(toastId.current);
+
+      toast.update(toastId.current, {
+        render: 'Upload successfull',
+        type: toast.TYPE.INFO,
+        autoClose: 1000
+      });
+
       refetch();
 
       await new Promise((resolve) => setTimeout(resolve, 50));
