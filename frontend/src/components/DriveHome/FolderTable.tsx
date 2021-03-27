@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { saveAs } from 'file-saver';
 import { toast } from 'react-toastify';
+import { format } from 'date-fns';
 
 import Axios from '../../config/axios';
 import FilesSchmea from '../../utils/interfaces/FilesSchema';
@@ -15,7 +16,7 @@ interface FolderTableProps {
 }
 
 function downloadFile(toastId: any, id: string, name: string) {
-  const notify = () => (toastId.current = toast.warn('Downloading ' + name));
+  const notify = () => (toastId.current = toast('Downloading ' + name));
 
   const update = () =>
     toast.update(toastId.current, {
@@ -33,7 +34,7 @@ function downloadFile(toastId: any, id: string, name: string) {
 }
 
 function downloadFolder(toastId: any, id: string, name: string) {
-  const notify = () => (toastId.current = toast.warn('Downloading ' + name));
+  const notify = () => (toastId.current = toast('Downloading ' + name));
 
   const update = () =>
     toast.update(toastId.current, {
@@ -82,7 +83,7 @@ function FolderRow({ file, setDirectory }: FolderRowProps) {
         </span>
       </td> */}
       <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500 text-blue-900 text-sm leading-5">
-        {updatedAt}
+        {format(new Date(updatedAt), 'LLL d, yyy  h:mm a')}
       </td>
       <td className="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-500 text-sm leading-5">
         {isDirectory && (

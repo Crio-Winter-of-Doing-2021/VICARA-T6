@@ -4,6 +4,7 @@ import { withRouter, useHistory } from 'react-router-dom';
 
 import Axios from '../../config/axios';
 
+import DragAndDrop from '../DragNDrop/index';
 import DirectoryRouter from './DirectoryRoute';
 import FolderTable from './FolderTable';
 
@@ -49,6 +50,7 @@ function DriveMain() {
 
   return (
     <>
+      <DragAndDrop refetch={refetch} />
       <DirectoryRouter
         setDirectory={changeParentFolder}
         currentFolderID={currentFolderID}
