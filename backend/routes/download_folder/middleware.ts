@@ -14,13 +14,12 @@ const createMiddleware = {
 
     await traverseDirectory(folderID, folderString, directoryStructure);
 
-    const s3 = new AWS.S3({
-      params: { Bucket: process.env.S3_BUCKET_NAME },
-      region: process.env.S3_REGION,
-    });
+    const s3 = new AWS.S3();
 
     for (let i = 0; i < directoryStructure.length; i++) {
-      const { fileName, fileKey, folderPath } = directoryStructure[i];
+      const { name: fileName, _id: fileKey, folderPath } = directoryStructure[
+        i
+      ];
 
       const params = {
         Bucket: process.env.S3_BUCKET_NAME,

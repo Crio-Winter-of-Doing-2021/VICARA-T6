@@ -15,8 +15,7 @@ deleteFolder.delete("/", async (req, res, next) => {
   let directoryStructure = [
     {
       folderPath: folderString,
-      fileName: result.name,
-      fileKey: result._id.toString(),
+      ...JSON.parse(JSON.stringify(result)),
     },
   ];
 
@@ -27,7 +26,7 @@ deleteFolder.delete("/", async (req, res, next) => {
 
   //Traverse the resultant directory and delete the files/folders from S3 and DB
   for (let i = 0; i < directoryStructure.length; i++) {
-    const { fileKey: fileID } = directoryStructure[i];
+    const { _id: fileID } = directoryStructure[i];
 
     const params = {
       Bucket: process.env.S3_BUCKET_NAME,

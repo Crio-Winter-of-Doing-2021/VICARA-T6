@@ -16,21 +16,20 @@ async function traverseDirectory(
       if (directoryNeededInResult) {
         directoryStructure.push({
           folderPath: folderString,
-          fileName: file.name,
-          fileKey: file._id.toString(),
+          ...JSON.parse(JSON.stringify(file)),
         });
       }
 
       await traverseDirectory(
         file._id,
         folderString + file.name + "/",
-        directoryStructure
+        directoryStructure,
+        directoryNeededInResult
       );
     } else {
       directoryStructure.push({
         folderPath: folderString,
-        fileName: file.name,
-        fileKey: file._id.toString(),
+        ...JSON.parse(JSON.stringify(file)),
       });
     }
   }
