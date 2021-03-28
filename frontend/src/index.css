@@ -3,3 +3,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .max-w-125 {
+    max-width: 125px;
+  }
+
+  .min-w-225 {
+    min-width: 225px;
+  }
+}
