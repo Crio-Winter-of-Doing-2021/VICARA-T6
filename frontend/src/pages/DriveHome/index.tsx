@@ -1,9 +1,11 @@
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, Flip } from 'react-toastify';
+import { QueryClient, QueryClientProvider } from 'react-query';
+
 import Navbar from '../../components/Helper/Navbar';
 import DriveMain from '../../components/DriveHome';
 
-import { ToastContainer, Flip } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { FileContextProvider } from '../../contexts/FileCopy';
 
 const queryClient = new QueryClient();
 
@@ -12,14 +14,16 @@ function DriveHome() {
     <>
       <Navbar />
       <QueryClientProvider client={queryClient}>
-        <ToastContainer
-          position="bottom-right"
-          newestOnTop={true}
-          transition={Flip}
-          closeOnClick
-          autoClose={false}
-        />
-        <DriveMain />
+        <FileContextProvider>
+          <ToastContainer
+            position="bottom-right"
+            newestOnTop={true}
+            transition={Flip}
+            closeOnClick
+            autoClose={false}
+          />
+          <DriveMain />
+        </FileContextProvider>
       </QueryClientProvider>
     </>
   );
