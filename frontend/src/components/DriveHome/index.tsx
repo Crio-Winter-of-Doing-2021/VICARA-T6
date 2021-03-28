@@ -7,6 +7,7 @@ import Axios from '../../config/axios';
 import DragAndDrop from '../DragNDrop/index';
 import DirectoryRouter from './DirectoryRoute';
 import FolderTable from './FolderTable';
+import LeftSideBar from '../LeftSideBar';
 
 interface FileProps {
   ownerID: string;
@@ -50,12 +51,21 @@ function DriveMain() {
 
   return (
     <>
-      <DragAndDrop refetch={refetch} />
-      <DirectoryRouter
-        setDirectory={changeParentFolder}
-        currentFolderID={currentFolderID}
-      />
-      <FolderTable setDirectory={changeParentFolder} files={data.children} />
+      <div className="flex">
+        <LeftSideBar />
+        <div>
+          <DragAndDrop refetch={refetch} />
+          <DirectoryRouter
+            setDirectory={changeParentFolder}
+            currentFolderID={currentFolderID}
+          />
+
+          <FolderTable
+            setDirectory={changeParentFolder}
+            files={data.children}
+          />
+        </div>
+      </div>
     </>
   );
 }

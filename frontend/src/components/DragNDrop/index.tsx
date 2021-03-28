@@ -1,6 +1,6 @@
 import Dropzone from 'react-dropzone';
 import { toast } from 'react-toastify';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { withRouter, useHistory } from 'react-router-dom';
 import Axios from '../../config/axios';
@@ -11,6 +11,10 @@ function DragAndDrop(props: any) {
   const ownerID = '605256109934f80db98712ea';
 
   const toastId: any = useRef(null);
+
+  useEffect(() => {
+    console.log('DragNDrop: I got rendered too');
+  }, []);
 
   async function postFolders(folders: any) {
     let directoryStructure: any = {};
