@@ -2,8 +2,11 @@ import { createContext, useContext, useState } from 'react';
 
 type ContextProps = {
   copiedFiles?: any;
-  addNewFileToCopy?: any;
+  disableSelection?: any;
+  selectTheCurrentFile?: any;
   emptyClipboard?: any;
+  filesCounter?: any;
+  setFilesCounter?: any;
   removeFileFromClipboard?: any;
 };
 
@@ -13,13 +16,20 @@ export const useFileContext = () => useContext(FileContext);
 
 export const FileContextProvider = (props: any) => {
   const [copiedFiles, copyNewFile] = useState({});
+  const [disableSelection] = useState(false);
+  const [filesCounter, setFilesCounter] = useState(0);
 
-  const addNewFileToCopy = (id: any, name: any, isDirectory: boolean): void => {
+  const selectTheCurrentFile = (
+    id: any,
+    name: any,
+    isDirectory: boolean,
+    isSelected: boolean
+  ): void => {
     copyNewFile({
       ...copiedFiles,
       [id]: {
         id,
-        selected: true,
+        selected: !isSelected,
         name,
         isDirectory
       }
@@ -42,10 +52,13 @@ export const FileContextProvider = (props: any) => {
   return (
     <FileContext.Provider
       value={{
+        filesCounter,
+        setFilesCounter,
         copiedFiles,
+        disableSelection,
         removeFileFromClipboard,
         emptyClipboard,
-        addNewFileToCopy
+        selectTheCurrentFile
       }}
     >
       {props.children}
