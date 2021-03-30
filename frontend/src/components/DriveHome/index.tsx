@@ -3,11 +3,14 @@ import { useQuery } from 'react-query';
 import { withRouter, useHistory } from 'react-router-dom';
 
 import Axios from '../../config/axios';
+import { useFileContext } from '../../contexts/File';
 
 import DragAndDrop from '../DragNDrop/index';
 import DirectoryRouter from './DirectoryRoute';
 import FolderTable from './FolderTable';
 import LeftSideBar from '../LeftSideBar';
+import FilePreview from '../FilePreview';
+// import RightSideBar from '../RightSideBar';
 
 interface FileProps {
   ownerID: string;
@@ -27,6 +30,8 @@ function DriveMain() {
   const history = useHistory();
   const ownerID = '605256109934f80db98712ea';
 
+  const { filesCounter } = useFileContext();
+
   // Get the folder ID from the URL
   const currentFolderID = history.location.pathname.replace('/', '') ?? ownerID;
 
@@ -45,6 +50,10 @@ function DriveMain() {
     refetch();
   }, [currentFolderID]);
 
+  useEffect(() => {
+    refetch();
+  }, [filesCounter]);
+
   if (status === 'loading') {
     return <span>Loading...</span>;
   }
@@ -54,17 +63,25 @@ function DriveMain() {
       <div className="flex">
         <LeftSideBar />
         <div>
-          <DragAndDrop refetch={refetch} />
+          <DragAndDrop />
           <DirectoryRouter
             setDirectory={changeParentFolder}
             currentFolderID={currentFolderID}
           />
 
-          <FolderTable
-            setDirectory={changeParentFolder}
-            files={data.children}
-          />
+          {(data?.currentFolderData === null ||
+            data?.currentFolderData?.directory) && (
+            <FolderTable
+              setDirectory={changeParentFolder}
+              files={data.children}
+            />
+          )}
+
+          {data?.currentFolderData?.directory === false && (
+            <FilePreview data={data?.currentFolderData} />
+          )}
         </div>
+        {/* <RightSideBar refetch={refetch} /> */}
       </div>
     </>
   );
