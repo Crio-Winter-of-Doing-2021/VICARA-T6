@@ -108,6 +108,7 @@ async function copyFileUtility(
     delete tempExisting._id;
     delete tempExisting.updatedAt;
     delete tempExisting.createdAt;
+    tempExisting.parent = parent_id;
     const new_file = new Files(tempExisting);
     await new_file.save();
     console.log("Duplicate File Created in DB");

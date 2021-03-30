@@ -113,7 +113,7 @@ S3Zipper.prototype = {
 
     emitter.on("end", function () {
       var data = files;
-      console.log("end");
+      // console.log("end");
       var result = [];
       var totalSizeOfPassedFiles = 0;
       var lastScannedFile;
@@ -121,15 +121,15 @@ S3Zipper.prototype = {
         var passedFile = t.filterOutFiles(data.Contents[i]);
         if (passedFile) {
           if (params.maxFileSize && params.maxFileSize < passedFile.Size) {
-            console.warn(
-              "Single file size exceeds max allowed size",
-              data.Contents[i].Size,
-              ">",
-              params.maxFileSize,
-              passedFile
-            );
+            // console.warn(
+            //   "Single file size exceeds max allowed size",
+            //   data.Contents[i].Size,
+            //   ">",
+            //   params.maxFileSize,
+            //   passedFile
+            // );
             if (result.length == 0) {
-              console.warn("Will zip large file on its own", passedFile.Key);
+              // console.warn("Will zip large file on its own", passedFile.Key);
               result.push(passedFile);
               totalSizeOfPassedFiles += passedFile.Size;
             } else break;
@@ -182,7 +182,7 @@ S3Zipper.prototype = {
       if (err) console.error(err);
       else {
         var files = clearedFiles.files;
-        console.log("files", files);
+        // console.log("files", files);
         async.map(
           files,
           function (f, callback) {
@@ -197,7 +197,7 @@ S3Zipper.prototype = {
                     callback(null, f);
                     return;
                   } else {
-                    console.log("zipping ", name, "...");
+                    // console.log("zipping ", name, "...");
 
                     zip.append(data.Body, { name: name });
                     callback(null, f);

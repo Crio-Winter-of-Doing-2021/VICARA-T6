@@ -5,8 +5,7 @@ export {};
 
 listDirectory.get("/", async (req, res, next) => {
   let { owner, parent } = req.query;
-
-  const fileDetails = await Files.findOne({ _id: parent });
+  const fileDetails = await Files.findById(parent);
 
   try {
     //Find the folder with the owner and parent folder id as url

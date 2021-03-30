@@ -16,7 +16,7 @@ listParentDirectories.get("/", async (req, res, next) => {
 
   try {
     //Find the initial folder details
-    let leafFileDetails: FilesSchema = await Files.findOne({ _id: parent });
+    let leafFileDetails: FilesSchema = await Files.findById(parent);
 
     //If name and id exists push them to the array
     if (leafFileDetails) {
@@ -34,7 +34,7 @@ listParentDirectories.get("/", async (req, res, next) => {
 
       //Find till the root parent is found
       while (leafFileDetails !== null) {
-        leafFileDetails = await Files.findOne({ _id: parent });
+        leafFileDetails = await Files.findById(parent);
 
         if (leafFileDetails) {
           const { _id, name } = leafFileDetails;

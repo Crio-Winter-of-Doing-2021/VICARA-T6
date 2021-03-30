@@ -22,7 +22,6 @@ createDirectoryStructure.post("/", async (req, res, next) => {
       let current;
       const files = JSON.parse(val);
       let tempID = parentID;
-      let db_calls = 0;
 
       for (const { path } of files) {
         current = output;
@@ -54,7 +53,6 @@ createDirectoryStructure.post("/", async (req, res, next) => {
               //If folder already exists in our DB
               //Update the files_string, child and parent IDs
               if (result) {
-                db_calls += 1;
                 files_string = files_string + "/" + segment;
                 file_structure[segment] = result._id;
                 parentID = result._id;
@@ -83,7 +81,7 @@ createDirectoryStructure.post("/", async (req, res, next) => {
         final_structure[files_string] = childID;
       }
 
-      console.log(final_structure);
+      console.log({ final_structure });
 
       res.json({ result: final_structure }).status(200);
     }

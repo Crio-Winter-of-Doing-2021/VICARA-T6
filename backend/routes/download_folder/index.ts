@@ -13,7 +13,7 @@ const zipper = new S3Zipper(config);
 
 export {};
 
-downloadFolder.get("/", createMiddleware.directory, async (req, res, next) => {
+downloadFolder.post("/", createMiddleware.directory, async (req, res, next) => {
   //Get folderName from middleware
   const { folderName } = req;
 
@@ -31,7 +31,7 @@ downloadFolder.get("/", createMiddleware.directory, async (req, res, next) => {
       function (err, result) {
         if (err) console.error(err);
         else {
-          console.log(result);
+          console.log("SUCCESSFULLY ZIPPED");
         }
       }
     );

@@ -6,38 +6,65 @@ export {};
 
 const createMiddleware = {
   directory: async function (req, res, next) {
-    let { folder: folderID } = req.query;
-    const result = await Files.findById(folderID);
-
-    let folderString = result.name + "/";
-    let directoryStructure = [];
-
-    await traverseDirectory(folderID, folderString, directoryStructure);
+    let { folder: folderIDs } = req.body;
 
     const s3 = new AWS.S3();
 
-    for (let i = 0; i < directoryStructure.length; i++) {
-      const { name: fileName, _id: fileKey, folderPath } = directoryStructure[
-        i
-      ];
+    let parentFolderString = "downloadFolder/";
 
-      const params = {
-        Bucket: process.env.S3_BUCKET_NAME,
-        CopySource: process.env.S3_BUCKET_NAME + "/" + fileKey,
-        Key: folderPath + fileName,
-      };
+    for (let i = 0; i < folderIDs.length; i++) {
+      const result = await Files.findById(folderIDs[i]);
 
-      s3.copyObject(params, function (copyErr, copyData) {
-        if (copyErr) {
-          console.log(copyErr);
-        } else {
-          console.log("Copied: ", params.Key);
+      if (result.directory) {
+        let folderString = result.name + "/";
+
+        let directoryStructure = [];
+        await traverseDirectory(folderIDs[i], folderString, directoryStructure);
+
+        for (let i = 0; i < directoryStructure.length; i++) {
+          const {
+            name: fileName,
+            _id: fileKey,
+            folderPath,
+          } = directoryStructure[i];
+
+          console.log({
+            id: fileKey,
+            folderPath: folderPath + fileName,
+          });
+
+          const params = {
+            Bucket: process.env.S3_BUCKET_NAME,
+            CopySource: process.env.S3_BUCKET_NAME + "/" + fileKey,
+            Key: parentFolderString + folderPath + fileName,
+          };
+
+          s3.copyObject(params, function (copyErr, copyData) {
+            if (copyErr) {
+              console.log(copyErr);
+            } else {
+              console.log("Copied: ", params.Key);
+            }
+          });
         }
-      });
+      } else {
+        const params = {
+          Bucket: process.env.S3_BUCKET_NAME,
+          CopySource: process.env.S3_BUCKET_NAME + "/" + result._id,
+          Key: parentFolderString + result.name,
+        };
+
+        s3.copyObject(params, function (copyErr, copyData) {
+          if (copyErr) {
+            console.log(copyErr);
+          } else {
+            console.log("Copied: ", params.Key);
+          }
+        });
+      }
     }
 
-    req.folderName = result.name;
-
+    req.folderName = "downloadFolder";
     next();
   },
 };
