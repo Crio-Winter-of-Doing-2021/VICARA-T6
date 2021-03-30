@@ -1,14 +1,23 @@
 import { format } from 'date-fns';
 import { useRef } from 'react';
+import { BsThreeDots, BsDownload } from 'react-icons/bs';
+import { RiDeleteBin5Line } from 'react-icons/ri';
+import { AiOutlineStar } from 'react-icons/ai';
+import { HiOutlinePencilAlt, HiEye } from 'react-icons/hi';
+import { Menu, Item, Separator, useContextMenu } from 'react-contexify';
+import { useMutation } from 'react-query';
+import prettyBytes from 'pretty-bytes';
 
+import Axios from '../../../config/axios';
+import 'react-contexify/dist/ReactContexify.css';
 import fileMapper from '../../../utils/helper/fileMapper';
-
 import {
   deleteFile,
   deleteFolder,
   downloadFile,
   downloadFolder
 } from '../../../utils/helper/api';
+import { useFileContext } from '../../../contexts/File';
 import FilesSchmea from '../../../utils/interfaces/FilesSchema';
 
 interface FolderRowProps {
@@ -16,8 +25,14 @@ interface FolderRowProps {
   fileSelected?: boolean;
   selectFile(id: string): void;
   fileInClipboard: boolean;
+  disableSelection: boolean;
   setDirectory(folderID: string): void;
-  addNewFileToCopy(id: string, name: string, isDirectory: boolean): void;
+  addNewFileToCopy(
+    id: string,
+    name: string,
+    isDirectory: boolean,
+    isSelected: boolean
+  ): void;
 }
 
 export default function FolderRow({
@@ -25,36 +40,93 @@ export default function FolderRow({
   fileSelected,
   selectFile,
   setDirectory,
+  disableSelection,
   addNewFileToCopy,
   fileInClipboard
 }: FolderRowProps) {
-  const { _id: fileID, name, directory: isDirectory, size, updatedAt } = file;
+  const {
+    _id: fileID,
+    name,
+    directory: isDirectory,
+    size,
+    updatedAt,
+    starred
+  } = file;
   const toastID: any = useRef(null);
+  const { filesCounter, setFilesCounter } = useFileContext();
+
+  const MENU_ID = fileID;
+
+  const { show } = useContextMenu({
+    id: MENU_ID
+  });
+
+  const starMutation = useMutation((fileID: any) => {
+    const result = Axios.patch('/starred_files', { fileID });
+    setFilesCounter(filesCounter + 1);
+    return result;
+  });
+
+  function handleItemClick(innerProps: any) {
+    const { event, props, triggerEvent, data } = innerProps;
+    console.log(event, props, triggerEvent, data);
+  }
+
+  function displayMenu(e: any, fileID: string) {
+    selectFile(fileID);
+    show(e);
+  }
+
+  const fileSize: any = size;
 
   return (
-    <tr
-      className={`${fileSelected && 'bg-yellow-50'}`}
-      onClick={() => selectFile(fileID)}
-      onDoubleClick={() => setDirectory(fileID)}
-    >
-      <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-        <div className="flex">
-          <img
-            className="mr-3"
-            height={20}
-            width={20}
-            src={fileMapper(isDirectory)}
-          />
-          <div className="text-sm leading-5 text-blue-900">{name}</div>
-        </div>
-      </td>
-      <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5">
-        {isDirectory ? 'Directory' : 'File'}
-      </td>
-      <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5">
-        {size ?? '-'}
-      </td>
-      {/* <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5">
+    <>
+      <tr
+        className={`${fileSelected && 'bg-yellow-50'}`}
+        onDoubleClick={() => setDirectory(fileID)}
+        onContextMenu={(e) => displayMenu(e, fileID)}
+      >
+        {/* <div onContextMenu={show}> */}
+        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+          <label className="flex justify-start items-start">
+            <div className="bg-white border-2 rounded border-gray-200 w-5 h-5 flex flex-shrink-0 justify-center items-center mr-2 focus-within:border-blue-500">
+              <input
+                type="checkbox"
+                className="opacity-0 absolute"
+                onClick={() =>
+                  addNewFileToCopy(fileID, name, isDirectory, fileInClipboard)
+                }
+                disabled={disableSelection}
+              />
+              <svg
+                className={`fill-current w-3 h-3 text-blue-500 pointer-events-none ${
+                  fileInClipboard ? 'block' : 'hidden'
+                }`}
+                viewBox="0 0 20 20"
+              >
+                <path d="M0 11l2-2 5 5L18 3l2 2L7 18z" />
+              </svg>
+            </div>
+          </label>
+        </td>
+        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+          <div className="flex">
+            <img
+              className="mr-3"
+              height={20}
+              width={20}
+              src={fileMapper(isDirectory)}
+            />
+            <div className="text-sm leading-5 text-blue-900">{name}</div>
+          </div>
+        </td>
+        <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5">
+          {isDirectory ? 'Directory' : 'File'}
+        </td>
+        <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5">
+          {(fileSize && prettyBytes(fileSize)) ?? '-'}
+        </td>
+        {/* <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5">
           <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
             <span
               aria-hidden
@@ -63,64 +135,81 @@ export default function FolderRow({
             <span className="relative text-xs">active</span>
           </span>
         </td> */}
-      <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-blue-900 text-sm leading-5">
-        {format(new Date(updatedAt), 'LLL d, yyy  h:mm a')}
-      </td>
-      <td className="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5">
-        {isDirectory && (
-          <>
-            <button
-              className="mr-4 px-5 py-2 border-green-500 border text-green-500 rounded transition duration-300 hover:bg-green-700 hover:text-white focus:outline-none"
-              onClick={() => downloadFolder(toastID, fileID, name)}
-            >
-              Download
-            </button>
-            <button
-              className={`mr-4 px-5 py-2 border-blue-500 border rounded transition duration-300 ${
-                fileInClipboard
-                  ? 'bg-blue-700 hover:bg-white hover:text-blue-500 text-white'
-                  : 'hover:bg-blue-700 hover:text-white text-blue-500'
-              } focus:outline-none`}
-              onClick={() => addNewFileToCopy(fileID, name, isDirectory)}
-            >
-              {fileInClipboard ? 'Copied' : 'Copy'}
-            </button>
-            <button
-              className="mr-4 px-5 py-2 border-red-500 border text-red-500 rounded transition duration-300 hover:bg-red-700 hover:text-white focus:outline-none"
-              onClick={() => deleteFolder(toastID, fileID, name)}
-            >
-              Delete
-            </button>
-          </>
-        )}
+        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-blue-900 text-sm leading-5">
+          {format(new Date(updatedAt), 'LLL d, yyy  h:mm a')}
+        </td>
+        <td className="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5">
+          {isDirectory && (
+            <>
+              <button
+                className="mr-4 px-5 py-2 border-green-500 border text-green-500 rounded transition duration-300 hover:bg-green-700 hover:text-white focus:outline-none"
+                onClick={() => downloadFolder(toastID, [fileID])}
+              >
+                <span className="flex items-center">
+                  <BsDownload className="mr-1" />
+                  Download
+                </span>
+              </button>
+              <button
+                className="mr-4 px-5 py-2 border-red-500 border text-red-500 rounded transition duration-300 hover:bg-red-700 hover:text-white focus:outline-none"
+                onClick={() => deleteFolder(toastID, fileID, name)}
+              >
+                <span className="flex items-center">
+                  <RiDeleteBin5Line className="mr-1" />
+                  Delete
+                </span>
+              </button>
+            </>
+          )}
 
-        {!isDirectory && (
-          <>
-            <button
-              className="mr-4 px-5 py-2 border-green-500 border text-green-500 rounded transition duration-300 hover:bg-green-700 hover:text-white focus:outline-none"
-              onClick={() => downloadFile(toastID, fileID, name)}
-            >
-              Download
-            </button>
-            <button
-              className={`mr-4 px-5 py-2 border-blue-500 border rounded transition duration-300 ${
-                fileInClipboard
-                  ? 'bg-blue-700 hover:bg-white hover:text-blue-500 text-white'
-                  : 'hover:bg-blue-700 hover:text-white text-blue-500'
-              } focus:outline-none`}
-              onClick={() => addNewFileToCopy(fileID, name, isDirectory)}
-            >
-              {fileInClipboard ? 'Copied' : 'Copy'}
-            </button>
-            <button
-              className="mr-4 px-5 py-2 border-red-500 border text-red-500 rounded transition duration-300 hover:bg-red-700 hover:text-white focus:outline-none"
-              onClick={() => deleteFile(toastID, fileID, name)}
-            >
-              Delete
-            </button>
-          </>
-        )}
-      </td>
-    </tr>
+          {!isDirectory && (
+            <>
+              <button
+                className="mr-4 px-5 py-2 border-green-500 border text-green-500 rounded transition duration-300 hover:bg-green-700 hover:text-white focus:outline-none"
+                onClick={() => downloadFile(toastID, fileID, name)}
+              >
+                <span className="flex items-center">
+                  <BsDownload className="mr-1" />
+                  Download
+                </span>
+              </button>
+              <button
+                className="mr-4 px-5 py-2 border-red-500 border text-red-500 rounded transition duration-300 hover:bg-red-700 hover:text-white focus:outline-none"
+                onClick={() => deleteFile(toastID, fileID, name)}
+              >
+                <span className="flex items-center">
+                  <RiDeleteBin5Line className="mr-1" />
+                  Delete
+                </span>
+              </button>
+            </>
+          )}
+          <button
+            className="mr-4 px-5 py-2 border-gray-500 border text-gray-500 rounded transition duration-300 hover:bg-gray-700 hover:text-white focus:outline-none"
+            onClick={(e) => displayMenu(e, fileID)}
+          >
+            <BsThreeDots />
+          </button>
+        </td>
+        {/* </div> */}
+
+        <Menu id={MENU_ID}>
+          <Item onClick={handleItemClick}>
+            <HiEye className="mr-2" />
+            View
+          </Item>
+          <Separator />
+          <Item onClick={handleItemClick}>
+            <HiOutlinePencilAlt className="mr-2" />
+            Rename
+          </Item>
+          <Separator />
+          <Item onClick={() => starMutation.mutate(fileID)}>
+            <AiOutlineStar className="mr-2" />
+            {starred ? 'Remove starred' : 'Add to Starred'}
+          </Item>
+        </Menu>
+      </tr>
+    </>
   );
 }
