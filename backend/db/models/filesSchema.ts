@@ -24,6 +24,9 @@ const FilesSchema = new Schema(
     size: {
       type: Number,
     },
+    starred: {
+      type: Boolean,
+    },
     url: {
       type: String,
     },
