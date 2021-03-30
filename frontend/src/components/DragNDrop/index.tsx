@@ -1,14 +1,15 @@
 import Dropzone from 'react-dropzone';
 import { toast } from 'react-toastify';
 import { useEffect, useRef } from 'react';
-
 import { withRouter, useHistory } from 'react-router-dom';
+
+import { useFileContext } from '../../contexts/File';
 import Axios from '../../config/axios';
 
 function DragAndDrop(props: any) {
-  const { refetch } = props;
   const history = useHistory();
   const ownerID = '605256109934f80db98712ea';
+  const { filesCounter, setFilesCounter } = useFileContext();
 
   const toastId: any = useRef(null);
 
@@ -21,7 +22,7 @@ function DragAndDrop(props: any) {
     const formData = new FormData();
 
     const parentID = history.location.pathname.replace('/', '') ?? ownerID;
-
+    toastId.current = toast('Uploading ' + folders.name);
     formData.append(folders, JSON.stringify(folders));
 
     try {
@@ -80,7 +81,7 @@ function DragAndDrop(props: any) {
         autoClose: 1000
       });
 
-      refetch();
+      setFilesCounter(filesCounter + 1);
 
       await new Promise((resolve) => setTimeout(resolve, 50));
     } catch (err) {
@@ -91,8 +92,6 @@ function DragAndDrop(props: any) {
   async function postFiles(files: any) {
     const formData = new FormData();
     const parentID = history.location.pathname.replace('/', '') ?? ownerID;
-
-    // const notify = () => (toastId.current = toast.warn('Uploading '));
 
     for (let i = 0; i < files.length; i++) {
       const parent = parentID;
@@ -106,27 +105,21 @@ function DragAndDrop(props: any) {
         const percent = Math.floor((loaded * 100) / total);
         console.log(`${loaded}kb of ${total} | ${percent}%`);
 
-        if (toastId.current === null) {
-          toastId.current = toast(`Upload in Progress ${percent}`, {
-            progress: percent
-          });
-        } else {
-          toast.update(toastId.current, {
-            render: `Upload in Progress ${percent}`,
-            progress: percent
-          });
-        }
+        // if (toastId.current === null) {
+        toastId.current = toast(`Upload in Progress ${percent}`, {
+          progress: percent
+        });
+        // } else {
+        //   toast.update(toastId.current, {
+        //     render: `Upload in Progress ${percent}`,
+        //     progress: percent
+        //   });
+        // }
       }
     };
 
     try {
-      const { data } = await Axios.post(
-        `/upload_file?owner=${ownerID}`,
-        formData,
-        options
-      );
-
-      console.log(data);
+      await Axios.post(`/upload_file?owner=${ownerID}`, formData, options);
 
       toast.update(toastId.current, {
         render: 'Upload successfull',
@@ -134,7 +127,7 @@ function DragAndDrop(props: any) {
         autoClose: 1000
       });
 
-      refetch();
+      setFilesCounter(filesCounter + 1);
 
       await new Promise((resolve) => setTimeout(resolve, 50));
     } catch (err) {
