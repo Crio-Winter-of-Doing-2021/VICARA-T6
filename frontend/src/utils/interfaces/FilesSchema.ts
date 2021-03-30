@@ -5,6 +5,7 @@ interface FilesSchema {
   owner: string;
   parent: string;
   size?: number;
+  starred?: boolean;
   updatedAt: string;
   createdAt: string;
 }
