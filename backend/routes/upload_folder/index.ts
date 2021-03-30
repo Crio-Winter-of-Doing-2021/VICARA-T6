@@ -32,12 +32,15 @@ uploadFolder.post("/", async (req, res, next) => {
   let filesCount = 0,
     finished = false;
 
+  const file_size = req.headers["content-length"];
+
   let { owner: ownerID } = req.query;
 
   req.busboy.on(
     "file",
     async (fieldname, file, filename, encoding, mimetype) => {
       const parentID = fieldname;
+      const fileExt = filename.split(".").pop();
 
       //Check if file already exists
       const result = await Files.findOne({
@@ -62,9 +65,9 @@ uploadFolder.post("/", async (req, res, next) => {
           directory: false,
           owner: ownerID,
           parent: parentID,
-          type: "image",
-          extension: "jpeg",
-          size: "1024",
+          type: mimetype,
+          extension: fileExt,
+          size: file_size,
         });
 
         upload(new_file._id.toString(), file)
