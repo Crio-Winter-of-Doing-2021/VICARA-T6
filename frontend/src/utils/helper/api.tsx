@@ -14,13 +14,20 @@ export const downloadFile = (toastId: any, id: string, name: string) => {
     });
 
   Axios.get(`/download_file?file=${id}`, { responseType: 'blob' })
-    .then((response) => new Blob([response.data], { type: 'application/png' }))
+    .then((response) => new Blob([response.data]))
     .then((blob) => saveAs(blob, name))
     .then(() => update());
 };
 
-export const downloadFolder = (toastId: any, id: string, name: string) => {
-  toastId.current = toast('Downloading ' + name);
+export const viewFile = async (id: string) => {
+  const response = await Axios.get(`/download_file?file=${id}`, {
+    responseType: 'blob'
+  });
+  return response;
+};
+
+export const downloadFolder = (toastId: any, folderIds: string[]) => {
+  toastId.current = toast('Downloading files');
 
   const update = () =>
     toast.update(toastId.current, {
@@ -29,13 +36,17 @@ export const downloadFolder = (toastId: any, id: string, name: string) => {
       autoClose: 1000
     });
 
-  Axios.get(`/download_folder?folder=${id}`, { responseType: 'blob' })
+  Axios.post(
+    '/download_folder',
+    { folder: folderIds },
+    { responseType: 'blob' }
+  )
     .then((response) => new Blob([response.data]))
-    .then((blob) => saveAs(blob, `${name}.zip`))
+    .then((blob) => saveAs(blob, 'myFolder.zip'))
     .then(() => update());
 };
 
-export const deleteFile = (toastId: any, id: string, name: string) => {
+export const deleteFile = async (toastId: any, id: string, name: string) => {
   toastId.current = toast.error('Deleting ' + name);
 
   const update = () =>
@@ -45,7 +56,7 @@ export const deleteFile = (toastId: any, id: string, name: string) => {
       autoClose: 1000
     });
 
-  Axios.delete('/delete_file', { data: { file: id } })
+  await Axios.delete('/delete_file', { data: { file: id } })
     .then((response) => console.log(response))
     .then(() => update());
 };
