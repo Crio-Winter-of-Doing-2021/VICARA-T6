@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import FilesSchmea from '../../../utils/interfaces/FilesSchema';
-import { useFileContext } from '../../../contexts/FileCopy';
+import { useFileContext } from '../../../contexts/File';
+import { BsArrowDown } from 'react-icons/bs';
 
 import FolderRow from '../FolderRow';
 
@@ -23,11 +24,16 @@ export default function FolderTable({ files, setDirectory }: FolderTableProps) {
     console.log('FOLDER TABLE: I GOT RENDERED');
   }, []);
 
-  const { copiedFiles, addNewFileToCopy } = useFileContext();
-  const [selectedFile, selectFile] = useState(null);
+  const {
+    copiedFiles,
+    selectTheCurrentFile,
+    disableSelection
+  } = useFileContext();
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [sortAscending, setOrderOfFields] = useState(true);
 
-  const selectTheCurrentFile = useCallback((id) => {
-    selectFile(id);
+  const setTheClickedFileAsSelected = useCallback((id) => {
+    setSelectedFile(id);
   }, []);
 
   return (
@@ -36,8 +42,19 @@ export default function FolderTable({ files, setDirectory }: FolderTableProps) {
         <table className="min-w-full">
           <thead>
             <tr>
+              <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm leading-4 text-blue-500 tracking-wider"></th>
               <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm leading-4 text-blue-500 tracking-wider">
-                Name
+                <span className="flex justify-between">
+                  Name
+                  <span
+                    className={`hover:bg-gray-200 rounded-3xl cursor-pointer py-2 px-2 right-1 transform duration-200 ${
+                      sortAscending ? 'rotate-0' : 'rotate-180'
+                    }`}
+                    onClick={() => setOrderOfFields(!sortAscending)}
+                  >
+                    <BsArrowDown />
+                  </span>
+                </span>
               </th>
               <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm leading-4 text-blue-500 tracking-wider">
                 Type
@@ -57,21 +74,33 @@ export default function FolderTable({ files, setDirectory }: FolderTableProps) {
             </tr>
           </thead>
           <tbody className="bg-white">
-            {files.map((file: FilesSchmea) => {
-              const fileExists: boolean =
-                copiedFiles[file._id]?.selected ?? false;
-              return (
-                <FolderRow
-                  key={file._id + file.name}
-                  file={file}
-                  fileSelected={selectedFile === file._id}
-                  setDirectory={setDirectory}
-                  selectFile={selectTheCurrentFile}
-                  addNewFileToCopy={addNewFileToCopy}
-                  fileInClipboard={fileExists}
-                />
-              );
-            })}
+            {files
+              .sort((a: any, b: any) => {
+                // Sort files
+                if (sortAscending) {
+                  return a.name > b.name ? 1 : -1;
+                } else {
+                  return a.name < b.name ? 1 : -1;
+                }
+              })
+              .sort((a: any, b: any) => b.directory - a.directory) // Sort directories
+              .map((file: FilesSchmea) => {
+                const fileExists: boolean =
+                  copiedFiles[file._id]?.selected ?? false;
+
+                return (
+                  <FolderRow
+                    key={file._id + file.name}
+                    file={file}
+                    fileSelected={selectedFile === file._id}
+                    setDirectory={setDirectory}
+                    selectFile={setTheClickedFileAsSelected}
+                    addNewFileToCopy={selectTheCurrentFile}
+                    fileInClipboard={fileExists}
+                    disableSelection={disableSelection}
+                  />
+                );
+              })}
           </tbody>
         </table>
       </div>
