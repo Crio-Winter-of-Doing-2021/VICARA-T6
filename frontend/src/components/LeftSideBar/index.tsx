@@ -1,30 +1,33 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
+import { useQuery } from 'react-query';
+
 import { GiCancel } from 'react-icons/gi';
-import { BsClipboard } from 'react-icons/bs';
+import { HiEye } from 'react-icons/hi';
 
-import { useFileContext } from '../../contexts/FileCopy';
+import { useFileContext } from '../../contexts/File';
 import fileMapper from '../../utils/helper/fileMapper';
+import Axios from '../../config/axios';
+import { toast } from 'react-toastify';
+import {
+  deleteFile,
+  deleteFolder,
+  downloadFolder
+} from '../../utils/helper/api';
 
-// function HomeSvg() {
-//   return (
-//     <span aria-hidden="true">
-//       <svg
-//         className="w-5 h-5"
-//         xmlns="http://www.w3.org/2000/svg"
-//         fill="none"
-//         viewBox="0 0 24 24"
-//         stroke="currentColor"
-//       >
-//         <path
-//           strokeLinecap="round"
-//           strokeLinejoin="round"
-//           strokeWidth="2"
-//           d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-//         />
-//       </svg>
-//     </span>
-//   );
-// }
+function useRecentFiles() {
+  return useQuery('recentfiles', async () => {
+    const { data } = await Axios.get('/recent_files');
+    return data;
+  });
+}
+
+function useStarredFiles() {
+  return useQuery('starredFiles', async () => {
+    const { data } = await Axios.get('/starred_files');
+    return data;
+  });
+}
 
 function DropDownArrow(props: any) {
   const { isOpen }: any = props;
@@ -67,10 +70,12 @@ function DropDownCoponent(props: any) {
         aria-haspopup="true"
         // :aria-expanded="(open || isActive) ? 'true' : 'false'"
       >
-        {props.icon}
+        <span className="" aria-hidden="true">
+          <DropDownArrow isOpen={isOpen} />
+        </span>
         <span className="ml-2 text-sm"> {props.heading} </span>
         <span className="ml-auto" aria-hidden="true">
-          <DropDownArrow isOpen={isOpen} />
+          <CounterComponent color={props.color} counter={props.counter ?? 0} />
         </span>
       </a>
       <div
@@ -84,9 +89,30 @@ function DropDownCoponent(props: any) {
   );
 }
 
+const CounterComponent = (props: any) => {
+  const { counter } = props;
+  return (
+    <span
+      className={`border-${props.color}-100 border-2 bg-${props.color}-50 text-${props.color}-400 px-2 rounded-full text-sm font-semibold`}
+    >
+      {counter}
+    </span>
+  );
+};
+
 export default function LeftSideBar() {
   const [filesList, copyFiles] = useState([]);
-  const { copiedFiles, removeFileFromClipboard } = useFileContext();
+  const {
+    filesCounter,
+    copiedFiles,
+    removeFileFromClipboard,
+    emptyClipboard
+  } = useFileContext();
+  const history = useHistory();
+  const currentFolderID =
+    history.location.pathname.replace('/', '') ?? '605256109934f80db98712ea';
+
+  const toastId: any = useRef(null);
 
   useEffect(() => {
     const tempFiles: any = Object.values(copiedFiles).filter(
@@ -94,6 +120,64 @@ export default function LeftSideBar() {
     );
     copyFiles(tempFiles);
   }, [copiedFiles]);
+
+  async function moveHere() {
+    await Axios.post('/move_files', {
+      parentID: currentFolderID,
+      foldersList: copiedFiles
+    });
+
+    emptyClipboard();
+  }
+
+  async function copyHere() {
+    await Axios.post('/copy_files', {
+      parentID: currentFolderID,
+      foldersList: copiedFiles
+    });
+
+    emptyClipboard();
+  }
+
+  async function bulkDelete() {
+    const fileList = Object.values(copiedFiles);
+
+    for (let i = 0; i < fileList.length; i++) {
+      const file: any = fileList[i];
+
+      if (file.isDirectory) {
+        await deleteFolder(toastId, file.id, file.name);
+      } else {
+        await deleteFile(toastId, file.id, file.name);
+      }
+
+      if (toastId.current == null) {
+        toast.update(toastId.current, {
+          render: 'Deletion successfull',
+          type: toast.TYPE.INFO,
+          autoClose: 1000
+        });
+      }
+    }
+
+    emptyClipboard();
+  }
+
+  async function bulkDownload() {
+    const filesList = Object.keys(copiedFiles);
+
+    await downloadFolder(toastId, filesList);
+
+    emptyClipboard();
+  }
+
+  const { data: recentFilesData, refetch: recentRefetch } = useRecentFiles();
+  const { data: starredFilesData, refetch: starredRefetch } = useStarredFiles();
+
+  useEffect(() => {
+    recentRefetch();
+    starredRefetch();
+  }, [filesCounter]);
 
   return (
     <div>
@@ -103,31 +187,81 @@ export default function LeftSideBar() {
           aria-label="Main"
           className="flex-1 px-2 py-4 space-y-2 overflow-y-hidden hover:overflow-y-auto"
         >
-          <DropDownCoponent heading="Dashboards" icon={BsClipboard}>
-            <a
-              href="#"
-              role="menuitem"
-              className="block p-2 text-sm text-gray-400 transition-colors duration-200 rounded-md dark:text-gray-400 dark:hover:text-light hover:text-gray-700"
-            >
-              Default
-            </a>
-            <a
-              href="#"
-              role="menuitem"
-              className="block p-2 text-sm text-gray-400 transition-colors duration-200 rounded-md dark:hover:text-light hover:text-gray-700"
-            >
-              Project Mangement
-            </a>
-            <a
-              href="#"
-              role="menuitem"
-              className="block p-2 text-sm text-gray-400 transition-colors duration-200 rounded-md dark:hover:text-light hover:text-gray-700"
-            >
-              E-Commerce
-            </a>
+          <DropDownCoponent
+            heading="Starred Files"
+            color="yellow"
+            counter={starredFilesData?.starredFilesResult?.length}
+          >
+            {starredFilesData?.starredFilesResult?.map((file: any) => {
+              const { id, directory: isDirectory, name } = file;
+              return (
+                <div
+                  key={id}
+                  className="space-y-2 px-2 flex justify-between relative border-b border-t py-3 border-gray-200"
+                  aria-label="Dashboards"
+                >
+                  <span
+                    className="hover:bg-gray-200 rounded-3xl cursor-pointer py-2 px-2 absolute right-1"
+                    onClick={() => removeFileFromClipboard(id)}
+                  >
+                    <HiEye size={16} />
+                  </span>
+                  <div className="flex">
+                    <img
+                      className="mr-3"
+                      height={20}
+                      width={20}
+                      src={fileMapper(isDirectory)}
+                    />
+                    <div className="text-sm leading-5 text-blue-900 max-w-125 overflow-ellipsis overflow-hidden whitespace-nowrap">
+                      {name}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </DropDownCoponent>
 
-          <DropDownCoponent heading="Clipboard" icon={BsClipboard}>
+          <DropDownCoponent
+            heading="Recent Files"
+            color="blue"
+            counter={recentFilesData?.recentFilesResult?.length}
+          >
+            {recentFilesData?.recentFilesResult?.map((file: any) => {
+              const { id, directory: isDirectory, name } = file;
+              return (
+                <div
+                  key={id}
+                  className="space-y-2 px-2 flex justify-between relative border-b border-t py-3 border-gray-200"
+                  aria-label="Dashboards"
+                >
+                  <span
+                    className="hover:bg-gray-200 rounded-3xl cursor-pointer py-2 px-2 absolute right-1"
+                    onClick={() => removeFileFromClipboard(id)}
+                  >
+                    <HiEye size={16} />
+                  </span>
+                  <div className="flex">
+                    <img
+                      className="mr-3"
+                      height={20}
+                      width={20}
+                      src={fileMapper(isDirectory)}
+                    />
+                    <div className="text-sm leading-5 text-blue-900 max-w-125 overflow-ellipsis overflow-hidden whitespace-nowrap">
+                      {name}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </DropDownCoponent>
+
+          <DropDownCoponent
+            heading="Selected Files"
+            color="green"
+            counter={filesList.length}
+          >
             <>
               {filesList.map(({ id, name, isDirectory }, index) => {
                 return (
@@ -156,6 +290,35 @@ export default function LeftSideBar() {
                   </div>
                 );
               })}
+              <br />
+              {filesList?.length > 0 && (
+                <div>
+                  <button
+                    className="w-full text-sm mb-2 block mr-4 px-5 py-2 border-green-500 border text-green-500 rounded transition duration-150 hover:bg-green-700 hover:text-white focus:outline-none"
+                    onClick={() => bulkDownload()}
+                  >
+                    Bulk Download
+                  </button>
+                  <button
+                    className="w-full text-sm mb-2 block mr-4 px-5 py-2 border-red-500 border text-red-500 rounded transition duration-150 hover:bg-red-700 hover:text-white focus:outline-none"
+                    onClick={() => bulkDelete()}
+                  >
+                    Bulk Delete
+                  </button>
+                  <button
+                    className="w-full text-sm mb-2 block mr-4 px-5 py-2 border-gray-500 border text-gray-500 rounded transition duration-150 hover:bg-gray-700 hover:text-white focus:outline-none"
+                    onClick={() => copyHere()}
+                  >
+                    Copy to current Folder
+                  </button>
+                  <button
+                    className="w-full text-sm mb-2 block mr-4 px-5 py-2 border-yellow-500 border text-yellow-500 rounded transition duration-150 hover:bg-yellow-700 hover:text-white focus:outline-none"
+                    onClick={() => moveHere()}
+                  >
+                    Move to current Folder
+                  </button>
+                </div>
+              )}
             </>
           </DropDownCoponent>
         </nav>
