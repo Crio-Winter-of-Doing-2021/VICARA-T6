@@ -8,10 +8,9 @@ import FolderRow from '../FolderRow';
 
 interface FolderTableProps {
   files: FilesSchmea[];
-  setDirectory(folderID: string): void;
 }
 
-export default function FolderTable({ files, setDirectory }: FolderTableProps) {
+export default function FolderTable({ files }: FolderTableProps) {
   if (files?.length === 0) {
     return (
       <div className="px-10 -my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-12">
@@ -43,7 +42,7 @@ export default function FolderTable({ files, setDirectory }: FolderTableProps) {
           <thead>
             <tr>
               <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm leading-4 text-blue-500 tracking-wider"></th>
-              <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm leading-4 text-blue-500 tracking-wider">
+              <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm leading-4 text-blue-500 tracking-wider 2xl:w-6/12">
                 <span className="flex justify-between">
                   Name
                   <span
@@ -90,7 +89,6 @@ export default function FolderTable({ files, setDirectory }: FolderTableProps) {
                     key={file._id + file.name}
                     file={file}
                     fileSelected={selectedFile === file._id}
-                    setDirectory={setDirectory}
                     selectFile={setTheClickedFileAsSelected}
                     addNewFileToCopy={selectTheCurrentFile}
                     fileInClipboard={fileExists}

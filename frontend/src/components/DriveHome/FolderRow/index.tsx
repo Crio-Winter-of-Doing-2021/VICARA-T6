@@ -26,12 +26,12 @@ interface FolderRowProps {
   selectFile(id: string): void;
   fileInClipboard: boolean;
   disableSelection: boolean;
-  setDirectory(folderID: string): void;
   addNewFileToCopy(
     id: string,
     name: string,
     isDirectory: boolean,
-    isSelected: boolean
+    isSelected: boolean,
+    parentID: string
   ): void;
 }
 
@@ -39,7 +39,6 @@ export default function FolderRow({
   file,
   fileSelected,
   selectFile,
-  setDirectory,
   disableSelection,
   addNewFileToCopy,
   fileInClipboard
@@ -50,11 +49,16 @@ export default function FolderRow({
     directory: isDirectory,
     extension,
     size,
+    parent,
     updatedAt,
     starred
   } = file;
   const toastID: any = useRef(null);
-  const { filesCounter, setFilesCounter } = useFileContext();
+  const {
+    filesCounter,
+    setFilesCounter,
+    changeParentFolder
+  } = useFileContext();
 
   const MENU_ID = fileID;
 
@@ -84,18 +88,24 @@ export default function FolderRow({
     <>
       <tr
         className={`${fileSelected && 'bg-yellow-50'}`}
-        onDoubleClick={() => setDirectory(fileID)}
+        onDoubleClick={() => changeParentFolder(fileID)}
         onContextMenu={(e) => displayMenu(e, fileID)}
       >
         {/* <div onContextMenu={show}> */}
-        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+        <td className="py-4 pr-0 pl-2 w-1 ml-2 border-b border-gray-200">
           <label className="flex justify-start items-start">
             <div className="bg-white border-2 rounded border-gray-200 w-5 h-5 flex flex-shrink-0 justify-center items-center mr-2 focus-within:border-blue-500">
               <input
                 type="checkbox"
                 className="opacity-0 absolute"
                 onClick={() =>
-                  addNewFileToCopy(fileID, name, isDirectory, fileInClipboard)
+                  addNewFileToCopy(
+                    fileID,
+                    name,
+                    isDirectory,
+                    fileInClipboard,
+                    parent
+                  )
                 }
                 disabled={disableSelection}
               />
@@ -110,8 +120,8 @@ export default function FolderRow({
             </div>
           </label>
         </td>
-        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-          <div className="flex">
+        <td className="py-4 whitespace-no-wrap border-b border-gray-200">
+          <div className="flex justify-start items-start">
             <img
               className="mr-3"
               height={20}
@@ -194,7 +204,7 @@ export default function FolderRow({
         {/* </div> */}
 
         <Menu id={MENU_ID}>
-          <Item onClick={handleItemClick}>
+          <Item onClick={() => changeParentFolder(fileID)}>
             <HiEye className="mr-2" />
             View
           </Item>

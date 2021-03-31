@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useQuery } from 'react-query';
 
 import Axios from '../../config/axios';
+import { useFileContext } from '../../contexts/File';
 import DirectoryRouteRequestSchema from '../../utils/interfaces/DirectoryRouterSchema';
 interface DirectoryRouteResultProps {
   data?: DirectoryRouteRequestSchema;
@@ -10,7 +11,6 @@ interface DirectoryRouteResultProps {
 
 interface DirectoryRouteProps {
   currentFolderID: string;
-  setDirectory(folderID: string): void;
 }
 
 function useParentDirectories(currentFolderID: string) {
@@ -23,12 +23,13 @@ function useParentDirectories(currentFolderID: string) {
 }
 
 export default function DirectoryRouter({
-  currentFolderID,
-  setDirectory
+  currentFolderID
 }: DirectoryRouteProps) {
   const { data, refetch }: DirectoryRouteResultProps = useParentDirectories(
     currentFolderID
   );
+
+  const { changeParentFolder } = useFileContext();
 
   useEffect(() => {
     console.log('Directory Route: I got rendered too');
@@ -46,7 +47,7 @@ export default function DirectoryRouter({
             <div key={id}>
               <button
                 className="hover:bg-gray-200 px-2 py-1 rounded"
-                onClick={() => setDirectory(id)}
+                onClick={() => changeParentFolder(id)}
               >
                 <span>{name}</span>
               </button>

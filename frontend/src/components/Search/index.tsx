@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { withRouter, useHistory } from 'react-router-dom';
 import { useSearchContext } from '../../contexts/SearchFiles';
@@ -32,12 +32,6 @@ function SearchMain() {
     refetch();
   }, [searchText]);
 
-  // Changes the URL Parameter ID
-  const changeParentFolder = useCallback((folderID: string) => {
-    history.push('/' + folderID);
-    refetch();
-  }, []);
-
   if (status === 'loading') {
     return <span>Loading...</span>;
   }
@@ -49,10 +43,7 @@ function SearchMain() {
   return (
     <div className="mt-2">
       {data?.searchFilesResult?.length > 0 && (
-        <FolderTable
-          setDirectory={changeParentFolder}
-          files={data.searchFilesResult}
-        />
+        <FolderTable files={data.searchFilesResult} />
       )}
     </div>
   );

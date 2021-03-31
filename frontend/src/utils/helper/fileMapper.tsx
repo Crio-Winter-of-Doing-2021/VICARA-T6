@@ -27,7 +27,6 @@ export default function fileMapper(
   if (isDirectory) {
     return require('../../assets/FileIcons/folder.png').default;
   } else {
-    console.log(extension);
     for (let i = 0; i < fileExtensionsMapper.length; i++) {
       if (extension?.includes(fileExtensionsMapper[i])) {
         return require(`../../assets/FileIcons/${fileExtensionsMapper[i]}.png`)

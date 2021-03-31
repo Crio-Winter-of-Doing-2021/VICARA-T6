@@ -5,12 +5,16 @@
 @tailwind utilities;
 
 @layer utilities {
-  .max-w-125 {
-    max-width: 125px;
+  .max-w-175 {
+    max-width: 175px;
   }
 
   .min-w-225 {
     min-width: 225px;
+  }
+
+  .min-w-300 {
+    min-width: 300px;
   }
 
   .h-50vh {
@@ -18,10 +22,10 @@
   }
 
   .w-80vw {
-    width: 80vw;
+    width: 78vw;
   }
 
   .max-w-80vw {
-    max-width: 80vw;
+    max-width: 78vw;
   }
 }

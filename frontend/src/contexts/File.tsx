@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
 
 type ContextProps = {
   copiedFiles?: any;
@@ -7,6 +8,7 @@ type ContextProps = {
   emptyClipboard?: any;
   filesCounter?: any;
   setFilesCounter?: any;
+  changeParentFolder?: any;
   removeFileFromClipboard?: any;
 };
 
@@ -17,31 +19,59 @@ export const useFileContext = () => useContext(FileContext);
 export const FileContextProvider = (props: any) => {
   const [copiedFiles, copyNewFile] = useState({});
   const [disableSelection] = useState(false);
+  const [parentFolderID, setParentFolderID] = useState(null);
   const [filesCounter, setFilesCounter] = useState(0);
+  const history = useHistory();
+
+  // Changes the URL Parameter ID
+  const changeParentFolder = useCallback((folderID: string) => {
+    history.push('/' + folderID);
+  }, []);
 
   const selectTheCurrentFile = (
-    id: any,
-    name: any,
+    id: string,
+    name: string,
     isDirectory: boolean,
-    isSelected: boolean
+    isSelected: boolean,
+    parentID: any
   ): void => {
-    copyNewFile({
-      ...copiedFiles,
+    const newFile = {
       [id]: {
         id,
         selected: !isSelected,
         name,
         isDirectory
       }
-    });
+    };
+
+    if (parentFolderID !== null) {
+      if (parentID === parentFolderID) {
+        copyNewFile({
+          ...copiedFiles,
+          ...newFile
+        });
+      }
+    } else {
+      copyNewFile({
+        ...copiedFiles,
+        ...newFile
+      });
+    }
+    // console.log(Object.values({ ...copiedFiles, ...newFile }));
+    // if (Object.values({ copiedFiles, ...newFile }).length === 0) {
+    //   setParentFolderID(parentID);
+    // }
+
+    if (Object.values({ ...copiedFiles, ...newFile }).length <= 1) {
+      setParentFolderID(parentID);
+    }
   };
 
   const removeFileFromClipboard = (id: any): void => {
+    const tempCopiedFiles = copiedFiles;
+    delete tempCopiedFiles[id];
     copyNewFile({
-      ...copiedFiles,
-      [id]: {
-        selected: false
-      }
+      ...tempCopiedFiles
     });
   };
 
@@ -58,7 +88,8 @@ export const FileContextProvider = (props: any) => {
         disableSelection,
         removeFileFromClipboard,
         emptyClipboard,
-        selectTheCurrentFile
+        selectTheCurrentFile,
+        changeParentFolder
       }}
     >
       {props.children}

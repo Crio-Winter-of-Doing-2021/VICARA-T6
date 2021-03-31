@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { withRouter, useHistory } from 'react-router-dom';
 
@@ -41,11 +41,6 @@ function DriveMain() {
     currentFolderID
   });
 
-  // Changes the URL Parameter ID
-  const changeParentFolder = useCallback((folderID: string) => {
-    history.push('/' + folderID);
-  }, []);
-
   // Refetch when URL paramter changes
   useEffect(() => {
     refetch();
@@ -69,17 +64,11 @@ function DriveMain() {
         <LeftSideBar />
         <div>
           <DragAndDrop />
-          <DirectoryRouter
-            setDirectory={changeParentFolder}
-            currentFolderID={currentFolderID}
-          />
+          <DirectoryRouter currentFolderID={currentFolderID} />
 
           {(data?.currentFolderData === null ||
             data?.currentFolderData?.directory) && (
-            <FolderTable
-              setDirectory={changeParentFolder}
-              files={data.children}
-            />
+            <FolderTable files={data.children} />
           )}
 
           {data?.currentFolderData?.directory === false && (
