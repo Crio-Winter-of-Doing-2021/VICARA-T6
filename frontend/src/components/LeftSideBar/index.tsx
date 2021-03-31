@@ -193,7 +193,7 @@ export default function LeftSideBar() {
             counter={starredFilesData?.starredFilesResult?.length}
           >
             {starredFilesData?.starredFilesResult?.map((file: any) => {
-              const { id, directory: isDirectory, name } = file;
+              const { id, extension, directory: isDirectory, name } = file;
               return (
                 <div
                   key={id}
@@ -211,7 +211,7 @@ export default function LeftSideBar() {
                       className="mr-3"
                       height={20}
                       width={20}
-                      src={fileMapper(isDirectory)}
+                      src={fileMapper(extension, isDirectory)}
                     />
                     <div className="text-sm leading-5 text-blue-900 max-w-125 overflow-ellipsis overflow-hidden whitespace-nowrap">
                       {name}
@@ -228,7 +228,7 @@ export default function LeftSideBar() {
             counter={recentFilesData?.recentFilesResult?.length}
           >
             {recentFilesData?.recentFilesResult?.map((file: any) => {
-              const { id, directory: isDirectory, name } = file;
+              const { id, extension, directory: isDirectory, name } = file;
               return (
                 <div
                   key={id}
@@ -246,7 +246,7 @@ export default function LeftSideBar() {
                       className="mr-3"
                       height={20}
                       width={20}
-                      src={fileMapper(isDirectory)}
+                      src={fileMapper(extension, isDirectory)}
                     />
                     <div className="text-sm leading-5 text-blue-900 max-w-125 overflow-ellipsis overflow-hidden whitespace-nowrap">
                       {name}
@@ -263,7 +263,7 @@ export default function LeftSideBar() {
             counter={filesList.length}
           >
             <>
-              {filesList.map(({ id, name, isDirectory }, index) => {
+              {filesList.map(({ id, extension, name, isDirectory }, index) => {
                 return (
                   <div
                     key={id}
@@ -281,7 +281,7 @@ export default function LeftSideBar() {
                         className="mr-3"
                         height={20}
                         width={20}
-                        src={fileMapper(isDirectory)}
+                        src={fileMapper(extension, isDirectory)}
                       />
                       <div className="text-sm leading-5 text-blue-900 max-w-125 overflow-ellipsis overflow-hidden whitespace-nowrap">
                         {name}

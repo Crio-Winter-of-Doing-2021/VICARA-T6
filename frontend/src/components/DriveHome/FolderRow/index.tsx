@@ -48,6 +48,7 @@ export default function FolderRow({
     _id: fileID,
     name,
     directory: isDirectory,
+    extension,
     size,
     updatedAt,
     starred
@@ -115,7 +116,7 @@ export default function FolderRow({
               className="mr-3"
               height={20}
               width={20}
-              src={fileMapper(isDirectory)}
+              src={fileMapper(extension, isDirectory)}
             />
             <div className="text-sm leading-5 text-blue-900 max-w-lg overflow-ellipsis overflow-hidden whitespace-nowrap">
               {name}

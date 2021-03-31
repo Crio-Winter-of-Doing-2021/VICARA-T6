@@ -6,6 +6,7 @@ interface FilesSchema {
   parent: string;
   size?: number;
   type?: string;
+  extension?: string;
   starred?: boolean;
   updatedAt: string;
   createdAt: string;
