@@ -117,11 +117,10 @@ export default function FolderRow({
               width={20}
               src={fileMapper(isDirectory)}
             />
-            <div className="text-sm leading-5 text-blue-900">{name}</div>
+            <div className="text-sm leading-5 text-blue-900 max-w-lg overflow-ellipsis overflow-hidden whitespace-nowrap">
+              {name}
+            </div>
           </div>
-        </td>
-        <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5">
-          {isDirectory ? 'Directory' : 'File'}
         </td>
         <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5">
           {(fileSize && prettyBytes(fileSize)) ?? '-'}

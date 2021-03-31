@@ -10,6 +10,7 @@ import DirectoryRouter from './DirectoryRoute';
 import FolderTable from './FolderTable';
 import LeftSideBar from '../LeftSideBar';
 import FilePreview from '../FilePreview';
+import Loader from 'react-loader-spinner';
 // import RightSideBar from '../RightSideBar';
 
 interface FileProps {
@@ -55,7 +56,11 @@ function DriveMain() {
   }, [filesCounter]);
 
   if (status === 'loading') {
-    return <span>Loading...</span>;
+    return (
+      <div className="h-screen w-screen flex justify-center items-center">
+        <Loader type="Rings" color="#60a5fa" height={100} width={100} />
+      </div>
+    );
   }
 
   return (

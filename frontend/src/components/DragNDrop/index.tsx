@@ -162,7 +162,7 @@ function DragAndDrop(props: any) {
         <section>
           <div
             {...getRootProps()}
-            className="border border-dashed border-black px-10 py-20 mx-8 my-5"
+            className="border border-dashed border-black px-10 py-20 mx-8 my-5 w-80vw"
           >
             <input {...getInputProps()} />
             <p>Drag and drop some files here, or click to select files</p>

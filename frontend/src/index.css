@@ -12,4 +12,16 @@
   .min-w-225 {
     min-width: 225px;
   }
+
+  .h-50vh {
+    height: 50vh;
+  }
+
+  .w-80vw {
+    width: 80vw;
+  }
+
+  .max-w-80vw {
+    max-width: 80vw;
+  }
 }
