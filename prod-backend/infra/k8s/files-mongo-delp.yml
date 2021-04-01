@@ -12,9 +12,16 @@ spec:
       labels:
         app: files-mongo
     spec:
+      volumes:
+        - name: files-storage
+          persistentVolumeClaim:
+            claimName: files-persistent-volume-claim
       containers:
         - name: files-mongo
           image: mongo
+          volumeMounts:
+            - name: files-storage
+              mountPath: /data/db
 
 ---
 apiVersion: v1
