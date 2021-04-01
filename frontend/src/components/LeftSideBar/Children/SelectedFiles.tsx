@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { GiCancel } from 'react-icons/gi';
 import { HiEye } from 'react-icons/hi';
 import { useHistory } from 'react-router-dom';
@@ -15,6 +15,7 @@ import {
 
 export default function SelectedFiles(props: any) {
   const history = useHistory();
+  const [clipboardDisabled, disableClipboardActions] = useState(false);
 
   const {
     copiedFiles,
@@ -27,6 +28,28 @@ export default function SelectedFiles(props: any) {
     history.location.pathname.replace('/', '') ?? '605256109934f80db98712ea';
 
   const toastId: any = useRef(null);
+
+  useEffect(() => {
+    async function fetchFileDetails() {
+      const { data } = await Axios.get(`/get_file?parent=${currentFolderID}`);
+
+      if (data?.directory === false) {
+        disableClipboardActions(true);
+      }
+    }
+
+    fetchFileDetails();
+  }, []);
+
+  useEffect(() => {
+    console.log({ parentFolderIDofSelectedFile, currentFolderID });
+
+    if (parentFolderIDofSelectedFile === currentFolderID) {
+      disableClipboardActions(true);
+    } else {
+      disableClipboardActions(false);
+    }
+  }, [parentFolderIDofSelectedFile, currentFolderID]);
 
   useEffect(() => {
     const tempFiles: any = Object.values(copiedFiles).filter(
@@ -194,7 +217,7 @@ export default function SelectedFiles(props: any) {
             >
               Download
             </button>
-            {parentFolderIDofSelectedFile !== currentFolderID && (
+            {!clipboardDisabled && (
               <button
                 className="w-full text-sm mb-2 block mr-4 px-5 py-2 border-blue-500 border text-blue-500 rounded transition duration-150 hover:bg-blue-700 hover:text-white focus:outline-none"
                 onClick={() => copyHere()}
@@ -202,7 +225,7 @@ export default function SelectedFiles(props: any) {
                 Copy Here
               </button>
             )}
-            {parentFolderIDofSelectedFile === currentFolderID && (
+            {clipboardDisabled && (
               <button className="w-full text-sm mb-2 block mr-4 px-5 py-2 border-gray-300 border text-gray-300 rounded transition duration-150 focus:outline-none">
                 Copy Here
               </button>
@@ -213,7 +236,7 @@ export default function SelectedFiles(props: any) {
             >
               Delete
             </button>
-            {parentFolderIDofSelectedFile !== currentFolderID && (
+            {!clipboardDisabled && (
               <button
                 className="w-full text-sm mb-2 block mr-4 px-5 py-2 border-yellow-500 border text-yellow-500 rounded transition duration-150 hover:bg-yellow-700 hover:text-white focus:outline-none"
                 onClick={() => moveHere()}
@@ -221,7 +244,7 @@ export default function SelectedFiles(props: any) {
                 Move Here
               </button>
             )}
-            {parentFolderIDofSelectedFile === currentFolderID && (
+            {clipboardDisabled && (
               <button className="w-full text-sm mb-2 block mr-4 px-5 py-2 border-gray-300 border text-gray-300 rounded transition duration-150 focus:outline-none">
                 Move Here
               </button>

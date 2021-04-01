@@ -34,31 +34,38 @@ export const FileContextProvider = (props: any) => {
     isSelected: boolean,
     parentID: any
   ): void => {
-    const newFile = {
-      [id]: {
-        id,
-        selected: !isSelected,
-        name,
-        isDirectory
-      }
-    };
+    // If ID already exists remove it from object
+    if (copiedFiles[id]) {
+      removeFileFromClipboard(id);
+    } else {
+      const newFile = {
+        [id]: {
+          id,
+          selected: !isSelected,
+          name,
+          isDirectory
+        }
+      };
 
-    if (parentFolderIDofSelectedFile !== null) {
-      if (parentID === parentFolderIDofSelectedFile) {
+      // If parent folder id is not null
+      if (parentFolderIDofSelectedFile !== null) {
+        // If it matches allow it to be added to clipboard
+        if (parentID === parentFolderIDofSelectedFile) {
+          copyNewFile({
+            ...copiedFiles,
+            ...newFile
+          });
+        }
+      } else {
         copyNewFile({
           ...copiedFiles,
           ...newFile
         });
       }
-    } else {
-      copyNewFile({
-        ...copiedFiles,
-        ...newFile
-      });
-    }
 
-    if (Object.values({ ...copiedFiles, ...newFile }).length <= 1) {
-      setParentFolderID(parentID);
+      if (Object.values({ ...copiedFiles, ...newFile }).length <= 1) {
+        setParentFolderID(parentID);
+      }
     }
   };
 
@@ -68,6 +75,11 @@ export const FileContextProvider = (props: any) => {
     copyNewFile({
       ...tempCopiedFiles
     });
+
+    // If there are no selected files set parent to null
+    if (Object.values(tempCopiedFiles).length === 0) {
+      setParentFolderID(null);
+    }
   };
 
   const emptyClipboard = () => {
