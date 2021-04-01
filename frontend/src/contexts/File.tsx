@@ -84,6 +84,7 @@ export const FileContextProvider = (props: any) => {
 
   const emptyClipboard = () => {
     copyNewFile({});
+    setParentFolderID(null);
   };
 
   return (
