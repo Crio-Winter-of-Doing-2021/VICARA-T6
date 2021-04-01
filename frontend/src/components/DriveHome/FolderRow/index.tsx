@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { useRef } from 'react';
+import { useState, useRef } from 'react';
 import { BsThreeDots, BsDownload } from 'react-icons/bs';
 import { RiDeleteBin5Line } from 'react-icons/ri';
 import { AiOutlineStar } from 'react-icons/ai';
@@ -7,9 +7,10 @@ import { HiOutlinePencilAlt, HiEye } from 'react-icons/hi';
 import { Menu, Item, Separator, useContextMenu } from 'react-contexify';
 import { useMutation } from 'react-query';
 import prettyBytes from 'pretty-bytes';
-
-import Axios from '../../../config/axios';
 import 'react-contexify/dist/ReactContexify.css';
+
+import ReactModal from '../../Modal';
+import Axios from '../../../config/axios';
 import fileMapper from '../../../utils/helper/fileMapper';
 import {
   deleteFile,
@@ -65,17 +66,13 @@ export default function FolderRow({
   const { show } = useContextMenu({
     id: MENU_ID
   });
+  const [showModal, setIsOpenModal] = useState(false);
 
   const starMutation = useMutation((fileID: any) => {
     const result = Axios.patch('/starred_files', { fileID });
     setFilesCounter(filesCounter + 1);
     return result;
   });
-
-  function handleItemClick(innerProps: any) {
-    const { event, props, triggerEvent, data } = innerProps;
-    console.log(event, props, triggerEvent, data);
-  }
 
   function displayMenu(e: any, fileID: string) {
     selectFile(fileID);
@@ -223,7 +220,7 @@ export default function FolderRow({
             )}
           </>
           <Separator />
-          <Item onClick={handleItemClick}>
+          <Item onClick={() => setIsOpenModal(true)}>
             <HiOutlinePencilAlt className="mr-2" />
             Rename
           </Item>
@@ -234,6 +231,14 @@ export default function FolderRow({
           </Item>
         </Menu>
       </tr>
+
+      <ReactModal
+        modalIsOpen={showModal}
+        setIsOpenModal={setIsOpenModal}
+        name={name}
+        id={fileID}
+        parent={parent}
+      ></ReactModal>
     </>
   );
 }
