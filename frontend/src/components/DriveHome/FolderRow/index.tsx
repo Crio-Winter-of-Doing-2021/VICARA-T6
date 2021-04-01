@@ -88,7 +88,9 @@ export default function FolderRow({
     <>
       <tr
         className={`${fileSelected && 'bg-yellow-50'}`}
-        onDoubleClick={() => changeParentFolder(fileID)}
+        onDoubleClick={() => {
+          !disableSelection && changeParentFolder(fileID);
+        }}
         onContextMenu={(e) => displayMenu(e, fileID)}
       >
         {/* <div onContextMenu={show}> */}
@@ -107,7 +109,6 @@ export default function FolderRow({
                     parent
                   )
                 }
-                disabled={disableSelection}
               />
               <svg
                 className={`fill-current w-3 h-3 text-blue-500 pointer-events-none ${
@@ -204,10 +205,23 @@ export default function FolderRow({
         {/* </div> */}
 
         <Menu id={MENU_ID}>
-          <Item onClick={() => changeParentFolder(fileID)}>
-            <HiEye className="mr-2" />
-            View
-          </Item>
+          <>
+            {disableSelection && (
+              <Item disabled={true}>
+                <HiEye className="mr-2" />
+                Cannot View Selected Directory
+              </Item>
+            )}
+          </>
+
+          <>
+            {!disableSelection && (
+              <Item onClick={() => changeParentFolder(fileID)}>
+                <HiEye className="mr-2" />
+                View
+              </Item>
+            )}
+          </>
           <Separator />
           <Item onClick={handleItemClick}>
             <HiOutlinePencilAlt className="mr-2" />

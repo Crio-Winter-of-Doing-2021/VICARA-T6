@@ -18,8 +18,9 @@ export default function SelectedFiles(props: any) {
 
   const {
     copiedFiles,
+    emptyClipboard,
     removeFileFromClipboard,
-    emptyClipboard
+    parentFolderIDofSelectedFile
   } = useFileContext();
 
   const currentFolderID =
@@ -35,19 +36,23 @@ export default function SelectedFiles(props: any) {
   }, [copiedFiles]);
 
   async function moveHere() {
-    await Axios.post('/move_files', {
-      parentID: currentFolderID,
-      foldersList: copiedFiles
-    });
+    if (parentFolderIDofSelectedFile !== currentFolderID) {
+      await Axios.post('/move_files', {
+        parentID: currentFolderID,
+        foldersList: copiedFiles
+      });
+    }
 
     emptyClipboard();
   }
 
   async function copyHere() {
-    await Axios.post('/copy_files', {
-      parentID: currentFolderID,
-      foldersList: copiedFiles
-    });
+    if (parentFolderIDofSelectedFile !== currentFolderID) {
+      await Axios.post('/copy_files', {
+        parentID: currentFolderID,
+        foldersList: copiedFiles
+      });
+    }
 
     emptyClipboard();
   }
@@ -189,24 +194,38 @@ export default function SelectedFiles(props: any) {
             >
               Download
             </button>
-            <button
-              className="w-full text-sm mb-2 block mr-4 px-5 py-2 border-blue-500 border text-blue-500 rounded transition duration-150 hover:bg-blue-700 hover:text-white focus:outline-none"
-              onClick={() => copyHere()}
-            >
-              Copy Here
-            </button>
+            {parentFolderIDofSelectedFile !== currentFolderID && (
+              <button
+                className="w-full text-sm mb-2 block mr-4 px-5 py-2 border-blue-500 border text-blue-500 rounded transition duration-150 hover:bg-blue-700 hover:text-white focus:outline-none"
+                onClick={() => copyHere()}
+              >
+                Copy Here
+              </button>
+            )}
+            {parentFolderIDofSelectedFile === currentFolderID && (
+              <button className="w-full text-sm mb-2 block mr-4 px-5 py-2 border-gray-300 border text-gray-300 rounded transition duration-150 focus:outline-none">
+                Copy Here
+              </button>
+            )}
             <button
               className="w-full text-sm mb-2 block mr-4 px-5 py-2 border-red-500 border text-red-500 rounded transition duration-150 hover:bg-red-700 hover:text-white focus:outline-none"
               onClick={() => bulkDelete()}
             >
               Delete
             </button>
-            <button
-              className="w-full text-sm mb-2 block mr-4 px-5 py-2 border-yellow-500 border text-yellow-500 rounded transition duration-150 hover:bg-yellow-700 hover:text-white focus:outline-none"
-              onClick={() => moveHere()}
-            >
-              Move Here
-            </button>
+            {parentFolderIDofSelectedFile !== currentFolderID && (
+              <button
+                className="w-full text-sm mb-2 block mr-4 px-5 py-2 border-yellow-500 border text-yellow-500 rounded transition duration-150 hover:bg-yellow-700 hover:text-white focus:outline-none"
+                onClick={() => moveHere()}
+              >
+                Move Here
+              </button>
+            )}
+            {parentFolderIDofSelectedFile === currentFolderID && (
+              <button className="w-full text-sm mb-2 block mr-4 px-5 py-2 border-gray-300 border text-gray-300 rounded transition duration-150 focus:outline-none">
+                Move Here
+              </button>
+            )}
           </div>
         </div>
       )}

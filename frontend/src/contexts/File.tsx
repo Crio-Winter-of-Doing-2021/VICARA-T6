@@ -3,13 +3,13 @@ import { useHistory } from 'react-router-dom';
 
 type ContextProps = {
   copiedFiles?: any;
-  disableSelection?: any;
-  selectTheCurrentFile?: any;
-  emptyClipboard?: any;
   filesCounter?: any;
+  emptyClipboard?: any;
   setFilesCounter?: any;
   changeParentFolder?: any;
+  selectTheCurrentFile?: any;
   removeFileFromClipboard?: any;
+  parentFolderIDofSelectedFile?: any;
 };
 
 const FileContext = createContext<ContextProps>({});
@@ -18,8 +18,7 @@ export const useFileContext = () => useContext(FileContext);
 
 export const FileContextProvider = (props: any) => {
   const [copiedFiles, copyNewFile] = useState({});
-  const [disableSelection] = useState(false);
-  const [parentFolderID, setParentFolderID] = useState(null);
+  const [parentFolderIDofSelectedFile, setParentFolderID] = useState(null);
   const [filesCounter, setFilesCounter] = useState(0);
   const history = useHistory();
 
@@ -44,8 +43,8 @@ export const FileContextProvider = (props: any) => {
       }
     };
 
-    if (parentFolderID !== null) {
-      if (parentID === parentFolderID) {
+    if (parentFolderIDofSelectedFile !== null) {
+      if (parentID === parentFolderIDofSelectedFile) {
         copyNewFile({
           ...copiedFiles,
           ...newFile
@@ -57,10 +56,6 @@ export const FileContextProvider = (props: any) => {
         ...newFile
       });
     }
-    // console.log(Object.values({ ...copiedFiles, ...newFile }));
-    // if (Object.values({ copiedFiles, ...newFile }).length === 0) {
-    //   setParentFolderID(parentID);
-    // }
 
     if (Object.values({ ...copiedFiles, ...newFile }).length <= 1) {
       setParentFolderID(parentID);
@@ -82,14 +77,14 @@ export const FileContextProvider = (props: any) => {
   return (
     <FileContext.Provider
       value={{
+        copiedFiles,
         filesCounter,
         setFilesCounter,
-        copiedFiles,
-        disableSelection,
-        removeFileFromClipboard,
         emptyClipboard,
+        changeParentFolder,
         selectTheCurrentFile,
-        changeParentFolder
+        removeFileFromClipboard,
+        parentFolderIDofSelectedFile
       }}
     >
       {props.children}

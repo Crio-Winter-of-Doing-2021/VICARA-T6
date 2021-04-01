@@ -23,11 +23,7 @@ export default function FolderTable({ files }: FolderTableProps) {
     console.log('FOLDER TABLE: I GOT RENDERED');
   }, []);
 
-  const {
-    copiedFiles,
-    selectTheCurrentFile,
-    disableSelection
-  } = useFileContext();
+  const { copiedFiles, selectTheCurrentFile } = useFileContext();
   const [selectedFile, setSelectedFile] = useState(null);
   const [sortAscending, setOrderOfFields] = useState(true);
 
@@ -92,7 +88,7 @@ export default function FolderTable({ files }: FolderTableProps) {
                     selectFile={setTheClickedFileAsSelected}
                     addNewFileToCopy={selectTheCurrentFile}
                     fileInClipboard={fileExists}
-                    disableSelection={disableSelection}
+                    disableSelection={fileExists && file.directory}
                   />
                 );
               })}
