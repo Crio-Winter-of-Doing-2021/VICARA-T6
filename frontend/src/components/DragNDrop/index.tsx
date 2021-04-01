@@ -1,10 +1,9 @@
 import Dropzone from 'react-dropzone';
-import { toast } from 'react-toastify';
 import { useEffect, useRef } from 'react';
 import { withRouter, useHistory } from 'react-router-dom';
 
 import { useFileContext } from '../../contexts/File';
-import Axios from '../../config/axios';
+import { uploadFiles, uploadFolders } from '../../utils/helper/api';
 
 function DragAndDrop(props: any) {
   const history = useHistory();
@@ -12,128 +11,11 @@ function DragAndDrop(props: any) {
   const { filesCounter, setFilesCounter } = useFileContext();
 
   const toastId: any = useRef(null);
+  const parentID = history.location.pathname.replace('/', '') ?? ownerID;
 
   useEffect(() => {
     console.log('DragNDrop: I got rendered too');
   }, []);
-
-  async function postFolders(folders: any) {
-    let directoryStructure: any = {};
-    const formData = new FormData();
-
-    const parentID = history.location.pathname.replace('/', '') ?? ownerID;
-    toastId.current = toast('Uploading ' + folders.name);
-    formData.append(folders, JSON.stringify(folders));
-
-    try {
-      const { data } = await Axios.post(
-        `/create_directory_stucture?parent=${parentID}&owner=${ownerID}`,
-        formData
-      );
-      directoryStructure = data.result;
-
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    } catch (err) {
-      console.log(err.message);
-    }
-
-    for (let i = 0; i < folders.length; i++) {
-      const filePathArr = folders[i].path.split('/');
-      filePathArr.pop();
-      const filePath = filePathArr.join('/');
-      const parentID = directoryStructure[filePath];
-      const parent = parentID;
-
-      formData.append(parent, folders[i]);
-    }
-
-    const options = {
-      onUploadProgress: (progressEvent: any) => {
-        const { loaded, total } = progressEvent;
-        const percent = Math.floor((loaded * 100) / total);
-        console.log(`${loaded}kb of ${total} | ${percent}%`);
-
-        if (toastId.current === null) {
-          toastId.current = toast(`Upload in Progress ${percent}`, {
-            progress: percent
-          });
-        } else {
-          toast.update(toastId.current, {
-            render: `Upload in Progress ${percent}`,
-            progress: percent
-          });
-        }
-      }
-    };
-
-    try {
-      const { data } = await Axios.post(
-        `/upload_folder?owner=${ownerID}`,
-        formData,
-        options
-      );
-
-      console.log(data);
-
-      toast.update(toastId.current, {
-        render: 'Upload successfull',
-        type: toast.TYPE.INFO,
-        autoClose: 1000
-      });
-
-      setFilesCounter(filesCounter + 1);
-
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    } catch (err) {
-      console.log(err.message);
-    }
-  }
-
-  async function postFiles(files: any) {
-    const formData = new FormData();
-    const parentID = history.location.pathname.replace('/', '') ?? ownerID;
-
-    for (let i = 0; i < files.length; i++) {
-      const parent = parentID;
-
-      formData.append(parent, files[i]);
-    }
-
-    const options = {
-      onUploadProgress: (progressEvent: any) => {
-        const { loaded, total } = progressEvent;
-        const percent = Math.floor((loaded * 100) / total);
-        console.log(`${loaded}kb of ${total} | ${percent}%`);
-
-        // if (toastId.current === null) {
-        toastId.current = toast(`Upload in Progress ${percent}`, {
-          progress: percent
-        });
-        // } else {
-        //   toast.update(toastId.current, {
-        //     render: `Upload in Progress ${percent}`,
-        //     progress: percent
-        //   });
-        // }
-      }
-    };
-
-    try {
-      await Axios.post(`/upload_file?owner=${ownerID}`, formData, options);
-
-      toast.update(toastId.current, {
-        render: 'Upload successfull',
-        type: toast.TYPE.INFO,
-        autoClose: 1000
-      });
-
-      setFilesCounter(filesCounter + 1);
-
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    } catch (err) {
-      console.log(err.message);
-    }
-  }
 
   async function sendTheFiles(files: any) {
     // Initialize jsZip
@@ -145,13 +27,15 @@ function DragAndDrop(props: any) {
 
     if (listOfFolders.length) {
       console.log('FOLDERS FOUND : ', listOfFolders.length);
-      await postFolders(listOfFolders);
+      await uploadFolders(toastId, parentID, ownerID, listOfFolders);
+      setFilesCounter(filesCounter + 1);
       console.log('FOLDERS SENT');
     }
 
     if (listOfFiles.length) {
       console.log('FILES FOUND : ', listOfFiles.length);
-      await postFiles(listOfFiles);
+      await uploadFiles(toastId, parentID, ownerID, listOfFiles);
+      setFilesCounter(filesCounter + 1);
       console.log('FILES SENT');
     }
   }
