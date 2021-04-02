@@ -1,0 +1,24 @@
+name: deploy-upload
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/upload/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cd backend/upload && docker build -t darkcrusader/drive-upload .
+      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      - run: docker push darkcrusader/drive-upload
+      - uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - run: doctl kubernetes cluster kubeconfig save vicara
+      - run: kubectl rollout restart deployment upload-depl
