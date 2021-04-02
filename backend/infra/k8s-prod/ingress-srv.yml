@@ -10,8 +10,15 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-send-timeout: '1200'
     nginx.ingress.kubernetes.io/proxy-read-timeout: '1200'
     nginx.ingress.kubernetes.io/send-timeout: '1200'
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 
 spec:
+  tls:
+    - hosts:
+        - my-apps.me
+        - www.my-apps.me
+      secretName: vicara-prod-tls
+
   rules:
     - host: www.my-apps.me
       http:
