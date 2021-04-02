@@ -1,0 +1,11 @@
+# Node modules
+node_modules/
+
+# IDE
+.idea/
+
+# Infra imperative commands
+backend/infra/imperative
+
+# common build
+backend/common/build

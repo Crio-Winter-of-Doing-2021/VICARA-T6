@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: browse-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: browse
+  template:
+    metadata:
+      labels:
+        app: browse
+    spec:
+      containers:
+        - name: browse
+          image: darkcrusader/drive-browse
+          env:
+            - name: MONGO_URI
+              value: 'mongodb://files-mongo-srv:27017/files'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: browse-srv
+spec:
+  selector:
+    app: browse
+  ports:
+    - name: browse
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
