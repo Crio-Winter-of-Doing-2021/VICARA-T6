@@ -4,6 +4,7 @@ import { withRouter, useHistory } from 'react-router-dom';
 
 import { useFileContext } from '../../contexts/File';
 import { uploadFiles, uploadFolders } from '../../utils/helper/api';
+import { BsUpload } from 'react-icons/bs';
 
 function DragAndDrop(props: any) {
   const history = useHistory();
@@ -46,10 +47,13 @@ function DragAndDrop(props: any) {
         <section>
           <div
             {...getRootProps()}
-            className="border border-dashed border-black px-10 py-20 mx-8 my-5 w-80vw"
+            className="border-2 border-dotted bg-white opacity-100 border-black px-10 py-10 mx-8 my-5 w-80vw flex justify-center items-center flex-col"
           >
             <input {...getInputProps()} />
-            <p>Drag and drop some files here, or click to select files</p>
+            <BsUpload size={25} className="mb-4" />
+            <p className="text-lg">
+              Drag and drop files and folders here to upload them
+            </p>
           </div>
         </section>
       )}

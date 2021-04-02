@@ -42,8 +42,6 @@ export default function SelectedFiles(props: any) {
   }, []);
 
   useEffect(() => {
-    console.log({ parentFolderIDofSelectedFile, currentFolderID });
-
     if (parentFolderIDofSelectedFile === currentFolderID) {
       disableClipboardActions(true);
     } else {
