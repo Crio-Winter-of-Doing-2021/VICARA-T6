@@ -13,7 +13,7 @@ metadata:
 
 spec:
   rules:
-    - host: vicara.dev
+    - host: www.my-apps.me
       http:
         paths:
           - path: /api/users/?(.*)
