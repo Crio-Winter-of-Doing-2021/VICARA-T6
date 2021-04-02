@@ -26,9 +26,9 @@ const start = async () => {
             useUnifiedTopology: true,
             useCreateIndex: true
         });
-        console.log('Connected to mongo');
+        console.log('Connected to mongodb');
     } catch (err) {
-        console.error('Error connecting to mongo');
+        console.error('Error connecting to mongodb');
         console.log(err);
     }
 
