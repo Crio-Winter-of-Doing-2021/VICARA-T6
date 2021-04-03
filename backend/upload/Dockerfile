@@ -11,6 +11,7 @@ FROM node:12.17.0-alpine
 WORKDIR /app
 COPY package.json ./
 RUN npm i --only=production
+ENV NODE_ENV production
 COPY --from=builder /app/dist .
 RUN npm i pm2 -g
 EXPOSE 3000
