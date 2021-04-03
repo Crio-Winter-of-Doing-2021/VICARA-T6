@@ -24,8 +24,7 @@ export default function SelectedFiles(props: any) {
     parentFolderIDofSelectedFile
   } = useFileContext();
 
-  const currentFolderID =
-    history.location.pathname.replace('/', '') ?? '605256109934f80db98712ea';
+  const currentFolderID = history.location.pathname.replace('/', '');
 
   const toastId: any = useRef(null);
 
@@ -39,7 +38,7 @@ export default function SelectedFiles(props: any) {
     }
 
     fetchFileDetails();
-  }, []);
+  }, [currentFolderID]);
 
   useEffect(() => {
     if (parentFolderIDofSelectedFile === currentFolderID) {
