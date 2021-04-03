@@ -1,25 +1,34 @@
 const recentFiles = require("express").Router();
 const Files = require("../../db/models/filesSchema");
+const currentUserMiddleware = require("../middleware");
 
 export {};
 
-recentFiles.get("/", async (req, res, next) => {
-  const currentTime: any = new Date();
-  const result = await Files.find().sort({ _id: -1 }).limit(10);
+recentFiles.get(
+  "/",
+  currentUserMiddleware.currentUser,
+  async (req, res, next) => {
+    const currentTime: any = new Date();
+    const ownerID = req.currentUser.id;
 
-  const recentFilesResult = result.filter((file) => {
-    const fileUpdationDate: any = new Date(file.updatedAt);
-    const diff: number = Math.abs(currentTime - fileUpdationDate) / 1000 / 60;
+    const result = await Files.find({ owner: ownerID })
+      .sort({ _id: -1 })
+      .limit(10);
 
-    //files which came under 10 minutes
-    if (diff <= 10) {
-      return true;
-    }
+    const recentFilesResult = result.filter((file) => {
+      const fileUpdationDate: any = new Date(file.updatedAt);
+      const diff: number = Math.abs(currentTime - fileUpdationDate) / 1000 / 60;
 
-    return false;
-  });
+      //files which came under 10 minutes
+      if (diff <= 10) {
+        return true;
+      }
 
-  return res.json({ recentFilesResult }).status(200);
-});
+      return false;
+    });
+
+    return res.json({ recentFilesResult }).status(200);
+  }
+);
 
 module.exports = recentFiles;

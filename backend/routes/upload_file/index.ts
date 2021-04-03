@@ -1,6 +1,7 @@
 const uploadFile = require("express").Router();
 const AWS = require("aws-sdk");
 const Files = require("../../db/models/filesSchema");
+const currentUserMiddleware = require("../middleware");
 
 export {};
 
@@ -24,109 +25,115 @@ async function upload(filename, file) {
   }
 }
 
-uploadFile.post("/", async (req, res, next) => {
-  let { owner: ownerID } = req.query;
+uploadFile.post(
+  "/",
+  currentUserMiddleware.currentUser,
+  async (req, res, next) => {
+    const ownerID = req.currentUser.id;
 
-  let uploadStartTime = new Date(),
-    busboyFinishTime = null,
-    s3UploadFinishTime = null;
+    let uploadStartTime = new Date(),
+      busboyFinishTime = null,
+      s3UploadFinishTime = null;
 
-  let filesCount = 0,
-    finished = false;
+    let filesCount = 0,
+      finished = false;
 
-  const file_size = req.headers["content-length"];
+    const file_size = req.headers["content-length"];
 
-  req.busboy.on(
-    "file",
-    async (fieldname, file, filename, encoding, mimetype) => {
-      const parentID = fieldname;
-      const fileExt = filename.split(".").pop();
+    req.busboy.on(
+      "file",
+      async (fieldname, file, filename, encoding, mimetype) => {
+        const parentID = fieldname;
+        const fileExt = filename.split(".").pop();
 
-      //Check if file already exists
-      const result = await Files.findOne({
-        parent: parentID,
-        name: filename,
-        owner: ownerID,
-      });
-
-      if (result === null) {
-        ++filesCount;
-      }
-
-      file.on("end", function () {
-        // console.log("ENDED");
-        // res.json({ msg: "ENDED" })
-      });
-
-      file.on("data", function (data) {
-        // console.log("DATA FOUND");
-      });
-
-      if (result === null) {
-        const new_file = new Files({
-          name: filename,
-          directory: false,
-          owner: ownerID,
+        //Check if file already exists
+        const result = await Files.findOne({
           parent: parentID,
-          type: mimetype,
-          extension: fileExt,
-          size: file_size,
+          name: filename,
+          owner: ownerID,
         });
 
-        upload(new_file._id.toString(), file)
-          .then(async (data) => {
-            console.log(data);
-            await new_file.save();
-            await Files.findByIdAndUpdate(new_file._id, { url: data.Location });
-            filesCount--;
-            console.log("ADDED");
+        if (result === null) {
+          ++filesCount;
+        }
 
-            if (filesCount === 0 && finished) {
-              console.log("Finished Uploading");
-              res.json("OK").status(200);
-            }
-          })
-          .catch(async (err) => {
-            console.log(err);
-            // console.log("REMOVED");
-            filesCount--;
+        file.on("end", function () {
+          // console.log("ENDED");
+          // res.json({ msg: "ENDED" })
+        });
+
+        file.on("data", function (data) {
+          // console.log("DATA FOUND");
+        });
+
+        if (result === null) {
+          const new_file = new Files({
+            name: filename,
+            directory: false,
+            owner: ownerID,
+            parent: parentID,
+            type: mimetype,
+            extension: fileExt,
+            size: file_size,
           });
-      } else {
-        console.log("FILE ALREADY EXISTS");
 
-        if (filesCount === 0 && finished) {
-          console.log("Finished Uploading");
-          res.json("OK").status(200);
+          upload(new_file._id.toString(), file)
+            .then(async (data) => {
+              console.log(data);
+              await new_file.save();
+              await Files.findByIdAndUpdate(new_file._id, {
+                url: data.Location,
+              });
+              filesCount--;
+              console.log("ADDED");
+
+              if (filesCount === 0 && finished) {
+                console.log("Finished Uploading");
+                res.json("OK").status(200);
+              }
+            })
+            .catch(async (err) => {
+              console.log(err);
+              // console.log("REMOVED");
+              filesCount--;
+            });
+        } else {
+          console.log("FILE ALREADY EXISTS");
+
+          if (filesCount === 0 && finished) {
+            console.log("Finished Uploading");
+            res.json("OK").status(200);
+          }
+        }
+
+        console.log({ filesCount });
+
+        if (busboyFinishTime && s3UploadFinishTime) {
+          console.log("FINAL CALL HERE");
         }
       }
+    );
 
-      console.log({ filesCount });
+    req.busboy.on("finish", function () {
+      // send response
+      console.log("Done parsing form!");
+      finished = true;
 
       if (busboyFinishTime && s3UploadFinishTime) {
-        console.log("FINAL CALL HERE");
+        console.log({
+          uploadStartTime: uploadStartTime,
+          busboyFinishTime: busboyFinishTime,
+          s3UploadFinishTime: s3UploadFinishTime,
+        });
       }
-    }
-  );
+    });
 
-  req.busboy.on("finish", function () {
-    // send response
-    console.log("Done parsing form!");
-    finished = true;
+    req.busboy.on("end", function () {
+      // console.log("WHO ENDED ME");
+    });
 
-    if (busboyFinishTime && s3UploadFinishTime) {
-      console.log({
-        uploadStartTime: uploadStartTime,
-        busboyFinishTime: busboyFinishTime,
-        s3UploadFinishTime: s3UploadFinishTime,
-      });
-    }
-  });
-
-  req.busboy.on("end", function () {
-    // console.log("WHO ENDED ME");
-  });
-
-  req.pipe(req.busboy); // Pipe it trough busboy
-});
+    req.pipe(req.busboy); // Pipe it trough busboy
+  }
+);
 
 module.exports = uploadFile;

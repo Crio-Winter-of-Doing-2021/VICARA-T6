@@ -10,9 +10,13 @@ export default function ProtectedRoute({ component: Component, ...rest }: any) {
   useEffect(() => {
     async function getCurrentUser() {
       try {
-        const result = await Axios.get('/current_user');
-        console.log(result);
-        setAuthenticated(true);
+        const { data } = await Axios.get('/current_user');
+
+        if (data.currentUser === null) {
+          setAuthenticated(false);
+        } else {
+          setAuthenticated(true);
+        }
       } catch (error) {
         setAuthenticated(false);
       }
