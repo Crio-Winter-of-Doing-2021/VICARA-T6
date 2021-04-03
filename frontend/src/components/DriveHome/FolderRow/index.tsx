@@ -69,7 +69,7 @@ export default function FolderRow({
   const [showModal, setIsOpenModal] = useState(false);
 
   const starMutation = useMutation((fileID: any) => {
-    const result = Axios.patch('/starred_files', { fileID });
+    const result = Axios.post('/starred_files', { fileID });
     setFilesCounter(filesCounter + 1);
     return result;
   });
@@ -200,37 +200,37 @@ export default function FolderRow({
           </button>
         </td>
         {/* </div> */}
-
-        <Menu id={MENU_ID}>
-          <>
-            {disableSelection && (
-              <Item disabled={true}>
-                <HiEye className="mr-2" />
-                Cannot View Selected Directory
-              </Item>
-            )}
-          </>
-
-          <>
-            {!disableSelection && (
-              <Item onClick={() => changeParentFolder(fileID)}>
-                <HiEye className="mr-2" />
-                View
-              </Item>
-            )}
-          </>
-          <Separator />
-          <Item onClick={() => setIsOpenModal(true)}>
-            <HiOutlinePencilAlt className="mr-2" />
-            Rename
-          </Item>
-          <Separator />
-          <Item onClick={() => starMutation.mutate(fileID)}>
-            <AiOutlineStar className="mr-2" />
-            {starred ? 'Remove starred' : 'Add to Starred'}
-          </Item>
-        </Menu>
       </tr>
+
+      <Menu id={MENU_ID}>
+        <>
+          {disableSelection && (
+            <Item disabled={true}>
+              <HiEye className="mr-2" />
+              Cannot View Selected Directory
+            </Item>
+          )}
+        </>
+
+        <>
+          {!disableSelection && (
+            <Item onClick={() => changeParentFolder(fileID)}>
+              <HiEye className="mr-2" />
+              View
+            </Item>
+          )}
+        </>
+        <Separator />
+        <Item onClick={() => setIsOpenModal(true)}>
+          <HiOutlinePencilAlt className="mr-2" />
+          Rename
+        </Item>
+        <Separator />
+        <Item onClick={() => starMutation.mutate(fileID)}>
+          <AiOutlineStar className="mr-2" />
+          {starred ? 'Remove starred' : 'Add to Starred'}
+        </Item>
+      </Menu>
 
       <ReactModal
         modalIsOpen={showModal}

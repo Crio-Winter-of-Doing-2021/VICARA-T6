@@ -67,6 +67,7 @@ uploadFolder.post(
           const new_file = new Files({
             name: filename,
             directory: false,
+            starred: false,
             owner: ownerID,
             parent: parentID,
             type: mimetype,

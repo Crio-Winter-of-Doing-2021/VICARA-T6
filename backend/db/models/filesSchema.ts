@@ -29,9 +29,6 @@ const FilesSchema = new Schema(
     starred: {
       type: Boolean,
     },
-    url: {
-      type: String,
-    },
   },
   {
     timestamps: true,
