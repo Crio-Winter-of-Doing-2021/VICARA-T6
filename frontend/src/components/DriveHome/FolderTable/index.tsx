@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
+import { BsArrowDown } from 'react-icons/bs';
+import { ImFilesEmpty } from 'react-icons/im';
 
 import FilesSchmea from '../../../utils/interfaces/FilesSchema';
 import { useFileContext } from '../../../contexts/File';
-import { BsArrowDown } from 'react-icons/bs';
-
 import FolderRow from '../FolderRow';
 
 interface FolderTableProps {
@@ -11,14 +11,6 @@ interface FolderTableProps {
 }
 
 export default function FolderTable({ files }: FolderTableProps) {
-  if (files?.length === 0) {
-    return (
-      <div className="px-10 -my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-12">
-        No files and folders
-      </div>
-    );
-  }
-
   useEffect(() => {
     console.log('FOLDER TABLE: I GOT RENDERED');
   }, []);
@@ -30,6 +22,17 @@ export default function FolderTable({ files }: FolderTableProps) {
   const setTheClickedFileAsSelected = useCallback((id) => {
     setSelectedFile(id);
   }, []);
+
+  if (files?.length === 0) {
+    return (
+      <div className="px-10 py-40 overflow-x-auto flex justify-center items-center flex-col">
+        <div className="bg-gray-200 rounded-lg px-10 py-20 flex justify-center items-center flex-col">
+          <ImFilesEmpty size={40} className="mb-5" />
+          No files present in this folder
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">

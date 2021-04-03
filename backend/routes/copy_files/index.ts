@@ -12,7 +12,9 @@ async function copyFolderUtility(
   folder_id: string
 ): Promise<void> {
   const result = await Files.findById(folder_id);
+
   let folderString = result.name + "/";
+
   //Add the initial folder id to the arr
   let directoryStructure = [
     {
@@ -20,7 +22,9 @@ async function copyFolderUtility(
       ...JSON.parse(JSON.stringify(result)),
     },
   ];
+
   let directoryMapper = {};
+
   //Traverse the children and get their IDs
   await traverseDirectory(folder_id, folderString, directoryStructure, true);
 
@@ -28,6 +32,7 @@ async function copyFolderUtility(
   let tempExisting = directoryStructure[0];
   const fileID = tempExisting._id;
   tempExisting = JSON.parse(JSON.stringify(tempExisting));
+
   //Delete unecessary data
   delete tempExisting._id;
   delete tempExisting.updatedAt;

@@ -4,7 +4,6 @@ import { useHistory } from 'react-router-dom';
 import { RiLogoutCircleLine } from 'react-icons/ri';
 
 import Axios from '../../config/axios';
-import logo from '../../assets/logo.svg';
 import { useSearchContext } from '../../contexts/SearchFiles';
 
 interface fields {
@@ -33,7 +32,7 @@ export default function Navbar() {
         <div className="relative flex items-center justify-between h-16">
           <div className="flex-1 flex items-center justify-left sm:items-stretch sm:justify-center">
             <div className="flex-shrink-0 flex items-center mr-auto">
-              <img className="h-12 w-auto" src={logo} alt="Workflow" />
+              <h1 className="text-lg text-w">Vicara</h1>
             </div>
             <div className="flex justify-center w-full sm:ml-6 sm:hidden">
               <div className="rounded-tl-lg rounded-tr-lg w-10/12 overflow-hidden bg-white px-12">
@@ -50,7 +49,7 @@ export default function Navbar() {
                         <input
                           type="text"
                           ref={register}
-                          className="h-full leading-normal tracking-wide border border-none border-l-0 rounded rounded-l-none px-3 relative focus:outline-none text-xxs lg:text-xs text-gray-700 font-thin"
+                          className="h-full leading-normal tracking-wide border border-none border-l-0 rounded rounded-l-none px-3 relative focus:outline-none text-xxs lg:text-xs text-gray-700 focus-within:outline-none"
                           placeholder="Search Files and Folders"
                           name="searchText"
                         />

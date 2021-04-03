@@ -74,10 +74,27 @@ export default function FolderRow({
     return result;
   });
 
-  function displayMenu(e: any, fileID: string) {
+  const displayMenu = (e: any, fileID: string) => {
     selectFile(fileID);
     show(e);
-  }
+  };
+
+  const handleDelete = (
+    fileID: string,
+    isDirectory: boolean,
+    toastID: any,
+    name: string
+  ) => {
+    if (fileInClipboard) {
+      addNewFileToCopy(fileID, name, isDirectory, fileInClipboard, parent);
+    }
+
+    if (isDirectory) {
+      deleteFolder(toastID, fileID, name);
+    } else {
+      deleteFile(toastID, fileID, name);
+    }
+  };
 
   const fileSize: any = size;
 
@@ -160,7 +177,7 @@ export default function FolderRow({
               </button>
               <button
                 className="mr-4 px-5 py-2 border-red-500 border text-red-500 rounded transition duration-300 hover:bg-red-700 hover:text-white focus:outline-none"
-                onClick={() => deleteFolder(toastID, fileID, name)}
+                onClick={() => handleDelete(fileID, true, toastID, name)}
               >
                 <span className="flex items-center">
                   <RiDeleteBin5Line className="mr-1" />
@@ -183,7 +200,7 @@ export default function FolderRow({
               </button>
               <button
                 className="mr-4 px-5 py-2 border-red-500 border text-red-500 rounded transition duration-300 hover:bg-red-700 hover:text-white focus:outline-none"
-                onClick={() => deleteFile(toastID, fileID, name)}
+                onClick={() => handleDelete(fileID, false, toastID, name)}
               >
                 <span className="flex items-center">
                   <RiDeleteBin5Line className="mr-1" />
