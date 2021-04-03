@@ -91,7 +91,7 @@ uploadFolder.post(
             })
             .catch(async (err) => {
               console.log(err);
-              console.log("REMOVED");
+              // console.log("REMOVED");
               filesCount--;
             });
         } else {
@@ -126,7 +126,7 @@ uploadFolder.post(
     });
 
     req.busboy.on("end", function () {
-      console.log("WHO ENDED ME");
+      // console.log("WHO ENDED ME");
     });
 
     req.pipe(req.busboy); // Pipe it trough busboy

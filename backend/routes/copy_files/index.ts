@@ -2,6 +2,7 @@ const AWS = require("aws-sdk");
 const copyFiles = require("express").Router();
 const Files = require("../../db/models/filesSchema");
 const traverseDirectory = require("../../utils/helper/db_traversal");
+const currentUserMiddleware = require("../middleware");
 
 export {};
 
@@ -9,6 +10,7 @@ const s3 = new AWS.S3();
 
 async function copyFolderUtility(
   parent_id: string,
+  ownerID: string,
   folder_id: string
 ): Promise<void> {
   const result = await Files.findById(folder_id);
@@ -47,6 +49,7 @@ async function copyFolderUtility(
     delete tempExisting._id;
     delete tempExisting.updatedAt;
     delete tempExisting.createdAt;
+
     if (directoryMapper[tempExisting.parent] !== undefined) {
       console.log("EXISTS : ", tempExisting.name, fileID, tempExisting.parent);
       tempExisting.parent = directoryMapper[tempExisting.parent];
@@ -59,15 +62,17 @@ async function copyFolderUtility(
       );
       tempExisting.parent = parent_id;
     }
+
     const new_file = new Files(tempExisting);
+
     if (new_file.directory === false) {
       console.log(
         "Copying file with ID " + fileID + " to new ID " + new_file._id
       );
       const params = {
         Bucket: process.env.S3_BUCKET_NAME,
-        CopySource: process.env.S3_BUCKET_NAME + "/" + fileID,
-        Key: new_file._id.toString(),
+        CopySource: process.env.S3_BUCKET_NAME + "/" + ownerID + "/" + fileID,
+        Key: ownerID + "/" + new_file._id.toString(),
       };
       //Send the delete request
       try {
@@ -97,6 +102,7 @@ async function copyFolderUtility(
 
 async function copyFileUtility(
   parent_id: string,
+  ownerID: string,
   files_id: string[]
 ): Promise<void> {
   var existingFile = await Files.findById(files_id);
@@ -115,8 +121,9 @@ async function copyFileUtility(
 
     const params = {
       Bucket: process.env.S3_BUCKET_NAME,
-      CopySource: process.env.S3_BUCKET_NAME + "/" + existingFile._id,
-      Key: new_file._id.toString(),
+      CopySource:
+        process.env.S3_BUCKET_NAME + "/" + ownerID + "/" + existingFile._id,
+      Key: ownerID + "/" + new_file._id.toString(),
     };
 
     await s3
@@ -135,21 +142,26 @@ async function copyFileUtility(
   return Promise.resolve();
 }
 
-copyFiles.post("/", async (req, res, next) => {
-  let { foldersList, parentID } = req.body;
+copyFiles.post(
+  "/",
+  currentUserMiddleware.currentUser,
+  async (req, res, next) => {
+    let { foldersList, parentID } = req.body;
+    const ownerID = req.currentUser.id;
 
-  Object.entries(foldersList).map(async (fileDetails: any) => {
-    const id = fileDetails[0];
-    const data = fileDetails[1];
+    Object.entries(foldersList).map(async (fileDetails: any) => {
+      const fileID = fileDetails[0];
+      const data = fileDetails[1];
 
-    if (data.isDirectory) {
-      await copyFolderUtility(parentID, id);
-    } else {
-      await copyFileUtility(parentID, id);
-    }
-  });
+      if (data.isDirectory) {
+        await copyFolderUtility(parentID, ownerID, fileID);
+      } else {
+        await copyFileUtility(parentID, ownerID, fileID);
+      }
+    });
 
-  res.send("OK");
-});
+    res.send("OK");
+  }
+);
 
 module.exports = copyFiles;
