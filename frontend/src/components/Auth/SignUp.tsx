@@ -1,5 +1,6 @@
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import Axios from '../../config/axios';
 
 import logo from '../../assets/logo.svg';
 import './index.css';
@@ -10,10 +11,28 @@ interface fields {
 }
 
 function SignUp() {
-  const { handleSubmit, register, watch } = useForm();
+  const history = useHistory();
+  const { handleSubmit, register, setError, watch, errors } = useForm();
   console.log(watch('password'), watch('password')?.length);
 
-  const onSubmit = (values: fields) => console.log(values);
+  const onSubmit = async (values: fields) => {
+    console.log(values);
+
+    try {
+      await Axios.post('/signup', values).then((res) => {
+        const id = res.data._id;
+        history.push(`/${id}`);
+      });
+    } catch (error) {
+      console.log(error);
+      // console.log(error.response.data.err);
+
+      setError('custom', {
+        type: 'manual',
+        message: error?.response?.data?.err
+      });
+    }
+  };
 
   return (
     <div className="xl:w-8/12 lg:w-5/12 md:w-4/12 sm:w-full px-10 pb-10 pt-3 md:shadow-none md:p-6 rounded-md flex dark:text-white dark:bg-gray-800 bg-white shadow-lg flex-col items-center justify-center">
@@ -33,7 +52,10 @@ function SignUp() {
               Email address
             </label>
             <input
-              className="rounded-sm border py-3 px-3 text-lg text-grey-darkest"
+              className={`rounded-sm border py-3 px-3 text-lg text-grey-darkest ${
+                errors.email &&
+                'border-red-400 focus:border-red-600 focus:border-4'
+              }`}
               type="text"
               name="email"
               ref={register({
@@ -54,16 +76,13 @@ function SignUp() {
               Password
             </label>
             <input
-              className="rounded-sm border py-3 px-3 text-lg text-grey-darkest"
+              className={`rounded-sm border py-3 px-3 text-lg text-grey-darkest ${
+                errors.password &&
+                'border-red-400 focus:border-red-600 focus:border-4'
+              }`}
               type="text"
               name="password"
-              ref={register({
-                required: 'Required',
-                pattern: {
-                  value: /((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})/i,
-                  message: 'Not a strong password'
-                }
-              })}
+              ref={register({ required: 'Required' })}
             />
           </div>
           <div className="border border-grey-darkest py-2 px-4">
@@ -94,6 +113,9 @@ function SignUp() {
                 <span className="pl-2 text-sm">Numbers</span>
               </div>
             </div>
+          </div>
+          <div className="mt-2 text-red-500">
+            {errors.custom && errors?.custom?.message}
           </div>
           <div className="my-5 flex flex-col">
             <input

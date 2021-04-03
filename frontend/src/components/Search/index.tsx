@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { withRouter, useHistory } from 'react-router-dom';
 import { useSearchContext } from '../../contexts/SearchFiles';
+import Loader from 'react-loader-spinner';
 
 import Axios from '../../config/axios';
 
@@ -33,7 +34,11 @@ function SearchMain() {
   }, [searchText]);
 
   if (status === 'loading') {
-    return <span>Loading...</span>;
+    return (
+      <div className="h-screen w-screen flex justify-center items-center">
+        <Loader type="Rings" color="#60a5fa" height={100} width={100} />
+      </div>
+    );
   }
 
   if (data?.searchFilesResult?.length === 0) {

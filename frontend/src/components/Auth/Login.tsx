@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 
+import Axios from '../../config/axios';
 import logo from '../../assets/logo.svg';
 import './index.css';
 
@@ -10,10 +11,26 @@ interface fields {
 }
 
 function SignUp() {
-  const { handleSubmit, register, watch, errors } = useForm();
-  console.log(watch('password'), watch('password')?.length);
+  const history = useHistory();
+  const { handleSubmit, register, setError, watch, errors } = useForm();
 
-  const onSubmit = (values: fields) => console.log(values);
+  const onSubmit = async (values: fields) => {
+    console.log(values);
+
+    try {
+      await Axios.post('/signin', values).then((res) => {
+        const id = res.data._id;
+        history.push(`/${id}`);
+      });
+    } catch (error) {
+      console.log(error);
+
+      setError('custom', {
+        type: 'manual',
+        message: error?.response?.data?.err
+      });
+    }
+  };
 
   return (
     <div className="xl:w-8/12 lg:w-5/12 md:w-4/12 sm:w-full px-10 pb-10 pt-3 md:shadow-none md:p-6 rounded-md flex dark:text-white dark:bg-gray-800 bg-white shadow-lg flex-col items-center justify-center">
@@ -48,6 +65,7 @@ function SignUp() {
               })}
             />
           </div>
+
           <div className="mb-5 flex flex-col">
             <label
               className={`form-label cursor-text text-gray-500 ${
@@ -64,13 +82,12 @@ function SignUp() {
               type="text"
               name="password"
               ref={register({
-                required: 'Required',
-                pattern: {
-                  value: /((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})/i,
-                  message: 'Not a strong password'
-                }
+                required: 'Required'
               })}
             />
+          </div>
+          <div className="mt-2 text-red-500">
+            {errors.custom && errors?.custom?.message}
           </div>
           <div className="my-5 flex flex-col">
             <input

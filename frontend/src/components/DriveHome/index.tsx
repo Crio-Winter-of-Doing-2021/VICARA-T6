@@ -14,14 +14,13 @@ import Loader from 'react-loader-spinner';
 // import RightSideBar from '../RightSideBar';
 
 interface FileProps {
-  ownerID: string;
   currentFolderID: string;
 }
 
-function useFiles({ ownerID, currentFolderID }: FileProps) {
+function useFiles({ currentFolderID }: FileProps) {
   return useQuery('files', async () => {
     const { data } = await Axios.get(
-      `/list_directory?owner=${ownerID}&parent=${currentFolderID}`
+      `/list_directory?parent=${currentFolderID}`
     );
     return data;
   });
@@ -29,15 +28,13 @@ function useFiles({ ownerID, currentFolderID }: FileProps) {
 
 function DriveMain() {
   const history = useHistory();
-  const ownerID = '605256109934f80db98712ea';
 
   const { filesCounter } = useFileContext();
 
   // Get the folder ID from the URL
-  const currentFolderID = history.location.pathname.replace('/', '') ?? ownerID;
+  const currentFolderID = history.location.pathname.replace('/', '');
 
   const { data, status, refetch } = useFiles({
-    ownerID,
     currentFolderID
   });
 

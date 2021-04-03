@@ -1,7 +1,9 @@
 import { BsSearch } from 'react-icons/bs';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
+import { RiLogoutCircleLine } from 'react-icons/ri';
 
+import Axios from '../../config/axios';
 import logo from '../../assets/logo.svg';
 import { useSearchContext } from '../../contexts/SearchFiles';
 
@@ -13,6 +15,11 @@ export default function Navbar() {
   const history = useHistory();
   const { handleSubmit, register } = useForm();
   const { setSearch } = useSearchContext();
+
+  const handSignOut = async () => {
+    await Axios.post('/signout');
+    history.push('/auth/login');
+  };
 
   const onSubmit = (values: fields) => {
     const { searchText } = values;
@@ -59,17 +66,14 @@ export default function Navbar() {
               <div>
                 <button
                   type="button"
-                  className="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-                  id="user-menu"
-                  aria-expanded="false"
-                  aria-haspopup="true"
+                  className="mr-4 px-5 py-2 border-red-500 border text-red-500 rounded transition duration-300 hover:bg-red-700 hover:text-white focus:outline-none"
+                  id="signout"
+                  onClick={handSignOut}
                 >
-                  <span className="sr-only">Open user menu</span>
-                  <img
-                    className="h-8 w-8 rounded-full"
-                    src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.DK3glilaJHLDWStvRbGLaAHaHa%26pid%3DApi&f=1"
-                    alt=""
-                  />
+                  <span className="flex items-center">
+                    <RiLogoutCircleLine className="mr-1" />
+                    Sign Out
+                  </span>
                 </button>
               </div>
             </div>

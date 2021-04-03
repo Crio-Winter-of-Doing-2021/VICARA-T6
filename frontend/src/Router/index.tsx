@@ -1,9 +1,10 @@
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
 import Home from '../pages/Home';
-import Auth from '../pages/Auth/index';
-import Search from '../pages/Search/index';
-import DriveHome from '../pages/DriveHome/index';
+import Auth from '../pages/Auth';
+import Search from '../pages/Search';
+import DriveHome from '../pages/DriveHome';
+import ProtectedRoute from './ProtectedRoute';
 
 export default function App() {
   return (
@@ -15,12 +16,8 @@ export default function App() {
         <Route path="/auth/:state">
           <Auth />
         </Route>
-        <Route path="/search">
-          <Search />
-        </Route>
-        <Route path="/:id">
-          <DriveHome />
-        </Route>
+        <ProtectedRoute path="/search" component={Search} />
+        <ProtectedRoute path="/:id" component={DriveHome} />
       </Switch>
     </BrowserRouter>
   );
