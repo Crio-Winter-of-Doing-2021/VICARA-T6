@@ -77,7 +77,7 @@ uploadFile.post(
             size: file_size,
           });
 
-          upload(new_file._id.toString(), file)
+          upload(ownerID + "/" + new_file._id.toString(), file)
             .then(async (data) => {
               console.log(data);
               await new_file.save();
