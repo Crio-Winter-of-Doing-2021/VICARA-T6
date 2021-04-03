@@ -8,6 +8,8 @@ const currentUserMiddleware = require("../middleware");
 
 export {};
 
+const MAX_TOTAL_SIZE = 1024 * 1024 * 1024;
+
 function upload(filename) {
   const passStream = new stream.PassThrough();
 
@@ -36,6 +38,8 @@ uploadFile.post(
   async (req, res, next) => {
     const ownerID = req.currentUser.id;
 
+    const response: {}[] = [];
+
     let uploadStartTime = new Date(),
       busboyFinishTime = null,
       s3UploadFinishTime = null;
@@ -51,12 +55,12 @@ uploadFile.post(
     //   },
     // ];
 
-    const result = await Files.aggregate([
+    const totalSize = await Files.aggregate([
       {
         $match: {
           $and: [
             {
-              owner: new mongoose.Types.ObjectId("606832abfc9be470485d947a"),
+              owner: new mongoose.Types.ObjectId(ownerID),
             },
             {
               directory: false,
@@ -74,10 +78,11 @@ uploadFile.post(
       },
     ]);
 
+    let availableSize = MAX_TOTAL_SIZE - totalSize.total;
+
     req.busboy.on(
       "file",
       async (fieldname, file, filename, encoding, mimetype) => {
-        const smeter = meter();
 
         const parentID = fieldname;
         const fileExt = filename.split(".").pop();
@@ -117,29 +122,57 @@ uploadFile.post(
             upload(ownerID + "/" + new_file._id.toString())
           );
 
-          file.pipe(smeter).pipe(uploadResult.passStream);
+          const smeter = meter(availableSize);
 
-          const result = await uploadResult.uploadPromise;
+          smeter.on('error', function (e) {
+              response.push({
+                  name: new_file.name,
+                  status: 'Failure',
+                  message: 'You have exceeded your storage limit'
+              });
+          });
 
-          new_file.size = smeter.bytes;
+          try {
+              file.pipe(smeter).pipe(uploadResult.passStream);
 
-          console.log(new_file);
+              await uploadResult.uploadPromise;
 
-          await new_file.save();
+              new_file.size = smeter.bytes;
+
+              console.log(new_file);
+
+              await new_file.save();
+          } catch (err) {
+              response.push({
+                  name: new_file.name,
+                  status: 'Failure',
+                  message: err.message
+              });
+          }
 
           filesCount--;
+          availableSize -= new_file.size;
           console.log("ADDED");
+          response.push({
+              name: new_file.name,
+              status: 'Success',
+              message: 'File upload successful'
+          });
 
           if (filesCount === 0 && finished) {
             console.log("Finished Uploading");
-            res.json("OK").status(200);
+            res.send(response);
           }
         } else {
-          console.log("FILE ALREADY EXISTS");
+          response.push({
+              name: result.name,
+              status: 'Failure',
+              message: 'Filename already exists'
+          });
 
           if (filesCount === 0 && finished) {
             console.log("Finished Uploading");
-            res.json("OK").status(200);
+            res.send(response);
           }
         }
 
