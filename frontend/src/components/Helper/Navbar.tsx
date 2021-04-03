@@ -1,13 +1,14 @@
 import { BsSearch } from 'react-icons/bs';
 import { useForm } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { RiLogoutCircleLine } from 'react-icons/ri';
 
 import Axios from '../../config/axios';
+// import logo from '../../assets/logo.svg';
 import { useSearchContext } from '../../contexts/SearchFiles';
 
 interface fields {
-  searchText?: string;
+  search?: string;
 }
 
 export default function Navbar() {
@@ -21,9 +22,13 @@ export default function Navbar() {
   };
 
   const onSubmit = (values: fields) => {
-    const { searchText } = values;
-    setSearch(searchText);
-    history.push(`/search?text=${searchText}`);
+    const { search } = values;
+    setSearch(search);
+    if (search === '') {
+      history.push('/');
+    } else {
+      history.push(`/search?text=${search}`);
+    }
   };
 
   return (
@@ -31,8 +36,8 @@ export default function Navbar() {
       <div className="max-w-full mx-auto px-8 sm:px-6">
         <div className="relative flex items-center justify-between h-16">
           <div className="flex-1 flex items-center justify-left sm:items-stretch sm:justify-center">
-            <div className="flex-shrink-0 flex items-center mr-auto">
-              <h1 className="text-lg text-w">Vicara</h1>
+            <div className="flex-shrink-0 flex items-center mr-auto text-xl font-semibold">
+              <Link to="/">Vicara</Link>
             </div>
             <div className="flex justify-center w-full sm:ml-6 sm:hidden">
               <div className="rounded-tl-lg rounded-tr-lg w-10/12 overflow-hidden bg-white px-12">
@@ -49,9 +54,9 @@ export default function Navbar() {
                         <input
                           type="text"
                           ref={register}
-                          className="h-full leading-normal tracking-wide border border-none border-l-0 rounded rounded-l-none px-3 relative focus:outline-none text-xxs lg:text-xs text-gray-700 focus-within:outline-none"
+                          className="h-full border-none focus:ring-0 focus:shadow-none text-gray-700 outline-none border-transparent focus:outline-none focus:border-none ring-offset-0 w-72rem"
                           placeholder="Search Files and Folders"
-                          name="searchText"
+                          name="search"
                         />
                       </form>
                     </div>

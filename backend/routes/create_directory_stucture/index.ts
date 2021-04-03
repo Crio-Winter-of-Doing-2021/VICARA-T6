@@ -57,6 +57,7 @@ createDirectoryStructure.post(
               const folder = new Files({
                 name: segment,
                 directory: true,
+                starred: false,
                 parent: parentID,
                 owner: ownerID,
               });

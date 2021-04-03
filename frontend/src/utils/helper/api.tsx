@@ -1,8 +1,8 @@
 import { saveAs } from 'file-saver';
 import { toast } from 'react-toastify';
 import { IoMdClose } from 'react-icons/io';
-
 import axios from 'axios';
+
 import Axios from '../../config/axios';
 
 interface toastProps {
@@ -121,65 +121,53 @@ export const uploadFolders = async (
     directoryStructure = data.result;
 
     await new Promise((resolve) => setTimeout(resolve, 50));
-  } catch (err) {
-    if (axios.isCancel(err)) {
-      console.log(err.message);
+
+    for (let i = 0; i < folders.length; i++) {
+      const filePathArr = folders[i].path.split('/');
+      filePathArr.pop();
+      const filePath = filePathArr.join('/');
+      const parentID = directoryStructure[filePath];
+      const parent = parentID;
+
+      formData.append(parent, folders[i]);
     }
 
-    console.log(err.message);
+    const uploadDirectoryOptions = {
+      cancelToken: source.token,
+      onUploadProgress: (progressEvent: any) => {
+        const progress = progressEvent.loaded / progressEvent.total;
 
-    toast.update(toastId.current, {
-      render: 'Cancelling Upload',
-      type: toast.TYPE.ERROR
-    });
-
-    await new Promise((resolve) => {
-      setTimeout(() => toast.done(toastId.current), 1000);
-    });
-  }
-
-  for (let i = 0; i < folders.length; i++) {
-    const filePathArr = folders[i].path.split('/');
-    filePathArr.pop();
-    const filePath = filePathArr.join('/');
-    const parentID = directoryStructure[filePath];
-    const parent = parentID;
-
-    formData.append(parent, folders[i]);
-  }
-
-  const uploadDirectoryOptions = {
-    cancelToken: source.token,
-    onUploadProgress: (progressEvent: any) => {
-      const progress = progressEvent.loaded / progressEvent.total;
-
-      // check if we already displayed a toast
-      if (toastId.current === null) {
-        toastId.current = toast('Upload in Progress', {
-          progress: progress
-        });
-      } else {
-        toast.update(toastId.current, {
-          progress: progress
-        });
+        // check if we already displayed a toast
+        if (toastId.current === null) {
+          toastId.current = toast('Upload in Progress', {
+            progress: progress
+          });
+        } else {
+          toast.update(toastId.current, {
+            progress: progress
+          });
+        }
       }
-    }
-  };
+    };
 
-  try {
-    const { data } = await Axios.post(
+    const { data: folderData } = await Axios.post(
       '/upload_file',
       formData,
       uploadDirectoryOptions
     );
 
-    console.log(data);
+    console.log(folderData);
 
-    toast.update(toastId.current, {
-      render: 'Upload successfull',
-      type: toast.TYPE.INFO,
-      autoClose: 1000
-    });
+    // check if we already displayed a toast
+    if (toastId.current === null) {
+      toastId.current = toast('Upload successfull');
+    } else {
+      toast.update(toastId.current, {
+        render: 'Upload successfull',
+        type: toast.TYPE.INFO,
+        autoClose: 1000
+      });
+    }
 
     return await new Promise((resolve) => setTimeout(resolve, 50));
   } catch (err) {
@@ -233,13 +221,8 @@ export const viewFile = async (id: string) => {
 export const downloadFolder = (toastId: any, folderIds: string[]) => {
   toastId.current = toast('Downloading files');
 
-  Axios.post(
-    '/download_folder',
-    { folder: folderIds },
-    { responseType: 'blob' }
-  )
-    .then((response) => new Blob([response.data]))
-    .then((blob) => saveAs(blob, 'myFolder.zip'))
+  Axios.post('/download_folder', { folder: folderIds })
+    .then((response: any) => (window.location.href = response.data.url))
     .then(() => {
       toast.update(toastId.current, {
         render: 'Download successfull',

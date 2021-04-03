@@ -60,7 +60,9 @@ function DriveMain() {
       <div className="flex">
         <LeftSideBar />
         <div>
-          <DragAndDrop />
+          <DragAndDrop
+            disabled={data?.currentFolderData?.directory === false ?? false}
+          />
           <DirectoryRouter currentFolderID={currentFolderID} />
 
           {(data?.currentFolderData === null ||

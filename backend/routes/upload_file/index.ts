@@ -1,28 +1,33 @@
 const uploadFile = require("express").Router();
 const AWS = require("aws-sdk");
+const meter = require("stream-meter");
+const stream = require("stream");
+const mongoose = require("mongoose");
 const Files = require("../../db/models/filesSchema");
 const currentUserMiddleware = require("../middleware");
 
 export {};
 
-async function upload(filename, file) {
-  let s3 = new AWS.S3({
-    params: { Bucket: process.env.S3_BUCKET_NAME, Key: filename, Body: file },
-    options: { partSize: 5 * 1024 * 1024, queueSize: 10 }, // 5 MB
-  });
+function upload(filename) {
+  const passStream = new stream.PassThrough();
 
-  try {
-    const data = await s3
-      .upload()
-      .on("httpUploadProgress", function (evt) {
-        console.log(evt);
-      })
-      .promise();
+  const params = {
+    Key: filename,
+    Bucket: process.env.S3_BUCKET_NAME,
+    Body: passStream,
+  };
+  // Concurrency of 10, 5Mb buffers
+  const opts = {
+    queueSize: 10,
+    partSize: 1024 * 1024 * 5,
+  };
 
-    return Promise.resolve(data);
-  } catch (error) {
-    return Promise.reject(error);
-  }
+  const s3 = new AWS.S3();
+
+  return {
+    uploadPromise: s3.upload(params, opts).promise(),
+    passStream,
+  };
 }
 
 uploadFile.post(
@@ -38,11 +43,42 @@ uploadFile.post(
     let filesCount = 0,
       finished = false;
 
-    const file_size = req.headers["content-length"];
+    // let arr = [
+    //   {
+    //     name,
+    //     status: Success | Faile,
+    //     message: "Uploaded SUcce",
+    //   },
+    // ];
+
+    const result = await Files.aggregate([
+      {
+        $match: {
+          $and: [
+            {
+              owner: new mongoose.Types.ObjectId("606832abfc9be470485d947a"),
+            },
+            {
+              directory: false,
+            },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: {
+            $sum: "$size",
+          },
+        },
+      },
+    ]);
 
     req.busboy.on(
       "file",
       async (fieldname, file, filename, encoding, mimetype) => {
+        const smeter = meter();
+
         const parentID = fieldname;
         const fileExt = filename.split(".").pop();
 
@@ -63,40 +99,41 @@ uploadFile.post(
         });
 
         file.on("data", function (data) {
-          // console.log("DATA FOUND");
+          console.log("DATA FOUND");
         });
 
         if (result === null) {
           const new_file = new Files({
             name: filename,
             directory: false,
+            starred: false,
             owner: ownerID,
             parent: parentID,
             type: mimetype,
             extension: fileExt,
-            size: file_size,
           });
 
-          upload(ownerID + "/" + new_file._id.toString(), file)
-            .then(async (data) => {
-              console.log(data);
-              await new_file.save();
-              await Files.findByIdAndUpdate(new_file._id, {
-                url: data.Location,
-              });
-              filesCount--;
-              console.log("ADDED");
+          const uploadResult = <any>(
+            upload(ownerID + "/" + new_file._id.toString())
+          );
 
-              if (filesCount === 0 && finished) {
-                console.log("Finished Uploading");
-                res.json("OK").status(200);
-              }
-            })
-            .catch(async (err) => {
-              console.log(err);
-              // console.log("REMOVED");
-              filesCount--;
-            });
+          file.pipe(smeter).pipe(uploadResult.passStream);
+
+          const result = await uploadResult.uploadPromise;
+
+          new_file.size = smeter.bytes;
+
+          console.log(new_file);
+
+          await new_file.save();
+
+          filesCount--;
+          console.log("ADDED");
+
+          if (filesCount === 0 && finished) {
+            console.log("Finished Uploading");
+            res.json("OK").status(200);
+          }
         } else {
           console.log("FILE ALREADY EXISTS");
 

@@ -9,7 +9,7 @@ starredFiles.get("/", async (req, res, next) => {
   return res.json({ starredFilesResult: result }).status(200);
 });
 
-starredFiles.patch("/", async (req, res, next) => {
+starredFiles.post("/", async (req, res, next) => {
   const { fileID } = req.body;
 
   const result = await Files.findById(fileID);

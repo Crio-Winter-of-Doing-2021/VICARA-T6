@@ -40,6 +40,17 @@ function DragAndDrop(props: any) {
     }
   }
 
+  if (props.disabled) {
+    return (
+      <div>
+        <div className="border-2 border-dotted bg-gray-200 opacity-100 border-black px-10 py-12 mx-8 my-5 w-80vw flex justify-center items-center flex-col">
+          <input disabled={true} />
+          <p className="text-lg">Cannot upload inside a file</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Dropzone onDrop={(acceptedFiles) => sendTheFiles(acceptedFiles)}>
       {({ getRootProps, getInputProps }) => (
@@ -48,7 +59,7 @@ function DragAndDrop(props: any) {
             {...getRootProps()}
             className="border-2 border-dotted bg-white opacity-100 border-black px-10 py-10 mx-8 my-5 w-80vw flex justify-center items-center flex-col"
           >
-            <input {...getInputProps()} />
+            <input {...getInputProps()} disabled={props.disabled} />
             <BsUpload size={25} className="mb-4" />
             <p className="text-lg">
               Drag and drop files and folders here to upload them

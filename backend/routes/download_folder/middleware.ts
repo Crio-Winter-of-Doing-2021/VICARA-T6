@@ -6,11 +6,15 @@ export {};
 
 const createMiddleware = {
   directory: async function (req, res, next) {
+    const ownerID = req.currentUser.id;
+
     let { folder: folderIDs } = req.body;
+
+    console.log({ folderIDs });
 
     const s3 = new AWS.S3();
 
-    let parentFolderString = "downloadFolder/";
+    let parentFolderString = `${ownerID}/${new Date().toISOString()}`;
 
     for (let i = 0; i < folderIDs.length; i++) {
       const result = await Files.findById(folderIDs[i]);
@@ -35,8 +39,9 @@ const createMiddleware = {
 
           const params = {
             Bucket: process.env.S3_BUCKET_NAME,
-            CopySource: process.env.S3_BUCKET_NAME + "/" + fileKey,
-            Key: parentFolderString + folderPath + fileName,
+            CopySource:
+              process.env.S3_BUCKET_NAME + "/" + ownerID + "/" + fileKey,
+            Key: parentFolderString + "/" + folderPath + fileName,
           };
 
           s3.copyObject(params, function (copyErr, copyData) {
@@ -50,8 +55,9 @@ const createMiddleware = {
       } else {
         const params = {
           Bucket: process.env.S3_BUCKET_NAME,
-          CopySource: process.env.S3_BUCKET_NAME + "/" + result._id,
-          Key: parentFolderString + result.name,
+          CopySource:
+            process.env.S3_BUCKET_NAME + "/" + ownerID + "/" + result._id,
+          Key: parentFolderString + "/" + result.name,
         };
 
         s3.copyObject(params, function (copyErr, copyData) {
@@ -64,7 +70,7 @@ const createMiddleware = {
       }
     }
 
-    req.folderName = "downloadFolder";
+    req.folderName = parentFolderString;
     next();
   },
 };

@@ -21,7 +21,7 @@ interface renameModalProps {
   name?: string;
 }
 
-export default function ReactModal(props: any) {
+export default function RenameModal(props: any) {
   const { handleSubmit, register, setError, errors } = useForm({
     defaultValues: {
       name: props.name

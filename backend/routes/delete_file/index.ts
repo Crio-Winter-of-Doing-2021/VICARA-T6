@@ -17,7 +17,7 @@ deleteFile.delete(
 
     const params = {
       Bucket: process.env.S3_BUCKET_NAME,
-      Key: fileID,
+      Key: ownerID + "/" + fileID,
     };
 
     //Send the delete request

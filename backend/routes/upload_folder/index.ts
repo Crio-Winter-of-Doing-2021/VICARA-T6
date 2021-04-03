@@ -67,6 +67,7 @@ uploadFolder.post(
           const new_file = new Files({
             name: filename,
             directory: false,
+            starred: false,
             owner: ownerID,
             parent: parentID,
             type: mimetype,
@@ -91,7 +92,7 @@ uploadFolder.post(
             })
             .catch(async (err) => {
               console.log(err);
-              console.log("REMOVED");
+              // console.log("REMOVED");
               filesCount--;
             });
         } else {
@@ -126,7 +127,7 @@ uploadFolder.post(
     });
 
     req.busboy.on("end", function () {
-      console.log("WHO ENDED ME");
+      // console.log("WHO ENDED ME");
     });
 
     req.pipe(req.busboy); // Pipe it trough busboy
