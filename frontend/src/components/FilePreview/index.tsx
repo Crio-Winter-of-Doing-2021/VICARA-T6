@@ -35,9 +35,11 @@ export default function FilePreview(props: any) {
 
   useEffect(() => {
     async function fetchMyAPI() {
-      const { data } = await viewFile(props?.data?._id);
-      setBlob(data);
-      setLoading(false);
+      if (blob === null) {
+        const { data } = await viewFile(props?.data?._id);
+        setBlob(data);
+        setLoading(false);
+      }
     }
 
     fetchMyAPI();
