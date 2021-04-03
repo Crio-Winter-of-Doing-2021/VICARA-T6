@@ -108,8 +108,6 @@ export const uploadFolders = async (
     closeButton: <CloseButton source={source} />
   });
 
-  formData.append(folders, JSON.stringify(folders));
-
   const createDirectoryOptions = {
     cancelToken: source.token
   };
@@ -117,7 +115,7 @@ export const uploadFolders = async (
   try {
     const { data } = await Axios.post(
       `/create_directory_stucture?parent=${parentID}`,
-      formData,
+      { folders },
       createDirectoryOptions
     );
     directoryStructure = data.result;
@@ -170,7 +168,7 @@ export const uploadFolders = async (
 
   try {
     const { data } = await Axios.post(
-      '/upload_folder',
+      '/upload_file',
       formData,
       uploadDirectoryOptions
     );
