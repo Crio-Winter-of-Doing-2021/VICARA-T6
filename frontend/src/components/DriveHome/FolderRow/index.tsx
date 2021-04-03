@@ -2,14 +2,15 @@ import { format } from 'date-fns';
 import { useState, useRef } from 'react';
 import { BsThreeDots, BsDownload } from 'react-icons/bs';
 import { RiDeleteBin5Line } from 'react-icons/ri';
-import { AiOutlineStar } from 'react-icons/ai';
+import { AiOutlineShareAlt, AiOutlineStar } from 'react-icons/ai';
 import { HiOutlinePencilAlt, HiEye } from 'react-icons/hi';
 import { Menu, Item, Separator, useContextMenu } from 'react-contexify';
 import { useMutation } from 'react-query';
 import prettyBytes from 'pretty-bytes';
 import 'react-contexify/dist/ReactContexify.css';
 
-import ReactModal from '../../Modal';
+import RenameModal from '../../Modal/RenameModal';
+import GenerateLinkModal from '../../Modal/GenerateLinkModal';
 import Axios from '../../../config/axios';
 import fileMapper from '../../../utils/helper/fileMapper';
 import {
@@ -66,7 +67,8 @@ export default function FolderRow({
   const { show } = useContextMenu({
     id: MENU_ID
   });
-  const [showModal, setIsOpenModal] = useState(false);
+  const [showRenameModal, setIsOpenRenameModal] = useState(false);
+  const [showLinkModal, setIsOpenLinkModal] = useState(false);
 
   const starMutation = useMutation((fileID: any) => {
     const result = Axios.post('/starred_files', { fileID });
@@ -221,7 +223,7 @@ export default function FolderRow({
           )}
         </>
         <Separator />
-        <Item onClick={() => setIsOpenModal(true)}>
+        <Item onClick={() => setIsOpenRenameModal(true)}>
           <HiOutlinePencilAlt className="mr-2" />
           Rename
         </Item>
@@ -230,15 +232,28 @@ export default function FolderRow({
           <AiOutlineStar className="mr-2" />
           {starred ? 'Remove starred' : 'Add to Starred'}
         </Item>
+        <Item onClick={() => setIsOpenLinkModal(true)}>
+          <AiOutlineShareAlt className="mr-2" />
+          Generate sharable link
+        </Item>
       </Menu>
 
-      <ReactModal
-        modalIsOpen={showModal}
-        setIsOpenModal={setIsOpenModal}
+      <GenerateLinkModal
+        modalIsOpen={showLinkModal}
+        setIsOpenModal={setIsOpenLinkModal}
+        name={name}
+        id={fileID}
+        isDirectory={isDirectory}
+        parent={parent}
+      ></GenerateLinkModal>
+
+      <RenameModal
+        modalIsOpen={showRenameModal}
+        setIsOpenModal={setIsOpenRenameModal}
         name={name}
         id={fileID}
         parent={parent}
-      ></ReactModal>
+      ></RenameModal>
     </>
   );
 }

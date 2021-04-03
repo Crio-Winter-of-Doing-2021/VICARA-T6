@@ -29,6 +29,11 @@ const FilesSchema = new Schema(
     starred: {
       type: Boolean,
     },
+    share: {
+      url: String,
+      expiryTime: Number,
+      generatedAt: Date,
+    },
   },
   {
     timestamps: true,

@@ -67,11 +67,6 @@ downloadFolder.post(
               Expires: 60,
             };
 
-            const deletionParams = {
-              Bucket: process.env.S3_BUCKET_NAME,
-              Key: folderName,
-            };
-
             //Get presigned url
             const url = s3.getSignedUrl("getObject", downloadFolderParams);
 
