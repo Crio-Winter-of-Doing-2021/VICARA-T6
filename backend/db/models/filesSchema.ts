@@ -1,5 +1,7 @@
 const { Schema, ObjectId, model } = require("mongoose");
 
+export {};
+
 const FilesSchema = new Schema(
   {
     name: {

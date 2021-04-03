@@ -13,6 +13,10 @@ const getFile = require("./get_file");
 const starredFiles = require("./starred_files");
 const searchFiles = require("./search_files");
 const renameFile = require("./rename_file");
+const signin = require("./signin");
+const signout = require("./signout");
+const signup = require("./signup");
+const currentUser = require("./current_user");
 const listParentDirectories = require("./list_parent_directories");
 const createDirectoryStucture = require("./create_directory_stucture");
 
@@ -30,6 +34,10 @@ router.use("/starred_files", starredFiles);
 router.use("/search_files", searchFiles);
 router.use("/rename_file", renameFile);
 router.use("/get_file", getFile);
+router.use("/signin", signin);
+router.use("/signout", signout);
+router.use("/signup", signup);
+router.use("/current_user", currentUser);
 router.use("/list_parent_directories", listParentDirectories);
 router.use("/create_directory_stucture", createDirectoryStucture);
 

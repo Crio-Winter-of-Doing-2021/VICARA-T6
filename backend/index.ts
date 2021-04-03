@@ -6,19 +6,47 @@ const express = require("express");
 const busboy = require("connect-busboy");
 const cors = require("cors");
 const app = express();
+const cookieSession = require("cookie-session");
 const AWS = require("aws-sdk");
 const bodyParser = require("body-parser");
 
 const Files = require("./db/models/filesSchema");
 const routes = require("./routes");
 
-app.use(cors());
+const corsOptions = {
+  origin: "*",
+  credentials: true,
+  exposedHeaders: ["set-cookie"],
+};
+
+app.use(cors(corsOptions));
+
 app.use(bodyParser.json());
 app.use(
   busboy({
     highWaterMark: 10 * 1024 * 1024, // Set 10 MB buffer
   })
 ); // Insert the busboy middle-ware
+app.use(
+  cookieSession({
+    signed: false,
+    secure: false,
+  })
+);
+
+app.use(function (req, res, next) {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-Requested-With,content-type"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", true);
+  next();
+});
 
 //  Connect all our routes to our application
 app.use("/", routes);
