@@ -1,13 +1,16 @@
 import Dropzone from 'react-dropzone';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { withRouter, useHistory } from 'react-router-dom';
+import { BsUpload } from 'react-icons/bs';
 
+import UploadFilesInfo from '../Modal/UploadFilesInfo';
 import { useFileContext } from '../../contexts/File';
 import { uploadFiles, uploadFolders } from '../../utils/helper/api';
-import { BsUpload } from 'react-icons/bs';
 
 function DragAndDrop(props: any) {
   const history = useHistory();
+
+  const [showUploadFilesModal, setIsOpenUploadFilesModal] = useState(false);
   const { filesCounter, setFilesCounter } = useFileContext();
 
   const toastId: any = useRef(null);
@@ -34,7 +37,12 @@ function DragAndDrop(props: any) {
 
     if (listOfFiles.length) {
       console.log('FILES FOUND : ', listOfFiles.length);
-      await uploadFiles(toastId, parentID, listOfFiles);
+      await uploadFiles(
+        toastId,
+        parentID,
+        listOfFiles,
+        setIsOpenUploadFilesModal
+      );
       setFilesCounter(filesCounter + 1);
       console.log('FILES SENT');
     }
@@ -52,22 +60,29 @@ function DragAndDrop(props: any) {
   }
 
   return (
-    <Dropzone onDrop={(acceptedFiles) => sendTheFiles(acceptedFiles)}>
-      {({ getRootProps, getInputProps }) => (
-        <section>
-          <div
-            {...getRootProps()}
-            className="border-2 border-dotted bg-white opacity-100 border-black px-10 py-10 mx-8 my-5 w-80vw flex justify-center items-center flex-col"
-          >
-            <input {...getInputProps()} disabled={props.disabled} />
-            <BsUpload size={25} className="mb-4" />
-            <p className="text-lg">
-              Drag and drop files and folders here to upload them
-            </p>
-          </div>
-        </section>
-      )}
-    </Dropzone>
+    <>
+      <Dropzone onDrop={(acceptedFiles) => sendTheFiles(acceptedFiles)}>
+        {({ getRootProps, getInputProps }) => (
+          <section>
+            <div
+              {...getRootProps()}
+              className="border-2 border-dotted bg-white opacity-100 border-black px-10 py-10 mx-8 my-5 w-80vw flex justify-center items-center flex-col"
+            >
+              <input {...getInputProps()} disabled={props.disabled} />
+              <BsUpload size={25} className="mb-4" />
+              <p className="text-lg">
+                Drag and drop files and folders here to upload them
+              </p>
+            </div>
+          </section>
+        )}
+      </Dropzone>
+
+      <UploadFilesInfo
+        modalIsOpen={showUploadFilesModal}
+        setIsOpenModal={setIsOpenUploadFilesModal}
+      />
+    </>
   );
 }
 export default withRouter(DragAndDrop);

@@ -1,6 +1,7 @@
 import { saveAs } from 'file-saver';
 import { toast } from 'react-toastify';
 import { IoMdClose } from 'react-icons/io';
+import { AiOutlineInfoCircle } from 'react-icons/ai';
 import axios from 'axios';
 
 import Axios from '../../config/axios';
@@ -22,10 +23,22 @@ const CloseButton = ({ source }: toastProps) => (
   </span>
 );
 
+const InfoButton = (props: any) => (
+  <div className="flex justify-between">
+    Upload Successful
+    <AiOutlineInfoCircle
+      className="ml-2"
+      size={20}
+      onClick={() => props.setIsOpenUploadFilesModal(true)}
+    />
+  </div>
+);
+
 export const uploadFiles = async (
   toastId: any,
   parentID: string,
-  files: any
+  files: any,
+  setIsOpenUploadFilesModal: any
 ) => {
   // Define the form data
   const formData = new FormData();
@@ -68,9 +81,10 @@ export const uploadFiles = async (
     console.log(data);
 
     toast.update(toastId.current, {
-      render: 'Upload successfull',
-      type: toast.TYPE.INFO,
-      autoClose: 1000
+      render: (
+        <InfoButton setIsOpenUploadFilesModal={setIsOpenUploadFilesModal} />
+      ),
+      type: toast.TYPE.INFO
     });
 
     return await new Promise((resolve) => setTimeout(resolve, 50));
