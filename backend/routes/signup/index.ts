@@ -33,7 +33,7 @@ signup.post("/", async (req, res) => {
     jwt: userJwt,
   };
 
-  res.status(201).send(user);
+  return res.status(201).send(user);
 });
 
 module.exports = signup;

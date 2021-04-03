@@ -8,11 +8,10 @@ import { BsUpload } from 'react-icons/bs';
 
 function DragAndDrop(props: any) {
   const history = useHistory();
-  const ownerID = '605256109934f80db98712ea';
   const { filesCounter, setFilesCounter } = useFileContext();
 
   const toastId: any = useRef(null);
-  const parentID = history.location.pathname.replace('/', '') ?? ownerID;
+  const parentID = history.location.pathname.replace('/', '');
 
   useEffect(() => {
     console.log('DragNDrop: I got rendered too');
@@ -28,14 +27,14 @@ function DragAndDrop(props: any) {
 
     if (listOfFolders.length) {
       console.log('FOLDERS FOUND : ', listOfFolders.length);
-      await uploadFolders(toastId, parentID, ownerID, listOfFolders);
+      await uploadFolders(toastId, parentID, listOfFolders);
       setFilesCounter(filesCounter + 1);
       console.log('FOLDERS SENT');
     }
 
     if (listOfFiles.length) {
       console.log('FILES FOUND : ', listOfFiles.length);
-      await uploadFiles(toastId, parentID, ownerID, listOfFiles);
+      await uploadFiles(toastId, parentID, listOfFiles);
       setFilesCounter(filesCounter + 1);
       console.log('FILES SENT');
     }

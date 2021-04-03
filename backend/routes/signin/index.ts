@@ -11,7 +11,7 @@ signin.post("/", async (req, res) => {
 
   console.log(email, password);
 
-  const existingUser = await User.findOne({ email });
+  const existingUser = await User.findOne({ email, password });
 
   if (!existingUser) {
     console.log("Invalid Credentials");

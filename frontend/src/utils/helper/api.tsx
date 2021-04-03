@@ -25,7 +25,6 @@ const CloseButton = ({ source }: toastProps) => (
 export const uploadFiles = async (
   toastId: any,
   parentID: string,
-  ownerID: string,
   files: any
 ) => {
   // Define the form data
@@ -65,11 +64,7 @@ export const uploadFiles = async (
   };
 
   try {
-    const { data } = await Axios.post(
-      `/upload_file?owner=${ownerID}`,
-      formData,
-      options
-    );
+    const { data } = await Axios.post('/upload_file', formData, options);
     console.log(data);
 
     toast.update(toastId.current, {
@@ -100,7 +95,6 @@ export const uploadFiles = async (
 export const uploadFolders = async (
   toastId: any,
   parentID: string,
-  ownerID: string,
   folders: any
 ) => {
   let directoryStructure: any = {};
@@ -122,7 +116,7 @@ export const uploadFolders = async (
 
   try {
     const { data } = await Axios.post(
-      `/create_directory_stucture?parent=${parentID}&owner=${ownerID}`,
+      `/create_directory_stucture?parent=${parentID}`,
       formData,
       createDirectoryOptions
     );
@@ -176,7 +170,7 @@ export const uploadFolders = async (
 
   try {
     const { data } = await Axios.post(
-      `/upload_folder?owner=${ownerID}`,
+      '/upload_folder',
       formData,
       uploadDirectoryOptions
     );

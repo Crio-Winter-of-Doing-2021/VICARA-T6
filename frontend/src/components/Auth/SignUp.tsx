@@ -12,8 +12,14 @@ interface fields {
 
 function SignUp() {
   const history = useHistory();
-  const { handleSubmit, register, setError, watch, errors } = useForm();
-  console.log(watch('password'), watch('password')?.length);
+  const {
+    handleSubmit,
+    register,
+    setError,
+    clearErrors,
+    watch,
+    errors
+  } = useForm();
 
   const onSubmit = async (values: fields) => {
     console.log(values);
@@ -97,7 +103,12 @@ function SignUp() {
                     : 'text-red-400')
                 }`}
               >
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  checked={watch('password')?.length >= 8}
+                  className="form-checkbox rounded-lg text-green-500"
+                  readOnly
+                />
                 <span className="pl-2 text-sm">At least 8 characters</span>
               </div>
               <div
@@ -109,7 +120,17 @@ function SignUp() {
                     : 'text-red-400')
                 }`}
               >
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  checked={
+                    !!(
+                      watch('password')?.length !== 0 &&
+                      /\d/.test(watch('password'))
+                    )
+                  }
+                  className="form-checkbox rounded-lg text-green-500"
+                  readOnly
+                />
                 <span className="pl-2 text-sm">Numbers</span>
               </div>
             </div>
@@ -120,7 +141,8 @@ function SignUp() {
           <div className="my-5 flex flex-col">
             <input
               type="submit"
-              className="py-3.5 bg-pink-600 text-white rounded-sm"
+              className="py-3.5 bg-pink-600 text-white rounded-sm cursor-pointer hover:bg-pink-700 duration-100"
+              onClick={() => clearErrors()}
             />
           </div>
         </form>

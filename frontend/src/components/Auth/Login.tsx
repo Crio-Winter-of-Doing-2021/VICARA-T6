@@ -12,7 +12,14 @@ interface fields {
 
 function SignUp() {
   const history = useHistory();
-  const { handleSubmit, register, setError, watch, errors } = useForm();
+  const {
+    handleSubmit,
+    register,
+    setError,
+    clearErrors,
+    watch,
+    errors
+  } = useForm();
 
   const onSubmit = async (values: fields) => {
     console.log(values);
@@ -92,7 +99,8 @@ function SignUp() {
           <div className="my-5 flex flex-col">
             <input
               type="submit"
-              className="py-3.5 bg-pink-600 text-white rounded-sm"
+              className="py-3.5 bg-pink-600 text-white rounded-sm cursor-pointer hover:bg-pink-700 duration-100"
+              onClick={() => clearErrors()}
             />
           </div>
         </form>
