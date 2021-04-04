@@ -4,7 +4,7 @@ import axios, { AxiosInstance } from 'axios';
 
 const instance: AxiosInstance = axios.create({
   // .. where we make our configurations
-  baseURL: process.env.REACT_APP_BACKEND_URL,
+  baseURL: 'http://vicara.dev/api',
   withCredentials: true
 });
 

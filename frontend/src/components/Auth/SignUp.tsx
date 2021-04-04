@@ -25,17 +25,14 @@ function SignUp() {
     console.log(values);
 
     try {
-      await Axios.post('/signup', values).then((res) => {
+      await Axios.post('/users/signup', values).then((res) => {
         const id = res.data._id;
         history.push(`/${id}`);
       });
     } catch (error) {
-      console.log(error);
-      // console.log(error.response.data.err);
-
       setError('custom', {
         type: 'manual',
-        message: error?.response?.data?.err
+        message: error.response.data.errors[0].message
       });
     }
   };

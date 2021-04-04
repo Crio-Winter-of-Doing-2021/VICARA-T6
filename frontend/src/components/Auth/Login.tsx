@@ -25,7 +25,7 @@ function SignUp() {
     console.log(values);
 
     try {
-      await Axios.post('/signin', values).then((res) => {
+      await Axios.post('/users/signin', values).then((res) => {
         const id = res.data._id;
         history.push(`/${id}`);
       });
@@ -34,7 +34,7 @@ function SignUp() {
 
       setError('custom', {
         type: 'manual',
-        message: error?.response?.data?.err
+        message: error.response.data.errors[0].message
       });
     }
   };

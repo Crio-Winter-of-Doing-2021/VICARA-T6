@@ -8,7 +8,9 @@ import BaseLayout from '../components/BaseLayout';
 function useAuth() {
   return useQuery('user', async () => {
     try {
-      const { data } = await Axios.get('/current_user');
+      const { data } = await Axios.get('/users/currentuser');
+      console.log(data);
+
       return data;
     } catch (error) {
       return { error: error?.response?.data?.err };
