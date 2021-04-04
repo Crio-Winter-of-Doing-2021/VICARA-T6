@@ -12,6 +12,7 @@ function DragAndDrop(props: any) {
 
   const [showUploadFilesModal, setIsOpenUploadFilesModal] = useState(false);
   const { filesCounter, setFilesCounter } = useFileContext();
+  const [data, setData] = useState([]);
 
   const toastId: any = useRef(null);
   const parentID = history.location.pathname.replace('/', '');
@@ -30,19 +31,26 @@ function DragAndDrop(props: any) {
 
     if (listOfFolders.length) {
       console.log('FOLDERS FOUND : ', listOfFolders.length);
-      await uploadFolders(toastId, parentID, listOfFolders);
+      const result = await uploadFolders(
+        toastId,
+        parentID,
+        listOfFolders,
+        setIsOpenUploadFilesModal
+      );
+      setData(result);
       setFilesCounter(filesCounter + 1);
       console.log('FOLDERS SENT');
     }
 
     if (listOfFiles.length) {
       console.log('FILES FOUND : ', listOfFiles.length);
-      await uploadFiles(
+      const result = await uploadFiles(
         toastId,
         parentID,
         listOfFiles,
         setIsOpenUploadFilesModal
       );
+      setData(result);
       setFilesCounter(filesCounter + 1);
       console.log('FILES SENT');
     }
@@ -80,6 +88,7 @@ function DragAndDrop(props: any) {
 
       <UploadFilesInfo
         modalIsOpen={showUploadFilesModal}
+        data={data}
         setIsOpenModal={setIsOpenUploadFilesModal}
       />
     </>

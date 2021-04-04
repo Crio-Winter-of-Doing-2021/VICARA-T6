@@ -25,7 +25,7 @@ const CloseButton = ({ source }: toastProps) => (
 
 const InfoButton = (props: any) => (
   <div className="flex justify-between">
-    Upload Successful
+    Upload request completed
     <AiOutlineInfoCircle
       className="ml-2"
       size={20}
@@ -77,17 +77,20 @@ export const uploadFiles = async (
   };
 
   try {
-    const { data } = await Axios.post('/upload_file', formData, options);
-    console.log(data);
+    const { data: filesData } = await Axios.post(
+      '/upload_file',
+      formData,
+      options
+    );
 
     toast.update(toastId.current, {
       render: (
         <InfoButton setIsOpenUploadFilesModal={setIsOpenUploadFilesModal} />
       ),
-      type: toast.TYPE.INFO
+      type: toast.TYPE.WARNING
     });
 
-    return await new Promise((resolve) => setTimeout(resolve, 50));
+    return filesData;
   } catch (err) {
     if (axios.isCancel(err)) {
       console.log(err.message);
@@ -109,7 +112,8 @@ export const uploadFiles = async (
 export const uploadFolders = async (
   toastId: any,
   parentID: string,
-  folders: any
+  folders: any,
+  setIsOpenUploadFilesModal: any
 ) => {
   let directoryStructure: any = {};
   const formData = new FormData();
@@ -172,18 +176,14 @@ export const uploadFolders = async (
 
     console.log(folderData);
 
-    // check if we already displayed a toast
-    if (toastId.current === null) {
-      toastId.current = toast('Upload successfull');
-    } else {
-      toast.update(toastId.current, {
-        render: 'Upload successfull',
-        type: toast.TYPE.INFO,
-        autoClose: 1000
-      });
-    }
+    toast.update(toastId.current, {
+      render: (
+        <InfoButton setIsOpenUploadFilesModal={setIsOpenUploadFilesModal} />
+      ),
+      type: toast.TYPE.INFO
+    });
 
-    return await new Promise((resolve) => setTimeout(resolve, 50));
+    return folderData;
   } catch (err) {
     if (axios.isCancel(err)) {
       console.log(err.message);

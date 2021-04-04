@@ -10,7 +10,7 @@ const currentUserMiddleware = {
       req.currentUser = jwt.verify(req.session.jwt, process.env.JWT_SECRET!);
     } catch (err) {
       if (err.name === "TokenExpiredError") {
-        res.status(400).json({ err: "Session Expired" });
+        return res.status(400).json({ err: "Session Expired" });
       }
     }
 

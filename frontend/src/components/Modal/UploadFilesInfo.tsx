@@ -14,48 +14,7 @@ const customStyles = {
 };
 
 export default function UploadFilesInfo(props: any) {
-  const response = [
-    {
-      name: 'File1.jpeg',
-      status: 'Successful',
-      message: 'Uploaded Successfully'
-    },
-    {
-      name: 'File2.jpeg',
-      status: 'Failed',
-      message: 'Duplicate File Exists'
-    },
-    {
-      name: 'File3.jpeg',
-      status: 'Successful',
-      message: 'Uploaded Successfully'
-    },
-    {
-      name: 'File4.jpeg',
-      status: 'Failed',
-      message: 'Size Exceed'
-    },
-    {
-      name: 'File1.jpeg',
-      status: 'Successful',
-      message: 'Uploaded Successfully'
-    },
-    {
-      name: 'File2.jpeg',
-      status: 'Failed',
-      message: 'Duplicate File Exists'
-    },
-    {
-      name: 'File3.jpeg',
-      status: 'Successful',
-      message: 'Uploaded Successfully'
-    },
-    {
-      name: 'File4.jpeg',
-      status: 'Failed',
-      message: 'Size Exceed'
-    }
-  ];
+  const response = props.data;
 
   useEffect(() => {
     console.log(props);
@@ -106,7 +65,7 @@ export default function UploadFilesInfo(props: any) {
                             {file.name}
                           </td>
                           <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5">
-                            {file.status === 'Failed' && (
+                            {file.status === 'Failure' && (
                               <span className="relative inline-block px-3 py-1 font-semibold text-red-900 leading-tight">
                                 <span
                                   aria-hidden
@@ -115,7 +74,7 @@ export default function UploadFilesInfo(props: any) {
                                 <span className="relative text-xs">Failed</span>
                               </span>
                             )}
-                            {file.status === 'Successful' && (
+                            {file.status === 'Success' && (
                               <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
                                 <span
                                   aria-hidden

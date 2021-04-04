@@ -8,6 +8,8 @@ const currentUserMiddleware = require("../middleware");
 
 export {};
 
+const MAX_TOTAL_SIZE = 1024 * 1024 * 1024;
+
 function upload(filename) {
   const passStream = new stream.PassThrough();
 
@@ -35,6 +37,7 @@ uploadFile.post(
   currentUserMiddleware.currentUser,
   async (req, res, next) => {
     const ownerID = req.currentUser.id;
+    let response: {}[] = [];
 
     let uploadStartTime = new Date(),
       busboyFinishTime = null,
@@ -51,12 +54,12 @@ uploadFile.post(
     //   },
     // ];
 
-    const result = await Files.aggregate([
+    const totalSize = await Files.aggregate([
       {
         $match: {
           $and: [
             {
-              owner: new mongoose.Types.ObjectId("606832abfc9be470485d947a"),
+              owner: new mongoose.Types.ObjectId(ownerID),
             },
             {
               directory: false,
@@ -74,10 +77,12 @@ uploadFile.post(
       },
     ]);
 
+    let availableSize = MAX_TOTAL_SIZE - totalSize.total;
+
     req.busboy.on(
       "file",
       async (fieldname, file, filename, encoding, mimetype) => {
-        const smeter = meter();
+        const smeter = meter(availableSize);
 
         const parentID = fieldname;
         const fileExt = filename.split(".").pop();
@@ -91,16 +96,24 @@ uploadFile.post(
 
         if (result === null) {
           ++filesCount;
+        } else {
+          response.push({
+            name: result.name,
+            status: "Failure",
+            message: "Filename already exists",
+          });
         }
 
         file.on("end", function () {
-          // console.log("ENDED");
+          console.log("ENDED");
           // res.json({ msg: "ENDED" })
         });
 
         file.on("data", function (data) {
-          console.log("DATA FOUND");
+          // console.log("DATA FOUND");
         });
+
+        console.log(filesCount);
 
         if (result === null) {
           const new_file = new Files({
@@ -117,33 +130,41 @@ uploadFile.post(
             upload(ownerID + "/" + new_file._id.toString())
           );
 
-          file.pipe(smeter).pipe(uploadResult.passStream);
+          try {
+            file.pipe(smeter).pipe(uploadResult.passStream);
 
-          const result = await uploadResult.uploadPromise;
+            const result = await uploadResult.uploadPromise;
 
-          new_file.size = smeter.bytes;
+            new_file.size = smeter.bytes;
 
-          console.log(new_file);
+            console.log(new_file);
 
-          await new_file.save();
+            await new_file.save();
+          } catch (err) {
+            response.push({
+              name: new_file.name,
+              status: "Failure",
+              message: err.message,
+            });
+          }
 
           filesCount--;
+          availableSize -= new_file.size;
           console.log("ADDED");
 
-          if (filesCount === 0 && finished) {
-            console.log("Finished Uploading");
-            res.json("OK").status(200);
-          }
-        } else {
-          console.log("FILE ALREADY EXISTS");
-
-          if (filesCount === 0 && finished) {
-            console.log("Finished Uploading");
-            res.json("OK").status(200);
-          }
+          response.push({
+            name: new_file.name,
+            status: "Success",
+            message: "File upload successfully",
+          });
         }
 
-        console.log({ filesCount });
+        if (filesCount === 0 && finished) {
+          console.log("Finished Uploading");
+          res.send(response);
+        }
+
+        console.log({ filesCount, finished });
 
         if (busboyFinishTime && s3UploadFinishTime) {
           console.log("FINAL CALL HERE");
@@ -155,6 +176,11 @@ uploadFile.post(
       // send response
       console.log("Done parsing form!");
       finished = true;
+
+      if (filesCount === 0 && finished) {
+        console.log("Finished Uploading");
+        res.send(response);
+      }
 
       if (busboyFinishTime && s3UploadFinishTime) {
         console.log({
