@@ -7,6 +7,7 @@ import Axios from '../../config/axios';
 import SelectedFiles from './Children/SelectedFiles';
 import RecentFiles from './Children/RecentFiles';
 import StarredFiles from './Children/StarredFiles';
+import AvailableStorage from './Children/AvailableStorage';
 
 function useRecentFiles() {
   return useQuery('recentfiles', async () => {
@@ -113,6 +114,7 @@ export default function LeftSideBar() {
           aria-label="Main"
           className="flex-1 px-2 py-4 space-y-2 overflow-y-hidden hover:overflow-y-auto"
         >
+          <AvailableStorage />
           <DropDownCoponent
             heading="Starred Files"
             color="yellow"

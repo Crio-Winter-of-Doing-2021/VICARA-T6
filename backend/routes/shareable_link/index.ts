@@ -112,7 +112,7 @@ shareableLink.get(
             recursive: true,
             tmpDir: null, // optional, defaults to node_modules/aws-s3-zipper
           },
-          function (err, result) {
+          async function (err, result) {
             if (err) return Promise.reject(err);
             else {
               var lastFile = result.zippedFiles[result.zippedFiles.length - 1];
@@ -127,6 +127,15 @@ shareableLink.get(
               //Get presigned url
               const url = s3.getSignedUrl("getObject", downloadFolderParams);
               console.log(url);
+
+              await Files.findByIdAndUpdate(fileID, {
+                share: {
+                  url,
+                  expiryTime,
+                  generatedAt: new Date(),
+                },
+              });
+
               res.status(200).send({ url });
             }
           }
