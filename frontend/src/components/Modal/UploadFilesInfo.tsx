@@ -56,7 +56,7 @@ export default function UploadFilesInfo(props: any) {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    {response.map((file, index) => {
+                    {response?.map((file, index) => {
                       return (
                         <tr key={index}>
                           <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-md leading-5">

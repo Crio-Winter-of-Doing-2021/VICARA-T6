@@ -61,18 +61,19 @@ export const uploadFiles = async (
   const options = {
     cancelToken: source.token,
     onUploadProgress: (progressEvent: any) => {
-      const progress = progressEvent.loaded / progressEvent.total;
+      console.log(progressEvent);
+      // const progress = progressEvent.loaded / progressEvent.total;
 
       // check if we already displayed a toast
-      if (toastId.current === null) {
-        toastId.current = toast('Upload in Progress', {
-          progress: progress
-        });
-      } else {
-        toast.update(toastId.current, {
-          progress: progress
-        });
-      }
+      // if (toastId.current === null) {
+      //   toastId.current = toast('Upload in Progress', {
+      //     progress: progress > 90 ? 90 : progress
+      //   });
+      // } else {
+      //   toast.update(toastId.current, {
+      //     progress: progress > 90 ? 90 : progress
+      //   });
+      // }
     }
   };
 
@@ -99,13 +100,14 @@ export const uploadFiles = async (
     console.log(err.message);
 
     toast.update(toastId.current, {
-      render: 'Cancelling Upload',
-      type: toast.TYPE.ERROR
+      render: 'Upload Cancelled',
+      type: toast.TYPE.ERROR,
+      autoClose: 1000
     });
 
-    await new Promise((resolve) => {
-      setTimeout(() => toast.done(toastId.current), 1000);
-    });
+    // await new Promise((resolve) => {
+    //   setTimeout(() => toast.done(toastId.current), 1000);
+    // });
   }
 };
 
@@ -153,18 +155,17 @@ export const uploadFolders = async (
     const uploadDirectoryOptions = {
       cancelToken: source.token,
       onUploadProgress: (progressEvent: any) => {
-        const progress = progressEvent.loaded / progressEvent.total;
-
-        // check if we already displayed a toast
-        if (toastId.current === null) {
-          toastId.current = toast('Upload in Progress', {
-            progress: progress
-          });
-        } else {
-          toast.update(toastId.current, {
-            progress: progress
-          });
-        }
+        // const progress = progressEvent.loaded / progressEvent.total;
+        // // check if we already displayed a toast
+        // if (toastId.current === null) {
+        //   toastId.current = toast('Upload in Progress', {
+        //     progress: progress > 90 ? 90 : progress
+        //   });
+        // } else {
+        //   toast.update(toastId.current, {
+        //     progress: progress > 90 ? 90 : progress
+        //   });
+        // }
       }
     };
 
@@ -180,7 +181,7 @@ export const uploadFolders = async (
       render: (
         <InfoButton setIsOpenUploadFilesModal={setIsOpenUploadFilesModal} />
       ),
-      type: toast.TYPE.INFO
+      type: toast.TYPE.WARNING
     });
 
     return folderData;
@@ -193,12 +194,13 @@ export const uploadFolders = async (
 
     toast.update(toastId.current, {
       render: 'Cancelling Upload',
-      type: toast.TYPE.ERROR
+      type: toast.TYPE.ERROR,
+      autoClose: 1000
     });
 
-    await new Promise((resolve) => {
-      setTimeout(() => toast.done(toastId.current), 1000);
-    });
+    // await new Promise((resolve) => {
+    //   setTimeout(() => toast.done(toastId.current), 1000);
+    // });
   }
 };
 
