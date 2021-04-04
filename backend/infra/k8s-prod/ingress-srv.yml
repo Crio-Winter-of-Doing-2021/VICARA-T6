@@ -10,9 +10,6 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-send-timeout: '1200'
     nginx.ingress.kubernetes.io/proxy-read-timeout: '1200'
     nginx.ingress.kubernetes.io/send-timeout: '1200'
-    nginx.ingress.kubernetes.io/enable-cors: 'true'
-    nginx.ingress.kubernetes.io/session-cookie-samesite: 'None'
-    nginx.ingress.kubernetes.io/session-cookie-conditional-samesite-none: 'true'
     cert-manager.io/cluster-issuer: letsencrypt-prod
 
 spec:
