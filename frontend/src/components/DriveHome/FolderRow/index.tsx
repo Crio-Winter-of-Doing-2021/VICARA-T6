@@ -262,7 +262,7 @@ export default function FolderRow({
         id={fileID}
         isDirectory={isDirectory}
         parent={parent}
-      ></GenerateLinkModal>
+      />
 
       <RenameModal
         modalIsOpen={showRenameModal}
@@ -270,7 +270,7 @@ export default function FolderRow({
         name={name}
         id={fileID}
         parent={parent}
-      ></RenameModal>
+      />
     </>
   );
 }

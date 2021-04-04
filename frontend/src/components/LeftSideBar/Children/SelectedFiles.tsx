@@ -57,9 +57,16 @@ export default function SelectedFiles(props: any) {
 
   async function moveHere() {
     if (parentFolderIDofSelectedFile !== currentFolderID) {
+      toastId.current = toast('Moving files');
       await Axios.post('/move_files', {
         parentID: currentFolderID,
         foldersList: copiedFiles
+      });
+
+      toast.update(toastId.current, {
+        render: 'Move successfull',
+        type: toast.TYPE.INFO,
+        autoClose: 1000
       });
     }
 
@@ -68,9 +75,15 @@ export default function SelectedFiles(props: any) {
 
   async function copyHere() {
     if (parentFolderIDofSelectedFile !== currentFolderID) {
+      toastId.current = toast('Copying files');
       await Axios.post('/copy_files', {
         parentID: currentFolderID,
         foldersList: copiedFiles
+      });
+      toast.update(toastId.current, {
+        render: 'Copy successfull',
+        type: toast.TYPE.INFO,
+        autoClose: 1000
       });
     }
 

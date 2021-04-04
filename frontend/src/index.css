@@ -33,11 +33,23 @@
     width: 78vw;
   }
 
+  .w-48rem {
+    width: 48rem;
+  }
+
+  .w-54rem {
+    width: 54rem;
+  }
+
   .w-72rem {
     width: 72rem;
   }
 
   .max-w-80vw {
     max-width: 78vw;
+  }
+
+  .h-inherit {
+    height: inherit;
   }
 }

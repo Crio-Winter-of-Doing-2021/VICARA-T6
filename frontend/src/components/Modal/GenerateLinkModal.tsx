@@ -7,6 +7,9 @@ import Axios from '../../config/axios';
 import { toast } from 'react-toastify';
 
 const customStyles = {
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.15)'
+  },
   content: {
     top: '50%',
     left: '50%',

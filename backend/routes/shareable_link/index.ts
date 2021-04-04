@@ -67,35 +67,7 @@ async function generateFolderShareableLink(ownerID, folderID) {
       .promise();
   }
 
-  const s3FileName = "folders.zip";
-
-  return zipper.zipToS3File(
-    {
-      s3FolderName: parentFolderString,
-      startKey: null, // optional
-      s3ZipFileName: s3FileName,
-      recursive: true,
-      tmpDir: null, // optional, defaults to node_modules/aws-s3-zipper
-    },
-    function (err, result) {
-      if (err) return Promise.reject(err);
-      else {
-        var lastFile = result.zippedFiles[result.zippedFiles.length - 1];
-        if (lastFile) console.log("last key ", lastFile.Key); // next time start from here
-
-        const downloadFolderParams = {
-          Bucket: process.env.S3_BUCKET_NAME,
-          Key: parentFolderString + "/" + s3FileName,
-          Expires: 60,
-        };
-
-        //Get presigned url
-        const url = s3.getSignedUrl("getObject", downloadFolderParams);
-        console.log(url);
-        return Promise.resolve(url);
-      }
-    }
-  );
+  return Promise.resolve(parentFolderString);
 }
 
 shareableLink.get(
@@ -123,10 +95,52 @@ shareableLink.get(
       return res.status(200).send({ url: shareableObj?.url });
     } else {
       if (isDirectory) {
-        const url = await generateFolderShareableLink(ownerID, fileID);
-        console.log(url);
+        const parentFolderString = await generateFolderShareableLink(
+          ownerID,
+          fileID
+        );
 
-        res.status(200).send({ url });
+        console.log(parentFolderString);
+
+        const s3FileName = "folders.zip";
+
+        return zipper.zipToS3File(
+          {
+            s3FolderName: parentFolderString,
+            startKey: null, // optional
+            s3ZipFileName: s3FileName,
+            recursive: true,
+            tmpDir: null, // optional, defaults to node_modules/aws-s3-zipper
+          },
+          async function (err, result) {
+            if (err) return Promise.reject(err);
+            else {
+              var lastFile = result.zippedFiles[result.zippedFiles.length - 1];
+              if (lastFile) console.log("last key ", lastFile.Key); // next time start from here
+
+              const downloadFolderParams = {
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: parentFolderString + "/" + s3FileName,
+                Expires: 60,
+              };
+
+              //Get presigned url
+              const url = s3.getSignedUrl("getObject", downloadFolderParams);
+              console.log(url);
+
+              await Files.findByIdAndUpdate(fileID, {
+                share: {
+                  url,
+                  expiryTime,
+                  generatedAt: new Date(),
+                },
+              });
+
+              res.status(200).send({ url });
+            }
+          }
+        );
+
         // .catch((error) => res.status(500).send({ error }));
       } else {
         try {

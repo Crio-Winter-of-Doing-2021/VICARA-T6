@@ -18,6 +18,7 @@ const signout = require("./signout");
 const signup = require("./signup");
 const currentUser = require("./current_user");
 const shareableLink = require("./shareable_link");
+const availableStorage = require("./available_storage");
 const listParentDirectories = require("./list_parent_directories");
 const createDirectoryStucture = require("./create_directory_stucture");
 
@@ -40,6 +41,7 @@ router.use("/signout", signout);
 router.use("/signup", signup);
 router.use("/current_user", currentUser);
 router.use("/shareable_link", shareableLink);
+router.use("/available_storage", availableStorage);
 router.use("/list_parent_directories", listParentDirectories);
 router.use("/create_directory_stucture", createDirectoryStucture);
 
