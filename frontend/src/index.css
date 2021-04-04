@@ -48,4 +48,8 @@
   .max-w-80vw {
     max-width: 78vw;
   }
+
+  .h-inherit {
+    height: inherit;
+  }
 }

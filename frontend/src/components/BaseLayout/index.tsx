@@ -21,6 +21,7 @@ function BaseLayout(props: any) {
               newestOnTop={true}
               transition={Flip}
               closeOnClick
+              limit={5}
               autoClose={false}
             />
             {props.children}

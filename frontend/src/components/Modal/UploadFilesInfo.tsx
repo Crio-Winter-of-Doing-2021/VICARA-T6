@@ -1,8 +1,10 @@
-import { useEffect } from 'react';
 import Modal from 'react-modal';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 
 const customStyles = {
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.15)'
+  },
   content: {
     top: '50%',
     left: '50%',
@@ -15,10 +17,6 @@ const customStyles = {
 
 export default function UploadFilesInfo(props: any) {
   const response = props.data;
-
-  useEffect(() => {
-    console.log(props);
-  }, [props]);
 
   function closeModal() {
     props.setIsOpenModal(false);
@@ -39,10 +37,10 @@ export default function UploadFilesInfo(props: any) {
             </button>
           </div>
           <div className="flex flex-col px-5 py-10 h-80vh w-54rem justify-center">
-            <div className="flex justify-center flex-col items-center">
+            <div className="flex justify-center flex-col items-center h-inherit">
               <h2 className="text-lg mb-10">Upload File Status</h2>
               <br />
-              <div>
+              <div className="h-inherit">
                 <table className="w-48rem">
                   <thead>
                     <tr>
