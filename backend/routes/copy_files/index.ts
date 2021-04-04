@@ -149,16 +149,19 @@ copyFiles.post(
     let { foldersList, parentID } = req.body;
     const ownerID = req.currentUser.id;
 
-    Object.entries(foldersList).map(async (fileDetails: any) => {
-      const fileID = fileDetails[0];
-      const data = fileDetails[1];
+    const fList = Object.entries(foldersList);
+
+    for (let i = 0; i < fList.length; i++) {
+      const fileDetails = fList[i];
+      const fileID: any = fileDetails[0];
+      const data: any = fileDetails[1];
 
       if (data.isDirectory) {
         await copyFolderUtility(parentID, ownerID, fileID);
       } else {
         await copyFileUtility(parentID, ownerID, fileID);
       }
-    });
+    }
 
     res.send("OK");
   }
