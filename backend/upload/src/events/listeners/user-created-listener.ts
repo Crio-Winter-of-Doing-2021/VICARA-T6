@@ -10,7 +10,7 @@ export class UserCreatedListener extends Listener<UserCreatedEvent> {
         const {id} = data;
 
         const RootDir = File.buildDir({
-            fileName: 'root',
+            fileName: 'Home',
             isDirectory: true,
             parentId: id,
             ownerId: id

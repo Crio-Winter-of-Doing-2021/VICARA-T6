@@ -6,9 +6,9 @@ const router = express.Router();
 
 router.get("/api/browse/recent", async (req: Request, res: Response) => {
   const currentTime: Date = new Date();
-  const ownerID = req.currentUser!.id;
+  const ownerId = req.currentUser!.id;
 
-  const result = await File.find({ owner: ownerID })
+  const result = await File.find({ ownerId })
     .sort({ _id: -1 })
     .limit(10);
 
