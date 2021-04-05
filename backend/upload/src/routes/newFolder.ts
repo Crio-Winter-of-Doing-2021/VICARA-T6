@@ -7,7 +7,7 @@ import {BadUploadRequestError} from "@vic-common/common";
 
 const router = express.Router();
 
-router.post('/api/folders/upload', requireAuth,
+router.post('/api/folders/upload',
     [
         body('parentId')
             .isMongoId()
