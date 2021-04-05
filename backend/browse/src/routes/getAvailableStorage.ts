@@ -4,7 +4,7 @@ import { File } from "../models/file.model";
 
 const router = express.Router();
 
-router.get("/api/star", async (req: Request, res: Response) => {
+router.get("/api/storage", async (req: Request, res: Response) => {
   const ownerId = req.currentUser!.id;
   const totalAllotedSize = 1024 * 1024 * 1024;
 
