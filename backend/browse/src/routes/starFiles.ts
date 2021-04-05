@@ -9,7 +9,7 @@ const router = express.Router();
 router.get("/api/browse/star", async (req: Request, res: Response) => {
   const ownerId = req.currentUser!.id;
 
-  const starredFiles = await File.find({ owner: ownerId, starred: true });
+  const starredFiles = await File.find({ ownerId, starred: true });
 
   return res.send(starredFiles);
 });
