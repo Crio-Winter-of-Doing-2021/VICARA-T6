@@ -9,7 +9,7 @@ import {StorageFactory} from '../storage/Storage.factory';
 
 const router = express.Router();
 
-router.delete('/api/files/delete', requireAuth,
+router.delete('/api/files/delete',
     body('files')
         .isArray({min: 1})
         .withMessage('A valid fileId array should be provided'),
