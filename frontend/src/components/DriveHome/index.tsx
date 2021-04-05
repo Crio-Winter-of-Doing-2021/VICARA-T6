@@ -20,7 +20,7 @@ interface FileProps {
 function useFiles({ currentFolderID }: FileProps) {
   return useQuery('files', async () => {
     const { data } = await Axios.get(
-      `/list_directory?parent=${currentFolderID}`
+      `/api/browse/directory/${currentFolderID}`
     );
     return data;
   });
