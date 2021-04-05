@@ -25,6 +25,14 @@ export const checkIdValid = async (id: string): Promise<errResponse[]> => {
     });
     return res;
   }
+  if(await File.findById(id) === null) {
+    res.push({
+      field: 'id',
+      message: 'not a valid file id'
+    });
+    return res;
+  }
+  return res;
 };
 
 export const checkUpdateIdParam = async (

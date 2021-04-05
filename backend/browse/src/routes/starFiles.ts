@@ -25,11 +25,11 @@ router.patch("/api/star/:id", async (req: Request, res: Response) => {
 
   const fileDetails = await File.findById(id);
 
-  if (fileDetails?.isStarred === true) {
-    const updatedFile = await File.findByIdAndUpdate(id, { isStarred: false });
+  if (fileDetails!.starred === true) {
+    const updatedFile = await File.findByIdAndUpdate(id, { starred: false });
     res.send(updatedFile);
   } else {
-    const updatedFile = await File.findByIdAndUpdate(id, { isStarred: true });
+    const updatedFile = await File.findByIdAndUpdate(id, { starred: true });
     res.send(updatedFile);
   }
 });
