@@ -1,0 +1,33 @@
+import express, { Request, Response } from "express";
+
+import { checkIdValid, checkUpdateIdParam } from "../util/checkParams";
+import { File, FileDoc } from "../models/file.model";
+import { BadUploadRequestError } from "@vic-common/common";
+
+const router = express.Router();
+
+router.get("/api/browser/recent", async (req: Request, res: Response) => {
+  const currentTime: Date = new Date();
+  const ownerID = req.currentUser.id;
+
+  const result = await File.find({ owner: ownerID })
+    .sort({ _id: -1 })
+    .limit(10);
+
+  const recentFilesResult = result.filter((file: FileDoc) => {
+    const fileUpdationDate: Date = new Date(file.updatedAt);
+    const diff: number =
+      Math.abs(currentTime.valueOf() - fileUpdationDate.valueOf()) / 1000 / 60;
+
+    //files which came under 10 minutes
+    if (diff <= 10) {
+      return true;
+    }
+
+    return false;
+  });
+
+  return res.status(200).json({ recentFilesResult });
+});
+
+export { router as recentRouter };
