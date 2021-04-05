@@ -1,6 +1,5 @@
 import express, { Request, Response } from "express";
 import { Types } from "mongoose";
-import { checkIdValid, checkUpdateIdParam } from "../util/checkParams";
 import { File } from "../models/file.model";
 
 const router = express.Router();
@@ -38,4 +37,4 @@ router.get("/api/star", async (req: Request, res: Response) => {
   });
 });
 
-export { router as fileUpdateRouter };
+export { router as storageRouter };

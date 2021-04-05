@@ -34,4 +34,4 @@ router.patch("/api/star/:id", async (req: Request, res: Response) => {
   }
 });
 
-export { router as fileUpdateRouter };
+export { router as starRouter };
