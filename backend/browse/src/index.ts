@@ -4,11 +4,11 @@ import {app} from "./app";
 
 const start = async () => {
     if (!process.env.JWT_KEY) {
-        throw new Error('JWT key is not defined');
+        throw new Error('JWT key should be defined');
     }
 
     if (!process.env.MONGO_URI) {
-        throw new Error('MONGO_URI must be defined');
+        throw new Error('MONGO_URI should be defined');
     }
 
     try {
@@ -19,11 +19,13 @@ const start = async () => {
         });
         console.log('Connected to mongodb');
     } catch (err) {
+        console.error('Error connecting to mongodb');
         console.log(err);
     }
 
     app.listen(3000, () => {
         console.log('Listening on port 3000!');
+        console.log('This deployment was successful!...');
     });
 }
 

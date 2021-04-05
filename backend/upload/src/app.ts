@@ -3,14 +3,12 @@ import 'express-async-errors';
 import { json } from 'body-parser';
 import cors from 'cors';
 import cookieSession from 'cookie-session';
-import {errorHandler, NotFoundError, currentUser} from '@vic-common/common';
+import {errorHandler, NotFoundError} from '@vic-common/common';
 
-// Importing file routers
-import { createFileRouter } from "./routes/newFile";
-import { deleteFileRouter } from "./routes/deleteFile";
-// Importing folder routers
-import { createFolderRouter } from './routes/newFolder';
-import { deleteFolderRouter } from './routes/deleteFolder';
+import {deleteFileRouter} from "./routes/deleteFile";
+import {deleteFolderRouter} from "./routes/deleteFolder";
+import {createFileRouter} from "./routes/newFile";
+import {createFolderRouter} from "./routes/newFolder";
 
 const app = express();
 app.set('trust proxy', true);
@@ -20,27 +18,15 @@ app.use(cookieSession({
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'none'
 }));
-// app.use(cors({
-//     origin: true,
-//     credentials: true
-// }));
-app.use((req, res, next) => {
-    // const allowedOrigins = ['http://127.0.0.1:8020', 'http://localhost:8020', 'http://127.0.0.1:9000', 'http://localhost:9000'];
-    const origin = req.headers.origin!;
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    //res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:8020');
-    // res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    // res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    return next();
-});
+// const whitelist = ['http://localhost:3000', 'https://vigorous-dijkstra-746efd.netlify.app'];
+app.use(cors({
+    origin: true,
+    credentials: true
+}));
 
-app.use(currentUser);
-
-// Adding routers
 app.use(createFileRouter);
-app.use(deleteFileRouter);
 app.use(createFolderRouter);
+app.use(deleteFileRouter);
 app.use(deleteFolderRouter);
 
 app.all('*', () => {
