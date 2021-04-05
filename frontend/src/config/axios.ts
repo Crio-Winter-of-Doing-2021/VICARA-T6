@@ -4,7 +4,7 @@ import axios, { AxiosInstance } from 'axios';
 
 const instance: AxiosInstance = axios.create({
   // .. where we make our configurations
-  baseURL: 'http://vicara.dev/api',
+  baseURL: 'https://www.my-apps.me/api',
   withCredentials: true
 });
 
