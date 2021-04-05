@@ -64,6 +64,7 @@ const fileSchema = new mongoose.Schema({
         generatedAt: Date,
     },
 }, {
+    timestamps: true,
     toJSON: {
         transform(doc, ret) {
             ret.id = ret._id;

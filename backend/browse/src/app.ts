@@ -1,41 +1,52 @@
-import express from 'express';
-import 'express-async-errors';
-import { json } from 'body-parser';
-import cors from 'cors';
-import cookieSession from 'cookie-session';
-import {currentUser, errorHandler, NotFoundError, requireAuth} from '@vic-common/common';
+import express from "express";
+import "express-async-errors";
+import { json } from "body-parser";
+import cors from "cors";
+import cookieSession from "cookie-session";
+import {
+  currentUser,
+  errorHandler,
+  NotFoundError,
+  requireAuth,
+} from "@vic-common/common";
 
-import {ancestorRouter} from "./routes/getAncestors";
-import {getRootDirRouter} from "./routes/getRootDir";
-import {getFileRouter} from "./routes/getFile";
-import {fileUpdateRouter} from "./routes/updateFile";
-import {getDirRouter} from "./routes/getDirectory";
+import { ancestorRouter } from "./routes/getAncestors";
+import { getRootDirRouter } from "./routes/getRootDir";
+import { fileUpdateRouter } from "./routes/updateFile";
+import { getFileRouter } from "./routes/getFiles";
+import { storageRouter } from "./routes/getAvailableStorage";
+import { starRouter } from "./routes/starFiles";
 
 const app = express();
-app.set('trust proxy', true);
+app.set("trust proxy", true);
 app.use(json());
-app.use(cookieSession({
+app.use(
+  cookieSession({
     signed: false,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'none'
-}));
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
+  })
+);
 // const whitelist = ['http://localhost:3000', 'https://vigorous-dijkstra-746efd.netlify.app'];
-app.use(cors({
+app.use(
+  cors({
     origin: true,
-    credentials: true
-}));
+    credentials: true,
+  })
+);
 
 app.use(currentUser);
 app.use(requireAuth);
 
 app.use(ancestorRouter);
 app.use(getRootDirRouter);
-app.use(getFileRouter);
 app.use(fileUpdateRouter);
-app.use(getDirRouter);
+app.use(getFileRouter);
+app.use(storageRouter);
+app.use(starRouter);
 
-app.all('*', () => {
-    throw new NotFoundError('Route not found');
+app.all("*", () => {
+  throw new NotFoundError("Route not found");
 });
 
 app.use(errorHandler);
