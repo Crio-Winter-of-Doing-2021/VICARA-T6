@@ -1,29 +1,33 @@
-import express, {Request, Response} from "express";
-import {body} from "express-validator";
-import {File} from '../models/file.model';
+import express, { Request, Response } from "express";
+import { File } from "../models/file.model";
 
-import {NotFoundError, validateRequest} from "@vic-common/common";
-import {getAncestors} from "../util/getParents";
+import { NotFoundError, validateRequest } from "@vic-common/common";
+import { getAncestors } from "../util/getParents";
 
 const router = express.Router();
 
-router.get('/api/browse/ancestors', [
-    body('id')
-        .isMongoId()
-        .withMessage('Invalid id')
-], validateRequest, async (req: Request, res: Response) => {
+router.get(
+  "/api/browse/ancestors",
+  validateRequest,
+  async (req: Request, res: Response) => {
     const ownerId = req.currentUser!.id;
-    const reqId = req.body.id;
+    const parentId = req.query.id;
+
     const reqFile = await File.findOne({
-        ownerId,
-        _id: reqId
+      ownerId,
+      _id: parentId,
     });
+
     if (!reqFile) {
-        throw new NotFoundError('Resource not found');
+      throw new NotFoundError("Resource not found");
     }
 
-    const ancestors = await getAncestors(ownerId, reqId);
-    res.send({ancestors});
-})
+    const ancestors = await getAncestors(ownerId, parentId);
 
-export {router as ancestorRouter}
+    const reversedAncestors = ancestors.reverse();
+
+    res.send({ reversedAncestors });
+  }
+);
+
+export { router as ancestorRouter };

@@ -1,17 +1,54 @@
-import {File, FileDoc} from '../models/file.model';
+import { File, FileDoc } from "../models/file.model";
 
-export const getAncestors =
-    async (ownerId: string, fileId: string): Promise<FileDoc[]> => {
-    const ancestors: FileDoc[] = [];
+interface ancestorSchema {
+  id: string;
+  fileName: string;
+}
 
-    let curFile = await File.findById(fileId);
+export const getAncestors = async (
+  ownerId: string,
+  parentId: string
+): Promise<ancestorSchema[]> => {
+  let parent = parentId;
+  const ancestors: ancestorSchema[] = [];
+  let leafFileDetails: FileDoc = await File.findById(parentId);
 
-    while (true) {
-        if (curFile!.parentId === ownerId && curFile!.ownerId === ownerId) {
-            ancestors.push(curFile!);
-            return ancestors;
-        }
-        ancestors.push(curFile!);
-        curFile  = await File.findById(curFile!.parentId);
+  if (leafFileDetails) {
+    const { id, fileName } = leafFileDetails;
+
+    if (fileName && id) {
+      ancestors.push({
+        id,
+        fileName,
+      });
     }
+
+    //Update the parent of folder
+    parent = leafFileDetails?.parentId;
+
+    //Find till the root parent is found
+    while (leafFileDetails?.parentId !== leafFileDetails?.ownerId) {
+      leafFileDetails = await File.findById(parent);
+
+      if (leafFileDetails) {
+        const { id, fileName } = leafFileDetails;
+
+        if (fileName && id) {
+          ancestors.push({
+            id,
+            fileName,
+          });
+        }
+
+        parent = leafFileDetails?.parentId;
+      }
+    }
+
+    ancestors.push({
+      id: parent,
+      fileName: "Home",
+    });
+  }
+
+  return ancestors;
 };

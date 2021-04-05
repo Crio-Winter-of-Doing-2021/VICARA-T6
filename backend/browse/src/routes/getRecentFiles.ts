@@ -1,8 +1,6 @@
 import express, { Request, Response } from "express";
 
-import { checkIdValid, checkUpdateIdParam } from "../util/checkParams";
 import { File, FileDoc } from "../models/file.model";
-import { BadUploadRequestError } from "@vic-common/common";
 
 const router = express.Router();
 

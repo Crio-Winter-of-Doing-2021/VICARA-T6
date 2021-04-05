@@ -12,12 +12,12 @@ import {
 
 import { ancestorRouter } from "./routes/getAncestors";
 import { getRootDirRouter } from "./routes/getRootDir";
-import { fileUpdateRouter } from "./routes/updateFile";
 import { getFileRouter } from "./routes/getFiles";
 import { storageRouter } from "./routes/getAvailableStorage";
 import { starRouter } from "./routes/starFiles";
 import { recentRouter } from "./routes/getRecentFiles";
 import { searchFileRouter } from "./routes/searchFiles";
+import { moveFileRouter } from "./routes/moveFiles";
 
 const app = express();
 app.set("trust proxy", true);
@@ -29,7 +29,7 @@ app.use(
     sameSite: "none",
   })
 );
-// const whitelist = ['http://localhost:3000', 'https://vigorous-dijkstra-746efd.netlify.app'];
+
 app.use(
   cors({
     origin: true,
@@ -42,12 +42,12 @@ app.use(requireAuth);
 
 app.use(ancestorRouter);
 app.use(getRootDirRouter);
-app.use(fileUpdateRouter);
 app.use(getFileRouter);
 app.use(storageRouter);
 app.use(starRouter);
 app.use(recentRouter);
 app.use(searchFileRouter);
+app.use(moveFileRouter);
 
 app.all("*", () => {
   throw new NotFoundError("Route not found");
