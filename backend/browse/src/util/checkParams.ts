@@ -25,10 +25,10 @@ export const checkIdValid = async (id: string): Promise<errResponse[]> => {
     });
     return res;
   }
-  if(await File.findById(id) === null) {
+  if ((await File.findById(id)) === null) {
     res.push({
-      field: 'id',
-      message: 'not a valid file id'
+      field: "id",
+      message: "not a valid file id",
     });
     return res;
   }
@@ -36,8 +36,8 @@ export const checkIdValid = async (id: string): Promise<errResponse[]> => {
 };
 
 export const checkUpdateIdParam = async (
-  ownerId: string,
-  id: string
+  id: string,
+  ownerId: string
 ): Promise<errResponse[]> => {
   const res: errResponse[] = [];
   if (!id || !validator.isMongoId(id)) {

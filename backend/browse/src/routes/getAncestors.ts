@@ -14,10 +14,14 @@ router.get(
     const ownerId = req.currentUser!.id;
     const parentId = req.query.id as string;
 
+    console.log("#########################################");
+    console.log({ parentId });
+    console.log("#########################################");
+
     if (!parentId || validator.isMongoId(parentId)) {
-        return res.send({
-            err: 'Not a valid parentId'
-        });
+      return res.send({
+        err: "Not a valid parentId",
+      });
     }
 
     const reqFile = await File.findOne({
