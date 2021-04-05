@@ -6,9 +6,9 @@ import { BadUploadRequestError } from "@vic-common/common";
 
 const router = express.Router();
 
-router.get("/api/browser/recent", async (req: Request, res: Response) => {
+router.get("/api/browse/recent", async (req: Request, res: Response) => {
   const currentTime: Date = new Date();
-  const ownerID = req.currentUser.id;
+  const ownerID = req.currentUser!.id;
 
   const result = await File.find({ owner: ownerID })
     .sort({ _id: -1 })

@@ -23,7 +23,7 @@ export interface FileDoc extends mongoose.Document {
     ownerId: string;
     fileSize: number;
     starred: boolean;
-    updatedAt: mongoose.types.Date;
+    updatedAt: Date;
 }
 
 interface FileModel extends mongoose.Model<FileDoc> {

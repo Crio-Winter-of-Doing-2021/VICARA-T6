@@ -17,6 +17,7 @@ import { getFileRouter } from "./routes/getFiles";
 import { storageRouter } from "./routes/getAvailableStorage";
 import { starRouter } from "./routes/starFiles";
 import { recentRouter } from "./routes/getRecentFiles";
+import { searchFileRouter } from "./routes/searchFiles";
 
 const app = express();
 app.set("trust proxy", true);
@@ -46,6 +47,7 @@ app.use(getFileRouter);
 app.use(storageRouter);
 app.use(starRouter);
 app.use(recentRouter);
+app.use(searchFileRouter);
 
 app.all("*", () => {
   throw new NotFoundError("Route not found");
