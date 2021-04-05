@@ -88,7 +88,7 @@ export const checkParentParam = async (
   }
   const newParentAncestors = await getAncestors(ownerId, newParent);
   const isSubDir = newParentAncestors.filter(
-    (ancestor) => ancestor._id.toHexString() === toMoveId
+    (ancestor) => ancestor.id === toMoveId
   );
   if (isSubDir.length !== 0) {
     res.push({

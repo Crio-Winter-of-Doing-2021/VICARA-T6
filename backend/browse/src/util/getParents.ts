@@ -11,7 +11,7 @@ export const getAncestors = async (
 ): Promise<ancestorSchema[]> => {
   let parent = parentId;
   const ancestors: ancestorSchema[] = [];
-  let leafFileDetails: FileDoc = await File.findById(parentId);
+  let leafFileDetails = await File.findById(parentId);
 
   if (leafFileDetails) {
     const { id, fileName } = leafFileDetails;
