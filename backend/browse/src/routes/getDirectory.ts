@@ -1,19 +1,19 @@
 import express, {Request, Response} from "express";
 import {File} from "../models/file.model";
-import {body} from "express-validator";
+import {param} from "express-validator";
 import {NotFoundError, validateRequest} from "@vic-common/common";
 
 const router = express.Router();
 
-router.get('/api/browse/directory', [
-        body('dirId')
+router.get('/api/browse/directory/:id', [
+        param('id')
             .isMongoId()
             .withMessage('Invalid directory id')
     ],
     validateRequest,
     async (req: Request, res: Response) => {
     const ownerId = req.currentUser!.id;
-    const reqDirId = req.body.dirId;
+    const reqDirId = req.params.id;
     const reqDir = await File.findOne({
         _id: reqDirId,
         ownerId,
