@@ -43,11 +43,6 @@ export const getAncestors = async (
         parent = leafFileDetails?.parentId;
       }
     }
-
-    ancestors.push({
-      id: parent,
-      fileName: "Home",
-    });
   }
 
   return ancestors;
