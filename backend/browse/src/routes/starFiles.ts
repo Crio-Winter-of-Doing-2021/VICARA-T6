@@ -6,7 +6,7 @@ import { BadUploadRequestError } from "@vic-common/common";
 
 const router = express.Router();
 
-router.get("/api/star", async (req: Request, res: Response) => {
+router.get("/api/browse/star", async (req: Request, res: Response) => {
   const ownerId = req.currentUser!.id;
 
   const starredFiles = await File.find({ owner: ownerId, starred: true });
