@@ -16,6 +16,7 @@ interface DirAttrs {
 }
 
 export interface FileDoc extends mongoose.Document {
+    id: string;
     fileName: string;
     mimetype: string;
     isDirectory: boolean;
