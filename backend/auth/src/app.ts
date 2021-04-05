@@ -21,7 +21,7 @@ app.use(cookieSession({
 }));
 // const whitelist = ['http://localhost:3000', 'https://vigorous-dijkstra-746efd.netlify.app'];
 app.use(cors({
-    origin: 'https://vigorous-dijkstra-746efd.netlify.app',
+    origin: true,
     credentials: true
 }));
 
