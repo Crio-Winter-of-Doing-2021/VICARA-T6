@@ -19,9 +19,7 @@ interface FileProps {
 
 function useFiles({ currentFolderID }: FileProps) {
   return useQuery('files', async () => {
-    const { data } = await Axios.get(
-      `/api/browse/directory/${currentFolderID}`
-    );
+    const { data } = await Axios.get(`/browse/directory/${currentFolderID}`);
     return data;
   });
 }
