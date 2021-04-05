@@ -17,7 +17,7 @@ export default function Navbar() {
   const { setSearch } = useSearchContext();
 
   const handSignOut = async () => {
-    await Axios.post('/signout');
+    await Axios.post('/users/signout');
     history.push('/auth/login');
   };
 
