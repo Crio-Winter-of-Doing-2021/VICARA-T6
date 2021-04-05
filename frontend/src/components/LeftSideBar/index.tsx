@@ -11,14 +11,14 @@ import AvailableStorage from './Children/AvailableStorage';
 
 function useRecentFiles() {
   return useQuery('recentfiles', async () => {
-    const { data } = await Axios.get('/recent_files');
+    const { data } = await Axios.get('/browse/recent');
     return data;
   });
 }
 
 function useStarredFiles() {
   return useQuery('starredFiles', async () => {
-    const { data } = await Axios.get('/starred_files');
+    const { data } = await Axios.get('/browse/star');
     return data;
   });
 }
@@ -118,9 +118,9 @@ export default function LeftSideBar() {
           <DropDownCoponent
             heading="Starred Files"
             color="yellow"
-            counter={starredFilesData?.starredFilesResult?.length}
+            counter={starredFilesData?.length}
           >
-            <StarredFiles filesList={starredFilesData?.starredFilesResult} />
+            <StarredFiles filesList={starredFilesData} />
           </DropDownCoponent>
 
           <DropDownCoponent

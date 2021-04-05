@@ -1,7 +1,7 @@
 import fileMapper from '../../../utils/helper/fileMapper';
 
 export default function FileDisplay(props: any) {
-  const { id, extension, isDirectory, name } = props.data;
+  const { id, isDirectory, fileName } = props.data;
 
   return (
     <div
@@ -20,10 +20,10 @@ export default function FileDisplay(props: any) {
           className="mr-3"
           height={20}
           width={20}
-          src={fileMapper(extension, isDirectory)}
+          src={fileMapper(fileName, isDirectory)}
         />
         <div className="text-sm leading-5 text-blue-900 max-w-175 overflow-ellipsis overflow-hidden whitespace-nowrap">
-          {name}
+          {fileName}
         </div>
       </div>
     </div>

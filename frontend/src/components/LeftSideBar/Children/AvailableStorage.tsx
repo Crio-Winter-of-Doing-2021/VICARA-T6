@@ -6,7 +6,7 @@ import Axios from '../../../config/axios';
 
 function useAvailableStorage() {
   return useQuery('availableStorage', async () => {
-    const { data } = await Axios.get('/available_storage');
+    const { data } = await Axios.get('/browse/storage');
     return data;
   });
 }

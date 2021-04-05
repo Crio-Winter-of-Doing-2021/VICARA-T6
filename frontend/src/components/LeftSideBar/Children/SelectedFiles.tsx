@@ -30,7 +30,7 @@ export default function SelectedFiles(props: any) {
 
   useEffect(() => {
     async function fetchFileDetails() {
-      const { data } = await Axios.get(`/get_file?parent=${currentFolderID}`);
+      const { data } = await Axios.get(`/browse/file/${currentFolderID}`);
 
       if (data?.directory === false) {
         disableClipboardActions(true);
@@ -58,9 +58,12 @@ export default function SelectedFiles(props: any) {
   async function moveHere() {
     if (parentFolderIDofSelectedFile !== currentFolderID) {
       toastId.current = toast('Moving files');
-      await Axios.post('/move_files', {
-        parentID: currentFolderID,
-        foldersList: copiedFiles
+
+      const copiedFilesArr = Object.keys(copiedFiles);
+
+      await Axios.patch('/browse/move', {
+        parentId: currentFolderID,
+        foldersList: copiedFilesArr
       });
 
       toast.update(toastId.current, {
@@ -128,14 +131,13 @@ export default function SelectedFiles(props: any) {
 
   return (
     <>
-      {props.filesList.map(({ id, extension, name, isDirectory }, index) => {
+      {props.filesList.map(({ id, fileName, isDirectory }, index) => {
         return (
           <FileDisplay
             key={id}
             data={{
               id,
-              extension,
-              name,
+              fileName,
               isDirectory
             }}
             icon={<GiCancel size={16} />}

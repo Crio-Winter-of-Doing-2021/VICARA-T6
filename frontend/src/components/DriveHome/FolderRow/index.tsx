@@ -46,13 +46,11 @@ export default function FolderRow({
   fileInClipboard
 }: FolderRowProps) {
   const {
-    _id: fileID,
-    name,
-    directory: isDirectory,
-    extension,
-    size,
-    parent,
-    updatedAt,
+    id: fileID,
+    fileName,
+    isDirectory,
+    fileSize,
+    parentId,
     starred
   } = file;
   const toastID: any = useRef(null);
@@ -71,7 +69,7 @@ export default function FolderRow({
   const [showLinkModal, setIsOpenLinkModal] = useState(false);
 
   const starMutation = useMutation((fileID: any) => {
-    const result = Axios.post('/starred_files', { fileID });
+    const result = Axios.patch(`/browse/star/${fileID}`);
     setFilesCounter(filesCounter + 1);
     return result;
   });
@@ -85,20 +83,24 @@ export default function FolderRow({
     fileID: string,
     isDirectory: boolean,
     toastID: any,
-    name: string
+    fileName: string
   ) => {
     if (fileInClipboard) {
-      addNewFileToCopy(fileID, name, isDirectory, fileInClipboard, parent);
+      addNewFileToCopy(
+        fileID,
+        fileName,
+        isDirectory,
+        fileInClipboard,
+        parentId
+      );
     }
 
     if (isDirectory) {
-      deleteFolder(toastID, fileID, name);
+      deleteFolder(toastID, fileID, fileName);
     } else {
-      deleteFile(toastID, fileID, name);
+      deleteFile(toastID, fileID, fileName);
     }
   };
-
-  const fileSize: any = size;
 
   return (
     <>
@@ -119,10 +121,10 @@ export default function FolderRow({
                 onClick={() =>
                   addNewFileToCopy(
                     fileID,
-                    name,
+                    fileName,
                     isDirectory,
                     fileInClipboard,
-                    parent
+                    parentId
                   )
                 }
               />
@@ -143,10 +145,10 @@ export default function FolderRow({
               className="mr-3"
               height={20}
               width={20}
-              src={fileMapper(extension, isDirectory)}
+              src={fileMapper(fileName, isDirectory)}
             />
             <div className="text-sm leading-5 text-blue-900 max-w-lg overflow-ellipsis overflow-hidden whitespace-nowrap">
-              {name}
+              {fileName}
             </div>
           </div>
         </td>
@@ -163,7 +165,7 @@ export default function FolderRow({
           </span>
         </td> */}
         <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-blue-900 text-sm leading-5">
-          {format(new Date(updatedAt), 'LLL d, yyy  h:mm a')}
+          {format(new Date(), 'LLL d, yyy  h:mm a')}
         </td>
         <td className="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5">
           {isDirectory && (
@@ -179,7 +181,7 @@ export default function FolderRow({
               </button>
               <button
                 className="mr-4 px-5 py-2 border-red-500 border text-red-500 rounded transition duration-300 hover:bg-red-700 hover:text-white focus:outline-none"
-                onClick={() => handleDelete(fileID, true, toastID, name)}
+                onClick={() => handleDelete(fileID, true, toastID, fileName)}
               >
                 <span className="flex items-center">
                   <RiDeleteBin5Line className="mr-1" />
@@ -193,7 +195,7 @@ export default function FolderRow({
             <>
               <button
                 className="mr-4 px-5 py-2 border-green-500 border text-green-500 rounded transition duration-300 hover:bg-green-700 hover:text-white focus:outline-none"
-                onClick={() => downloadFile(toastID, fileID, name)}
+                onClick={() => downloadFile(toastID, fileID, fileName)}
               >
                 <span className="flex items-center">
                   <BsDownload className="mr-1" />
@@ -202,7 +204,7 @@ export default function FolderRow({
               </button>
               <button
                 className="mr-4 px-5 py-2 border-red-500 border text-red-500 rounded transition duration-300 hover:bg-red-700 hover:text-white focus:outline-none"
-                onClick={() => handleDelete(fileID, false, toastID, name)}
+                onClick={() => handleDelete(fileID, false, toastID, fileName)}
               >
                 <span className="flex items-center">
                   <RiDeleteBin5Line className="mr-1" />
@@ -258,18 +260,18 @@ export default function FolderRow({
       <GenerateLinkModal
         modalIsOpen={showLinkModal}
         setIsOpenModal={setIsOpenLinkModal}
-        name={name}
+        name={fileName}
         id={fileID}
         isDirectory={isDirectory}
-        parent={parent}
+        parent={parentId}
       />
 
       <RenameModal
         modalIsOpen={showRenameModal}
         setIsOpenModal={setIsOpenRenameModal}
-        name={name}
+        name={fileName}
         id={fileID}
-        parent={parent}
+        parent={parentId}
       />
     </>
   );

@@ -73,25 +73,25 @@ export default function FolderTable({ files }: FolderTableProps) {
               .sort((a: any, b: any) => {
                 // Sort files
                 if (sortAscending) {
-                  return a.name > b.name ? 1 : -1;
+                  return a.fileName > b.fileName ? 1 : -1;
                 } else {
-                  return a.name < b.name ? 1 : -1;
+                  return a.fileName < b.fileName ? 1 : -1;
                 }
               })
-              .sort((a: any, b: any) => b.directory - a.directory) // Sort directories
+              .sort((a: any, b: any) => b.isDirectory - a.isDirectory) // Sort directories
               .map((file: FilesSchmea) => {
                 const fileExists: boolean =
-                  copiedFiles[file._id]?.selected ?? false;
+                  copiedFiles[file.id]?.selected ?? false;
 
                 return (
                   <FolderRow
-                    key={file._id + file.name}
+                    key={file.id + file.fileName}
                     file={file}
-                    fileSelected={selectedFile === file._id}
+                    fileSelected={selectedFile === file.id}
                     selectFile={setTheClickedFileAsSelected}
                     addNewFileToCopy={selectTheCurrentFile}
                     fileInClipboard={fileExists}
-                    disableSelection={fileExists && file.directory}
+                    disableSelection={fileExists && file.isDirectory}
                   />
                 );
               })}

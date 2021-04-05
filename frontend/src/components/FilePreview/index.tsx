@@ -8,6 +8,7 @@ import Text from './children/Text';
 import Image from './children/Image';
 import Video from './children/Video';
 import Loader from 'react-loader-spinner';
+import FilesSchmea from '../../utils/interfaces/FilesSchema';
 
 const BasePreviewLayout = (props: any) => {
   return (
@@ -30,13 +31,14 @@ const BasePreviewLayout = (props: any) => {
 
 export default function FilePreview(props: any) {
   // const [fileType, setFileT] = useState(null);
+  const fileData: FilesSchmea = props.data;
   const [isLoading, setLoading] = useState(true);
   const [blob, setBlob] = useState<any>(null);
 
   useEffect(() => {
     async function fetchMyAPI() {
       if (blob === null) {
-        const { data } = await viewFile(props?.data?._id);
+        const { data } = await viewFile(fileData?.id);
         setBlob(data);
         setLoading(false);
       }
@@ -47,7 +49,7 @@ export default function FilePreview(props: any) {
 
   const DownloadFile = () => {
     const blobFile = new Blob([blob]);
-    saveAs(blobFile, props.data.name);
+    saveAs(blobFile, fileData.fileName);
   };
 
   if (isLoading) {
@@ -58,35 +60,35 @@ export default function FilePreview(props: any) {
     );
   }
 
-  if (props.data.type === 'application/pdf') {
+  if (fileData.mimetype === 'application/pdf') {
     return (
       <BasePreviewLayout download={DownloadFile}>
         <Pdf blob={blob} />
       </BasePreviewLayout>
     );
-  } else if (props.data.type.includes('audio')) {
+  } else if (fileData.mimetype.includes('audio')) {
     return (
       <BasePreviewLayout download={DownloadFile}>
-        <Audio blob={blob} metadata={props?.data?.type} />
+        <Audio blob={blob} metadata={fileData.mimetype} />
       </BasePreviewLayout>
     );
   } else if (
-    props.data.type.includes('text') ||
-    props.data.type.includes('json') ||
-    props.data.type.includes('octet-stream')
+    fileData.mimetype.includes('text') ||
+    fileData.mimetype.includes('json') ||
+    fileData.mimetype.includes('octet-stream')
   ) {
     return (
       <BasePreviewLayout download={DownloadFile}>
         <Text blob={blob} />
       </BasePreviewLayout>
     );
-  } else if (props.data.type.includes('image')) {
+  } else if (fileData.mimetype.includes('image')) {
     return (
       <BasePreviewLayout download={DownloadFile}>
         <Image blob={blob} />
       </BasePreviewLayout>
     );
-  } else if (props.data.type.includes('video')) {
+  } else if (fileData.mimetype.includes('video')) {
     return (
       <BasePreviewLayout download={DownloadFile}>
         <Video blob={blob} />

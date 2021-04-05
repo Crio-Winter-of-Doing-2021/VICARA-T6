@@ -1,6 +1,7 @@
 import { HiEye } from 'react-icons/hi';
 
 import { useFileContext } from '../../../contexts/File';
+import FilesSchema from '../../../utils/interfaces/FilesSchema';
 import FileDisplay from './filesDisplay';
 
 export default function StarredFiles(props: any) {
@@ -8,16 +9,15 @@ export default function StarredFiles(props: any) {
 
   return (
     <>
-      {props?.filesList?.map((file: any) => {
-        const { _id: id, extension, directory: isDirectory, name } = file;
+      {props?.filesList?.map((file: FilesSchema) => {
+        const { id, isDirectory, fileName } = file;
 
         return (
           <FileDisplay
             key={id}
             data={{
               id,
-              extension,
-              name,
+              fileName,
               isDirectory
             }}
             icon={<HiEye size={16} />}

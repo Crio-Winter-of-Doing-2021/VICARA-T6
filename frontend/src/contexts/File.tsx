@@ -29,7 +29,7 @@ export const FileContextProvider = (props: any) => {
 
   const selectTheCurrentFile = (
     id: string,
-    name: string,
+    fileName: string,
     isDirectory: boolean,
     isSelected: boolean,
     parentID: any
@@ -42,7 +42,7 @@ export const FileContextProvider = (props: any) => {
         [id]: {
           id,
           selected: !isSelected,
-          name,
+          fileName,
           isDirectory
         }
       };

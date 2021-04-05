@@ -1,10 +1,10 @@
 interface DirectoryRouteDataSchema {
   id: string;
-  name: string;
+  fileName: string;
 }
 
 interface DirectoryRouteRequestSchema {
-  directoryRoutes: DirectoryRouteDataSchema[];
+  reversedAncestors: DirectoryRouteDataSchema[];
 }
 
 export default DirectoryRouteRequestSchema;

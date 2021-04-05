@@ -1,15 +1,14 @@
 interface FilesSchema {
-  _id: string;
-  directory: boolean;
-  name: string;
-  owner: string;
-  parent: string;
-  size?: number;
-  type?: string;
+  id: string;
+  isDirectory: boolean;
+  fileName: string;
+  ownerId: string;
+  parentId: string;
+  fileSize?: number;
+  mimetype: string;
   extension?: string;
   starred?: boolean;
   updatedAt: string;
-  createdAt: string;
 }
 
 export default FilesSchema;

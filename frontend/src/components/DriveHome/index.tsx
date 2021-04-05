@@ -11,7 +11,6 @@ import FolderTable from './FolderTable';
 import LeftSideBar from '../LeftSideBar';
 import FilePreview from '../FilePreview';
 import Loader from 'react-loader-spinner';
-// import RightSideBar from '../RightSideBar';
 
 interface FileProps {
   currentFolderID: string;
@@ -19,7 +18,7 @@ interface FileProps {
 
 function useFiles({ currentFolderID }: FileProps) {
   return useQuery('files', async () => {
-    const { data } = await Axios.get(`/browse/directory/${currentFolderID}`);
+    const { data } = await Axios.get(`/browse/file/${currentFolderID}`);
     return data;
   });
 }
@@ -67,7 +66,6 @@ function DriveMain() {
 
           {data?.isDirectory === false && <FilePreview data={data} />}
         </div>
-        {/* <RightSideBar refetch={refetch} /> */}
       </div>
     </>
   );

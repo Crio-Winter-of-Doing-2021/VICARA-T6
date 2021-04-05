@@ -15,7 +15,7 @@ interface SearchProps {
 function useSearch({ searchText }: SearchProps) {
   return useQuery('search', async () => {
     if (searchText !== '') {
-      const { data } = await Axios.get(`/search_files?text=${searchText}`);
+      const { data } = await Axios.get(`/browse/search?text=${searchText}`);
       return data;
     }
   });

@@ -25,7 +25,7 @@ interface renameModalProps {
 }
 
 export default function RenameModal(props: any) {
-  const { handleSubmit, register, setError, errors } = useForm({
+  const { handleSubmit, setError, register, errors } = useForm({
     defaultValues: {
       name: props.name
     }
@@ -36,11 +36,15 @@ export default function RenameModal(props: any) {
 
   const onSubmit = async (values: renameModalProps) => {
     try {
-      await Axios.post('/rename_file', {
+      console.log({ props });
+
+      const result = await Axios.patch('/browse/rename', {
         id: props.id,
         parent: props.parent,
         name: values.name
       });
+
+      console.log(result);
 
       toastId.current = toast('Rename successfull');
 
