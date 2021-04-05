@@ -22,6 +22,7 @@ export interface FileDoc extends mongoose.Document {
     parentId: string;
     ownerId: string;
     fileSize: number;
+    starred: boolean;
 }
 
 interface FileModel extends mongoose.Model<FileDoc> {
@@ -51,9 +52,17 @@ const fileSchema = new mongoose.Schema({
         required: true
     },
     fileSize: {
-        type: Number,
-        default: 0
-    }
+        type: Number
+    },
+    starred: {
+        type: Boolean,
+        default: false
+    },
+    share: {
+        url: String,
+        expiryTime: Number,
+        generatedAt: Date,
+    },
 }, {
     toJSON: {
         transform(doc, ret) {
