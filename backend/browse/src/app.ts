@@ -18,6 +18,7 @@ import { starRouter } from "./routes/starFiles";
 import { recentRouter } from "./routes/getRecentFiles";
 import { searchFileRouter } from "./routes/searchFiles";
 import { moveFileRouter } from "./routes/moveFiles";
+import { fileRenameRouter } from "./routes/renameFiles";
 
 const app = express();
 app.set("trust proxy", true);
@@ -48,6 +49,7 @@ app.use(starRouter);
 app.use(recentRouter);
 app.use(searchFileRouter);
 app.use(moveFileRouter);
+app.use(fileRenameRouter);
 
 app.all("*", () => {
   throw new NotFoundError("Route not found");

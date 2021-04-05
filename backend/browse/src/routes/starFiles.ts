@@ -14,7 +14,7 @@ router.get("/api/browse/star", async (req: Request, res: Response) => {
   return res.send(starredFiles);
 });
 
-router.patch("/api/star/:id", async (req: Request, res: Response) => {
+router.patch("/api/browse/star/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   const ownerId = req.currentUser!.id;
 
