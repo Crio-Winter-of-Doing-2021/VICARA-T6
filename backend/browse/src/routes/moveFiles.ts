@@ -6,15 +6,7 @@ import {body} from "express-validator";
 
 const router = express.Router();
 
-router.patch('/api/browse/move', [
-    body('foldersList')
-        .isArray({min: 1})
-        .withMessage('At least one file should be provided'),
-    body('parentId')
-        .isMongoId()
-        .withMessage('Should be a valid mongoId')
-    ],
-    validateRequest,
+router.patch('/api/browse/move',
     async (req: Request, res: Response) => {
     const ownerId = req.currentUser!.id;
 

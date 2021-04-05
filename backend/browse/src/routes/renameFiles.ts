@@ -6,7 +6,7 @@ import {isFilenameValid} from "../util/checkParams";
 
 const router = express.Router();
 
-router.patch("/", [
+router.patch("/api/browse/rename", [
     body('id')
         .isMongoId()
         .withMessage('Invalid id'),
