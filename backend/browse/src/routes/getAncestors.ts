@@ -3,6 +3,7 @@ import { File } from "../models/file.model";
 
 import { NotFoundError, validateRequest } from "@vic-common/common";
 import { getAncestors } from "../util/getParents";
+import validator from "validator";
 
 const router = express.Router();
 
@@ -11,7 +12,13 @@ router.get(
   validateRequest,
   async (req: Request, res: Response) => {
     const ownerId = req.currentUser!.id;
-    const parentId = req.query.id;
+    const parentId = req.query.id as string;
+
+    if (!parentId || validator.isMongoId(parentId)) {
+        return res.send({
+            err: 'Not a valid parentId'
+        });
+    }
 
     const reqFile = await File.findOne({
       ownerId,
