@@ -3,7 +3,7 @@ import 'express-async-errors';
 import { json } from 'body-parser';
 import cors from 'cors';
 import cookieSession from 'cookie-session';
-import {errorHandler, NotFoundError} from '@vic-common/common';
+import {currentUser, errorHandler, NotFoundError, requireAuth} from '@vic-common/common';
 
 import {fileDownloadRouter} from "./routes/downloadFile";
 
@@ -20,6 +20,9 @@ app.use(cors({
     origin: true,
     credentials: true
 }));
+
+app.use(currentUser);
+app.use(requireAuth);
 
 app.use(fileDownloadRouter);
 

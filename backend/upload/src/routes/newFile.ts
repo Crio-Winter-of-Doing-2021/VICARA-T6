@@ -11,7 +11,7 @@ import {checkFileUploadParams} from "../util/checkParams";
 
 const router = express.Router();
 
-router.post('/api/files/upload', requireAuth,
+router.post('/api/files/upload',
     async (req: Request, res: Response) => {
     // Saves files to be returned
     const resFiles: (FileDoc | SaveFileFailed)[] = [];

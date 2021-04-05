@@ -7,7 +7,7 @@ import {deleteDirectory} from "../util/deleteDirectory";
 
 const router = express.Router();
 
-router.delete('/api/folders/delete', requireAuth,
+router.delete('/api/folders/delete',
     [
         body('folderId')
             .isMongoId()
