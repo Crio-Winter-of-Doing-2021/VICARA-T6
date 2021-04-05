@@ -8,7 +8,11 @@ router.get("/api/browse/search", async (req: Request, res: Response) => {
 
     const ownerId = req.currentUser!.id;
 
-    const searchText = req.query.text! as string;
+    if (!req.query.text) {
+        return res.send([]);
+    }
+
+    const searchText = req.query.text as string;
 
     if (searchText.trim().length === 0) {
         return res.send([]);
