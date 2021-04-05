@@ -10,7 +10,7 @@ interface fields {
   password?: string;
 }
 
-function SignUp() {
+function Login() {
   const history = useHistory();
   const {
     handleSubmit,
@@ -26,7 +26,7 @@ function SignUp() {
 
     try {
       await Axios.post('/users/signin', values).then((res) => {
-        const id = res.data._id;
+        const id = res.data.id;
         history.push(`/${id}`);
       });
     } catch (error) {
@@ -117,4 +117,4 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+export default Login;

@@ -26,7 +26,7 @@ function SignUp() {
 
     try {
       await Axios.post('/users/signup', values).then((res) => {
-        const id = res.data._id;
+        const id = res.data.id;
         history.push(`/${id}`);
       });
     } catch (error) {
