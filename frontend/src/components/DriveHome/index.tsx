@@ -60,19 +60,14 @@ function DriveMain() {
       <div className="flex">
         <LeftSideBar />
         <div>
-          <DragAndDrop
-            disabled={data?.currentFolderData?.directory === false ?? false}
-          />
+          <DragAndDrop disabled={data?.isDirectory === false ?? false} />
           <DirectoryRouter currentFolderID={currentFolderID} />
 
-          {(data?.currentFolderData === null ||
-            data?.currentFolderData?.directory) && (
+          {(data?.children.length === 0 || data?.isDirectory) && (
             <FolderTable files={data.children} />
           )}
 
-          {data?.currentFolderData?.directory === false && (
-            <FilePreview data={data?.currentFolderData} />
-          )}
+          {data?.isDirectory === false && <FilePreview data={data} />}
         </div>
         {/* <RightSideBar refetch={refetch} /> */}
       </div>

@@ -8,7 +8,7 @@ import BaseLayout from '../components/BaseLayout';
 function useAuth() {
   return useQuery('user', async () => {
     try {
-      const { data } = await Axios.get('/users/currentuser');
+      const { data } = await Axios.get('/browse/rootdir');
       console.log(data);
 
       return data;
@@ -39,7 +39,7 @@ function Login() {
 
   return (
     <div>
-      <Redirect to={`/${data?.currentUser?.id}`} />
+      <Redirect to={`/${data?.id}`} />
     </div>
   );
 }
