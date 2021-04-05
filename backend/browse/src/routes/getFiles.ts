@@ -5,7 +5,7 @@ import {NotFoundError, validateRequest} from "@vic-common/common";
 
 const router = express.Router();
 
-router.get('/api/browse/directory/:id', [
+router.get('/api/browse/file/:id', [
         param('id')
             .isMongoId()
             .withMessage('Invalid directory id')
@@ -13,27 +13,26 @@ router.get('/api/browse/directory/:id', [
     validateRequest,
     async (req: Request, res: Response) => {
     const ownerId = req.currentUser!.id;
-    const reqDirId = req.params.id;
-    const reqDir = await File.findOne({
-        _id: reqDirId,
-        ownerId,
-        isDirectory: true
+    const reqFileId = req.params.id;
+    const reqFile = await File.findOne({
+        _id: reqFileId,
+        ownerId
     });
-    if (!reqDir) {
+    if (!reqFile) {
         throw new NotFoundError('Resource not found');
     }
     const children = await File.find({
-        parentId: reqDir._id,
+        parentId: reqFile._id,
         ownerId,
     });
-    const resDir = reqDir.toObject();
-    resDir.id = resDir._id;
-    delete resDir._id;
+    const resFile = reqFile.toObject();
+    resFile.id = resFile._id;
+    delete resFile._id;
     const response = {
-        ...resDir,
+        ...resFile,
         children
     };
     res.send(response);
 });
 
-export {router as getDirRouter};
+export {router as getFileRouter};

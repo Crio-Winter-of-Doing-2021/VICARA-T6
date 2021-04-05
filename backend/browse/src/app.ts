@@ -7,9 +7,8 @@ import {currentUser, errorHandler, NotFoundError, requireAuth} from '@vic-common
 
 import {ancestorRouter} from "./routes/getAncestors";
 import {getRootDirRouter} from "./routes/getRootDir";
-import {getFileRouter} from "./routes/getFile";
 import {fileUpdateRouter} from "./routes/updateFile";
-import {getDirRouter} from "./routes/getDirectory";
+import {getFileRouter} from "./routes/getFiles";
 
 const app = express();
 app.set('trust proxy', true);
@@ -30,9 +29,8 @@ app.use(requireAuth);
 
 app.use(ancestorRouter);
 app.use(getRootDirRouter);
-app.use(getFileRouter);
 app.use(fileUpdateRouter);
-app.use(getDirRouter);
+app.use(getFileRouter);
 
 app.all('*', () => {
     throw new NotFoundError('Route not found');
