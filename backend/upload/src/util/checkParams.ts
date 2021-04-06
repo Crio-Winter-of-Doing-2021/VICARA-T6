@@ -50,7 +50,7 @@ export const checkFileUploadParams =
     if (duplicateFile) {
         if (overwrite) {
             const storage = StorageFactory.getStorage(StorageTypes.S3);
-            await storage.deleteFile(duplicateFile._id.toHexString());
+            await storage.deleteFile(duplicateFile._id.toHexString(), clientId);
             await File.findByIdAndDelete(duplicateFile._id);
         } else {
             res.push({

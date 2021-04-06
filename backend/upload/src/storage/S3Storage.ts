@@ -41,13 +41,13 @@ export class S3Storage extends StorageModel {
         return S3Storage.instance;
     }
 
-    public uploadFile(key: string):
+    public uploadFile(key: string, ownerId: string):
         { writeStream: stream.PassThrough; promise: Promise<AWS.S3.ManagedUpload.SendData> } {
         // Stream to write data into
         const pass = new stream.PassThrough();
         // S3 upload parameters
         const params: S3uploadParams = {
-            Key: key,
+            Key: `${ownerId}/${key}`,
             Bucket: this.bucketName,
             Body: pass,
         };

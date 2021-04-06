@@ -20,7 +20,7 @@ router.patch("/api/browse/star/:id", async (req: Request, res: Response) => {
 
   let err = await checkUpdateIdParam(id, ownerId);
   if (err.length !== 0) {
-    throw new BadUploadRequestError(err);
+    return res.status(400).send({err: 'Invalid request'});
   }
 
   const fileDetails = await File.findById(id);
