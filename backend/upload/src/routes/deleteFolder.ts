@@ -1,7 +1,7 @@
 import express, {Request, Response} from "express";
 import {body} from "express-validator";
 
-import {requireAuth, validateRequest} from "@vic-common/common";
+import {validateRequest} from "@vic-common/common";
 import {File} from "../models/file.model";
 import {deleteDirectory} from "../util/deleteDirectory";
 
@@ -28,7 +28,7 @@ router.delete('/api/folders/delete',
                 message: 'Invalid folderId for deletion'
             });
         }
-        await deleteDirectory(folderToDelete._id.toHexString());
+        await deleteDirectory(folderToDelete._id.toHexString(), ownerId);
         res.send(folderToDelete);
     }
 );

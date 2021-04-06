@@ -1,70 +1,37 @@
 import express, {Request, Response} from "express";
-import {body} from "express-validator";
-import validator from "validator";
 
-import {BadRequestError, requireAuth} from "@vic-common/common";
-import {File, FileDoc} from '../models/file.model';
-import {StorageTypes, DeleteFileFailed} from "../storage/Storage.model";
+import {File} from '../models/file.model';
+import {StorageTypes} from "../storage/Storage.model";
 import {StorageFactory} from '../storage/Storage.factory';
 
 const router = express.Router();
 
-router.delete('/api/files/delete',
-    body('files')
-        .isArray({min: 1})
-        .withMessage('A valid fileId array should be provided'),
+router.delete('/api/files/delete/:id',
     async (req: Request, res: Response) => {
-    // Saves deleted files
-    const resFiles: (FileDoc | DeleteFileFailed)[] = [];
-    // Get fileId array
-    const {files} = req.body;
-    // Request userId
-    const reqUserId = req.currentUser!.id;
+        // Get fileId
+        const fileId = req.params.id;
+        // Request userId
+        const ownerId = req.currentUser!.id;
 
-    for (let i = 0; i < files.length; i++) {
-        const fileId = files[i];
-        if (!validator.isMongoId(fileId)) {
-            resFiles.push({
-                fileId,
-                errCode: 400,
-                errors: [{
-                    field: 'fileId',
-                    message: 'Invalid fileId'
-                }]
+        const fileToDelete = await File.findOne({_id: fileId, ownerId: ownerId});
+        if (!fileToDelete) {
+            return res.status(404).send({
+                err: 'File not found'
             });
-            continue;
+        }
+        const deleteId = fileToDelete._id.toHexString();
+        const storage = StorageFactory.getStorage(StorageTypes.S3);
+        try {
+            await storage.deleteFile(deleteId, ownerId);
+        } catch (err) {
+            console.log(`Unable to delete ${deleteId} from storage`);
         }
         try {
-            const fileToDelete = await File.findOne({_id: fileId, ownerId: reqUserId});
-            if (!fileToDelete) {
-                throw new BadRequestError('File not found');
-            }
-            const deleteId = fileToDelete._id.toHexString();
-            const storage = StorageFactory.getStorage(StorageTypes.S3);
-            await storage.deleteFile(deleteId);
             await File.findByIdAndDelete(deleteId);
-            resFiles.push(fileToDelete);
         } catch (err) {
-            if (err instanceof BadRequestError) {
-                resFiles.push({
-                    fileId,
-                    errCode: 400,
-                    errors: [{
-                        message: 'Invalid request'
-                    }]
-                });
-            } else {
-                resFiles.push({
-                    fileId,
-                    errCode: 500,
-                    errors: [{
-                        message: 'Error deleting file from server'
-                    }]
-                });
-            }
+            return res.status(500).send({err: 'Unable to delete file'});
         }
-    }
-    res.send(resFiles);
+        res.send('Success');
 });
 
 export { router as deleteFileRouter };

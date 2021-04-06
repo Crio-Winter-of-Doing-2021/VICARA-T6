@@ -3,7 +3,7 @@ import * as stream from "stream";
 export abstract class StorageModel {
     abstract uploadFile(key: string):
         { writeStream: stream.PassThrough; promise: Promise<any> };
-    abstract deleteFile(key: string): Promise<any>;
+    abstract deleteFile(key: string, ownerId: string): Promise<any>;
 }
 
 export interface FileUploadRequest {
@@ -17,9 +17,9 @@ export interface SaveFileFailed extends FileUploadRequest {
 }
 
 export interface DeleteFileFailed {
-    fileId: string;
-    errCode: number;
-    errors: {message: string; field?: string}[];
+    name: string;
+    status: string;
+    message: string;
 }
 
 export enum StorageTypes {
