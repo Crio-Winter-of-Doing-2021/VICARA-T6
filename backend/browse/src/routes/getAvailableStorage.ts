@@ -1,5 +1,4 @@
 import express, { Request, Response } from "express";
-import { Types } from "mongoose";
 import { File } from "../models/file.model";
 
 const router = express.Router();
@@ -13,10 +12,10 @@ router.get("/api/browse/storage", async (req: Request, res: Response) => {
       $match: {
         $and: [
           {
-            owner: new Types.ObjectId(ownerId),
+            ownerId,
           },
           {
-            directory: false,
+            isDirectory: false,
           },
         ],
       },
@@ -25,14 +24,14 @@ router.get("/api/browse/storage", async (req: Request, res: Response) => {
       $group: {
         _id: null,
         total: {
-          $sum: "$size",
+          $sum: "$fileSize",
         },
       },
     },
   ]);
 
   return res.send({
-    totalAllotedSize: totalAllotedSize,
+    totalAllotedSize,
     totalUsedSize: totalUsedSize?.[0]?.total ?? 0,
   });
 });
