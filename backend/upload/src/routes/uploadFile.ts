@@ -1,8 +1,8 @@
-const meter = require("stream-meter");
-const mongoose = require("mongoose");
-const File = require("../models/file.model");
 import express, {Request, Response} from "express";
 import Busboy from 'busboy';
+import meter from 'stream-meter';
+
+import {File} from '../models/file.model';
 import { StorageFactory } from '../storage/Storage.factory';
 import { StorageTypes } from '../storage/Storage.model';
 
@@ -12,20 +12,24 @@ router.post("/api/files/upload",
     async (req: Request, res: Response) => {
         const ownerId = req.currentUser!.id;
         let response: {}[] = [];
-        
-        const s3 = StorageFactory.getStorage(StorageTypes.S3);
+
         const busboy = new Busboy({headers: req.headers});
+
+        console.log({busboy});
 
         let filesCount = 0,
             finished = false;
 
         busboy.on(
             "file",
-            async (fieldname: string, file: any, fileName: string, encoding: string, mimetype: string) => {
-                const smeter = meter();
-
+            async (
+                fieldname,
+                file,
+                fileName,
+                encoding,
+                mimetype
+            ) => {
                 const parentId = fieldname;
-
                 //Check if file already exists
                 const result = await File.findOne({
                     fileName,
@@ -36,7 +40,7 @@ router.post("/api/files/upload",
                     ++filesCount;
                 } else {
                     response.push({
-                        name: result.name,
+                        name: result.fileName,
                         status: "Failure",
                         message: "Filename already exists",
                     });
@@ -54,39 +58,34 @@ router.post("/api/files/upload",
                 console.log(filesCount);
 
                 if (result === null) {
-                    const new_file = new File({
+                    const new_file = File.buildFile({
                         fileName,
                         isDirectory: false,
-                        starred: false,
                         ownerId,
                         parentId,
                         mimetype,
                     });
-
+                    const s3 = StorageFactory.getStorage(StorageTypes.S3);
+                    const smeter = meter();
                     const {writeStream, promise: uploadPromise} = s3.uploadFile(new_file._id.toHexString(), ownerId);
                     try {
                         file.pipe(smeter).pipe(writeStream);
-
                         const result = await uploadPromise;
-
-                        new_file.size = smeter.bytes;
-
+                        console.log({result});
+                        new_file.fileSize = smeter.bytes;
                         console.log(new_file);
-
                         await new_file.save();
                     } catch (err) {
                         response.push({
-                            name: new_file.name,
+                            name: new_file.fileName,
                             status: "Failure",
                             message: err.message,
                         });
                     }
-
                     filesCount--;
                     console.log("ADDED");
-
                     response.push({
-                        name: new_file.name,
+                        name: new_file.fileName,
                         status: "Success",
                         message: "File upload successfully",
                     });
