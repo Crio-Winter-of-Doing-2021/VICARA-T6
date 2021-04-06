@@ -114,7 +114,7 @@ export const uploadFiles = async (
 
 export const uploadFolders = async (
   toastId: any,
-  parentID: string,
+  parentId: string,
   folders: any,
   setIsOpenUploadFilesModal: any
 ) => {
@@ -137,11 +137,11 @@ export const uploadFolders = async (
   try {
     const { data } = await Axios.post(
       '/folders/create',
-      { parentID, paths: folderStructureArr },
+      { parentId, paths: folderStructureArr },
       createDirectoryOptions
     );
 
-    const directoryStructure = data.result;
+    const directoryStructure = data;
 
     await new Promise((resolve) => setTimeout(resolve, 50));
 
@@ -173,8 +173,6 @@ export const uploadFolders = async (
       formData,
       uploadDirectoryOptions
     );
-
-    console.log(folderData);
 
     toast.update(toastId.current, {
       render: (
@@ -257,7 +255,7 @@ export const downloadFolder = (toastId: any, folderIds: string[]) => {
 export const deleteFile = async (toastId: any, id: string, name: string) => {
   toastId.current = toast.error('Deleting ' + name);
 
-  await Axios.delete('/delete_file', { data: { file: id } })
+  await Axios.delete(`/files/delete/${id}`)
     .then((response) => console.log(response))
     .then(() => {
       toast.update(toastId.current, {
@@ -275,10 +273,10 @@ export const deleteFile = async (toastId: any, id: string, name: string) => {
     });
 };
 
-export const deleteFolder = (toastId: any, id: string, name: string) => {
+export const deleteFolder = async (toastId: any, id: string, name: string) => {
   toastId.current = toast.error('Deleting ' + name);
 
-  Axios.delete('/delete_folder', { data: { file: id } })
+  await Axios.delete('/folders/delete', { data: { folderId: id } })
     .then((response) => console.log(response))
     .then(() => {
       toast.update(toastId.current, {
