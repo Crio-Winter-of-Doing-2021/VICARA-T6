@@ -1,21 +1,14 @@
 import express, { Request, Response } from "express";
 
-import { validateRequest } from "@vic-common/common";
 import {
   checkFolderUploadParams,
   createDirectories,
 } from "../util/createDirectories";
-import { body } from "express-validator";
 
 const router = express.Router();
 
 router.post(
   "/api/folders/create",
-  [
-    body("parentId").isMongoId().withMessage("Invalid parentId"),
-    body("paths").isArray({ min: 1 }).withMessage("Invalid paths array"),
-  ],
-  validateRequest,
   async (req: Request, res: Response) => {
     const ownerId = req.currentUser!.id;
     const parentId = req.body.parentId;

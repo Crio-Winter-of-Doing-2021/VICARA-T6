@@ -7,15 +7,9 @@ import {deleteDirectory} from "../util/deleteDirectory";
 
 const router = express.Router();
 
-router.delete('/api/folders/delete',
-    [
-        body('folderId')
-            .isMongoId()
-            .withMessage('Not a valid folderId')
-    ],
-    validateRequest,
+router.delete('/api/folders/delete/:id',
     async (req: Request, res: Response) => {
-        const folderId: string = req.body.folderId;
+        const folderId = req.params.id;
         const ownerId = req.currentUser!.id;
         const folderToDelete = await File.findOne({
             _id: folderId,
