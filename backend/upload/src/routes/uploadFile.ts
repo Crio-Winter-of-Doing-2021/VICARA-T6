@@ -19,29 +19,6 @@ router.post("/api/files/upload",
         let filesCount = 0,
             finished = false;
 
-        const totalSize = await File.aggregate([
-            {
-                $match: {
-                    $and: [
-                        {
-                            owner: new mongoose.Types.ObjectId(ownerId),
-                        },
-                        {
-                            directory: false,
-                        },
-                    ],
-                },
-            },
-            {
-                $group: {
-                    _id: null,
-                    total: {
-                        $sum: "$size",
-                    },
-                },
-            },
-        ]);
-
         busboy.on(
             "file",
             async (fieldname: string, file: any, fileName: string, encoding: string, mimetype: string) => {
