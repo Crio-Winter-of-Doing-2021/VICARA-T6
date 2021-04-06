@@ -23,36 +23,38 @@ function DragAndDrop(props: any) {
 
   async function sendTheFiles(files: any) {
     // Initialize jsZip
-
+    const condition = true;
     console.log(files);
 
     const listOfFolders = files.filter((e: any) => e.path !== e.name);
     const listOfFiles = files.filter((e: any) => e.path === e.name);
 
-    if (listOfFolders.length) {
-      console.log('FOLDERS FOUND : ', listOfFolders.length);
-      const result = await uploadFolders(
-        toastId,
-        parentID,
-        listOfFolders,
-        setIsOpenUploadFilesModal
-      );
-      setData(result);
-      setFilesCounter(filesCounter + 1);
-      console.log('FOLDERS SENT');
-    }
+    if (condition) {
+      if (listOfFolders.length) {
+        console.log('FOLDERS FOUND : ', listOfFolders.length);
+        const result = await uploadFolders(
+          toastId,
+          parentID,
+          listOfFolders,
+          setIsOpenUploadFilesModal
+        );
+        setData(result);
+        setFilesCounter(filesCounter + 1);
+        console.log('FOLDERS SENT');
+      }
 
-    if (listOfFiles.length) {
-      console.log('FILES FOUND : ', listOfFiles.length);
-      const result = await uploadFiles(
-        toastId,
-        parentID,
-        listOfFiles,
-        setIsOpenUploadFilesModal
-      );
-      setData(result);
-      setFilesCounter(filesCounter + 1);
-      console.log('FILES SENT');
+      if (listOfFiles.length) {
+        console.log('FILES FOUND : ', listOfFiles.length);
+        const result = await uploadFiles(
+          toastId,
+          parentID,
+          listOfFiles,
+          setIsOpenUploadFilesModal
+        );
+        setData(result);
+        setFilesCounter(filesCounter + 1);
+        console.log('FILES SENT');
+      }
     }
   }
 

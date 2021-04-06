@@ -4,6 +4,7 @@ import { IoMdClose } from 'react-icons/io';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import axios from 'axios';
 
+import createDirStructure from './createDirStructure';
 import Axios from '../../config/axios';
 
 interface toastProps {
@@ -79,7 +80,7 @@ export const uploadFiles = async (
 
   try {
     const { data: filesData } = await Axios.post(
-      '/upload_file',
+      '/files/upload',
       formData,
       options
     );
@@ -117,7 +118,6 @@ export const uploadFolders = async (
   folders: any,
   setIsOpenUploadFilesModal: any
 ) => {
-  let directoryStructure: any = {};
   const formData = new FormData();
 
   // Define the source for axios requests
@@ -132,23 +132,22 @@ export const uploadFolders = async (
     cancelToken: source.token
   };
 
+  const folderStructureArr = createDirStructure(folders)
+
   try {
     const { data } = await Axios.post(
-      `/create_directory_stucture?parent=${parentID}`,
-      { folders },
+      '/folders/create',
+      { parentID, paths: folderStructureArr },
       createDirectoryOptions
     );
-    directoryStructure = data.result;
+
+    const directoryStructure = data.result;
 
     await new Promise((resolve) => setTimeout(resolve, 50));
 
-    for (let i = 0; i < folders.length; i++) {
-      const filePathArr = folders[i].path.split('/');
-      filePathArr.pop();
-      const filePath = filePathArr.join('/');
-      const parentID = directoryStructure[filePath];
+    for (let i = 0; i < folderStructureArr.length; i++) {
+      const parentID = directoryStructure[folderStructureArr[i]];
       const parent = parentID;
-
       formData.append(parent, folders[i]);
     }
 
@@ -170,7 +169,7 @@ export const uploadFolders = async (
     };
 
     const { data: folderData } = await Axios.post(
-      '/upload_file',
+      '/files/upload',
       formData,
       uploadDirectoryOptions
     );

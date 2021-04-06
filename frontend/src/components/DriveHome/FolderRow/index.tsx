@@ -51,7 +51,8 @@ export default function FolderRow({
     isDirectory,
     fileSize,
     parentId,
-    starred
+    starred,
+    updatedAt
   } = file;
   const toastID: any = useRef(null);
   const {
@@ -165,7 +166,7 @@ export default function FolderRow({
           </span>
         </td> */}
         <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-blue-900 text-sm leading-5">
-          {format(new Date(), 'LLL d, yyy  h:mm a')}
+          {format(new Date(updatedAt), 'LLL d, yyy  h:mm a')}
         </td>
         <td className="px-6 py-4 whitespace-no-wrap text-left border-b border-gray-200 text-sm leading-5">
           {isDirectory && (
