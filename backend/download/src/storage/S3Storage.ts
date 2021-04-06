@@ -1,7 +1,6 @@
 import AWS from 'aws-sdk';
 
 import { StorageModel } from "./Storage.model";
-import * as stream from "stream";
 
 interface S3uploadParams {
     Bucket: string;
@@ -41,33 +40,30 @@ export class S3Storage extends StorageModel {
         return S3Storage.instance;
     }
 
-    public uploadFile(key: string):
-        { writeStream: stream.PassThrough; promise: Promise<AWS.S3.ManagedUpload.SendData> } {
-        // Stream to write data into
-        const pass = new stream.PassThrough();
-        // S3 upload parameters
-        const params: S3uploadParams = {
-            Key: key,
+    public downloadFile(key: string, ownerId: string) {
+        const fetchFileParams = {
             Bucket: this.bucketName,
-            Body: pass,
+            Key: `${ownerId}/${key}`
         };
-        // Concurrency of 10, 5Mb buffers
-        const opts = {
-            queueSize: 10,
-            partSize: 1024 * 1024 * 5
-        };
-
-        return {
-            promise: this.client.upload(params, opts).promise(),
-            writeStream: pass
-        };
+        return this.client.getObject(fetchFileParams).promise();
     }
 
-    public deleteFile(key: string): Promise<AWS.S3.DeleteObjectOutput> {
-        const params = {
+    public copyFile(key: string, newName: string, ownerId: string) {
+        const copyParams = {
+            Bucket: this.bucketName,
+            CopySource: `${this.bucketName}/${ownerId}/${key}`,
+            Key: newName
+        };
+        return this.client.copyObject(copyParams).promise();
+    }
+
+    public getFileUrl(key: string, expireTime: number) {
+        const downloadFileParams = {
             Bucket: this.bucketName,
             Key: key,
+            Expires: expireTime,
         };
-        return this.client.deleteObject(params).promise();
+        return this.client.getSignedUrl("getObject", downloadFileParams);
     }
+
 }
