@@ -205,7 +205,7 @@ export const downloadFile = (toastId: any, id: string, name: string) => {
   // Set the initial value of toast with custom toast button
   toastId.current = toast('Downloading ' + name);
 
-  Axios.get(`/download_file?file=${id}`, { responseType: 'blob' })
+  Axios.get(`/downloads/file/${id}`, { responseType: 'blob' })
     .then((response) => new Blob([response.data]))
     .then((blob) => saveAs(blob, name))
     .then(() => {
@@ -225,7 +225,7 @@ export const downloadFile = (toastId: any, id: string, name: string) => {
 };
 
 export const viewFile = async (id: string) => {
-  const response = await Axios.get(`/download_file?file=${id}`, {
+  const response = await Axios.get(`/downloads/file/${id}`, {
     responseType: 'blob'
   });
   return response;
