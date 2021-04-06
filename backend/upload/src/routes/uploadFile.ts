@@ -15,8 +15,6 @@ router.post("/api/files/upload",
 
         const busboy = new Busboy({headers: req.headers});
 
-        console.log({busboy});
-
         let filesCount = 0,
             finished = false;
 
@@ -32,6 +30,7 @@ router.post("/api/files/upload",
                 const parentId = fieldname;
                 //Check if file already exists
                 const result = await File.findOne({
+                    parentId,
                     fileName,
                     ownerId,
                 });
@@ -47,15 +46,12 @@ router.post("/api/files/upload",
                 }
 
                 file.on("end", function () {
-                    console.log("ENDED");
                     // res.json({ msg: "ENDED" })
                 });
 
                 file.on("data", function (data: any) {
                     // console.log("DATA FOUND");
                 });
-
-                console.log(filesCount);
 
                 if (result === null) {
                     const new_file = File.buildFile({
@@ -71,9 +67,7 @@ router.post("/api/files/upload",
                     try {
                         file.pipe(smeter).pipe(writeStream);
                         const result = await uploadPromise;
-                        console.log({result});
                         new_file.fileSize = smeter.bytes;
-                        console.log(new_file);
                         await new_file.save();
                     } catch (err) {
                         response.push({
@@ -83,7 +77,6 @@ router.post("/api/files/upload",
                         });
                     }
                     filesCount--;
-                    console.log("ADDED");
                     response.push({
                         name: new_file.fileName,
                         status: "Success",
@@ -92,21 +85,16 @@ router.post("/api/files/upload",
                 }
 
                 if (filesCount === 0 && finished) {
-                    console.log("Finished Uploading");
                     res.send(response);
                 }
-
-                console.log({ filesCount, finished });
             }
         );
 
         busboy.on("finish", function () {
             // send response
-            console.log("Done parsing form!");
             finished = true;
 
             if (filesCount === 0 && finished) {
-                console.log("Finished Uploading");
                 res.send(response);
             }
         });
