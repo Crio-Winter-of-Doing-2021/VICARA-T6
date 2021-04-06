@@ -18,9 +18,6 @@ router.patch('/api/browse/move',
     if (!newParentFolder) {
         return res.send({err: "Invalid folder id"});
     }
-    // Object.keys(foldersList).map(async (id: any) => {
-    //     await File.findByIdAndUpdate(id, { parent: parentId });
-    // });
     for (let i = 0; i < foldersList.length; i++) {
         await File.findByIdAndUpdate(foldersList[i], { parentId });
     }
