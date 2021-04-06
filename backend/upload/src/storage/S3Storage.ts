@@ -63,10 +63,10 @@ export class S3Storage extends StorageModel {
         };
     }
 
-    public deleteFile(key: string): Promise<AWS.S3.DeleteObjectOutput> {
+    public deleteFile(key: string, ownerId: string): Promise<AWS.S3.DeleteObjectOutput> {
         const params = {
             Bucket: this.bucketName,
-            Key: key,
+            Key: `${ownerId}/${key}`,
         };
         return this.client.deleteObject(params).promise();
     }
