@@ -40,12 +40,12 @@ export class S3Storage extends StorageModel {
         return S3Storage.instance;
     }
 
-    public downloadFile(key: string, ownerId: string) {
+    public downloadFile(key: string, ownerId: string, fileName: string) {
         const fetchFileParams = {
             Bucket: this.bucketName,
-            Key: `${ownerId}/${key}`
+            Key: `${ownerId}/${key}`,
+            ResponseContentDisposition: `attachment; filename ="${fileName}"`,
         };
-        console.log(fetchFileParams);
         return this.client.getObject(fetchFileParams).promise();
     }
 

@@ -18,13 +18,11 @@ router.get('/api/downloads/file/:id', async (req: Request, res: Response) => {
     }
     const s3 = StorageFactory.getStorage(StorageTypes.S3);
     try {
-        console.log({id, ownerId});
-        const responseS3 = await s3.downloadFile(id, ownerId);
-        console.log({responseS3});
-        if(!responseS3.data) {
+        const responseS3 = await s3.downloadFile(id, ownerId, fileToDownload.fileName);
+        if(!responseS3.Body) {
             return res.status(500).send({err: 'Could not find file in storage'});
         }
-        return res.send(responseS3.data.body);
+        return res.send(responseS3.Body);
     } catch (err) {
         return res.status(500).send({err: 'Could not find file in storage'});
     }
