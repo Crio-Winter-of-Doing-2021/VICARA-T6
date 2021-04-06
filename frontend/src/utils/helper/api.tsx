@@ -234,7 +234,9 @@ export const viewFile = async (id: string) => {
 export const downloadFolder = (toastId: any, folderIds: string[]) => {
   toastId.current = toast('Downloading files');
 
-  Axios.post('/download_folder', { folder: folderIds })
+  console.log({ folderIds });
+
+  Axios.post('/downloads/folder', { folder: folderIds })
     .then((response: any) => (window.location.href = response.data.url))
     .then(() => {
       toast.update(toastId.current, {
@@ -276,7 +278,7 @@ export const deleteFile = async (toastId: any, id: string, name: string) => {
 export const deleteFolder = async (toastId: any, id: string, name: string) => {
   toastId.current = toast.error('Deleting ' + name);
 
-  await Axios.delete('/folders/delete', { data: { folderId: id } })
+  await Axios.delete(`/folders/delete/${id}`)
     .then((response) => console.log(response))
     .then(() => {
       toast.update(toastId.current, {

@@ -60,7 +60,7 @@ function DriveMain() {
           <DragAndDrop disabled={data?.isDirectory === false ?? false} />
           <DirectoryRouter currentFolderID={currentFolderID} />
 
-          {(data?.children.length === 0 || data?.isDirectory) && (
+          {(data?.isDirectory) && (
             <FolderTable files={data.children} />
           )}
 

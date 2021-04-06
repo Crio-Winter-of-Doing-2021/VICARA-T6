@@ -79,8 +79,8 @@ export default function SelectedFiles(props: any) {
   async function copyHere() {
     if (parentFolderIDofSelectedFile !== currentFolderID) {
       toastId.current = toast('Copying files');
-      await Axios.post('/copy_files', {
-        parentID: currentFolderID,
+      await Axios.post('/downloads/copyfiles', {
+        parentId: currentFolderID,
         foldersList: copiedFiles
       });
       toast.update(toastId.current, {
