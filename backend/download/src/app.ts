@@ -7,6 +7,7 @@ import {currentUser, errorHandler, NotFoundError, requireAuth} from '@vic-common
 
 import {fileDownloadRouter} from "./routes/downloadFile";
 import {downloadFolderRouter} from "./routes/downloadFolder";
+import {copyFilesRouter} from "./routes/copyFiles";
 
 const app = express();
 app.set('trust proxy', true);
@@ -27,6 +28,7 @@ app.use(requireAuth);
 
 app.use(fileDownloadRouter);
 app.use(downloadFolderRouter);
+app.use(copyFilesRouter);
 
 app.all('*', () => {
     throw new NotFoundError('Route not found');
