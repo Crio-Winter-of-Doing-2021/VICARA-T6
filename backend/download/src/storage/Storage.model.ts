@@ -1,9 +1,7 @@
-import * as stream from "stream";
-
 export abstract class StorageModel {
-    abstract uploadFile(key: string):
-        { writeStream: stream.PassThrough; promise: Promise<any> };
-    abstract deleteFile(key: string): Promise<any>;
+    abstract downloadFile(key: string, ownerId: string): Promise<any>;
+    abstract copyFile(key: string, newName: string, ownerId: string): Promise<any>;
+    abstract getFileUrl(key: string, expireTime: number): string;
 }
 
 export interface FileUploadRequest {
