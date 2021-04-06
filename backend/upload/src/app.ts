@@ -7,7 +7,7 @@ import {currentUser, errorHandler, NotFoundError, requireAuth} from '@vic-common
 
 import {deleteFileRouter} from "./routes/deleteFile";
 import {deleteFolderRouter} from "./routes/deleteFolder";
-import {createFileRouter} from "./routes/newFile";
+import {uploadFileRouter} from "./routes/uploadFile";
 import {createFolderRouter} from "./routes/newFolder";
 
 const app = express();
@@ -27,7 +27,7 @@ app.use(cors({
 app.use(currentUser);
 app.use(requireAuth);
 
-app.use(createFileRouter);
+app.use(uploadFileRouter);
 app.use(createFolderRouter);
 app.use(deleteFileRouter);
 app.use(deleteFolderRouter);

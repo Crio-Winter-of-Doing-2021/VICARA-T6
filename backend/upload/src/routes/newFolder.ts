@@ -1,12 +1,11 @@
 import express, { Request, Response } from "express";
 
-import { requireAuth, validateRequest } from "@vic-common/common";
+import { validateRequest } from "@vic-common/common";
 import {
   checkFolderUploadParams,
   createDirectories,
 } from "../util/createDirectories";
 import { body } from "express-validator";
-import { BadUploadRequestError } from "@vic-common/common";
 
 const router = express.Router();
 
@@ -24,7 +23,7 @@ router.post(
 
     const errRes = await checkFolderUploadParams(parentId, ownerId, paths);
     if (errRes.length !== 0) {
-      throw new BadUploadRequestError(errRes);
+      return res.status(400).send({err: 'Invalid request'});
     }
     const pathsId = await createDirectories(ownerId, parentId, paths);
     res.send(pathsId);

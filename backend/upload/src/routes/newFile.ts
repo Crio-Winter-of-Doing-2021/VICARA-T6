@@ -2,17 +2,17 @@ import express, {Request, Response} from "express";
 import Busboy from 'busboy';
 import meter from 'stream-meter';
 
-import {requireAuth} from "@vic-common/common";
 import {File, FileDoc} from '../models/file.model';
 import {StorageFactory} from '../storage/Storage.factory';
 import {StorageTypes, SaveFileFailed} from '../storage/Storage.model';
-import {StorageError, BadUploadRequestError} from '@vic-common/common';
+import {BadUploadRequestError} from '@vic-common/common';
 import {checkFileUploadParams} from "../util/checkParams";
 
 const router = express.Router();
 
 router.post('/api/files/upload',
     async (req: Request, res: Response) => {
+    const ownerId = req.currentUser!.id;
     // Saves files to be returned
     const resFiles: (FileDoc | SaveFileFailed)[] = [];
     // Saves state of form being processed
@@ -40,7 +40,7 @@ router.post('/api/files/upload',
                     req.query.overwrite === 'true'
                 );
                 if (check.length !== 0) {
-                    throw new BadUploadRequestError(check);
+                    return res.status(400).send({err: check[0].message});
                 }
                 const newFile = File.buildFile({
                     fileName,
@@ -51,7 +51,7 @@ router.post('/api/files/upload',
                 });
                 // To measure length of stream
                 const fileMeter = meter();
-                const {writeStream, promise} =  storage.uploadFile(newFile._id.toHexString());
+                const {writeStream, promise} =  storage.uploadFile(newFile._id.toHexString(), ownerId);
                 // Write to storage and wait
                 file.pipe(fileMeter).pipe(writeStream);
                 await promise;
@@ -67,16 +67,14 @@ router.post('/api/files/upload',
                         parentId,
                         fileName,
                         errCode: 400,
-                        errors: err.serializeErrors()
+                        error: 'Bad upload request'
                     });
                 } else {
                     resFiles.push({
                         parentId,
                         fileName,
                         errCode: 500,
-                        errors:
-                            new StorageError('Could not save the file to storage')
-                                .serializeErrors()
+                        error: 'Could not upload'
                     });
                 }
             } finally {
