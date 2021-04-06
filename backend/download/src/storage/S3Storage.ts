@@ -45,6 +45,7 @@ export class S3Storage extends StorageModel {
             Bucket: this.bucketName,
             Key: `${ownerId}/${key}`
         };
+        console.log(fetchFileParams);
         return this.client.getObject(fetchFileParams).promise();
     }
 
