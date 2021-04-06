@@ -11,15 +11,8 @@ export class UserDeletedListener extends Listener<UserDeletedEvent> {
     queueGroupName = queueGroupName;
     async onMessage(data: UserDeletedEvent["data"], msg: Message) {
         const {id} = data;
-        const filesToDelete = await File.find({
-            ownerId: id,
-            isDirectory: false
-        });
         const storage = StorageFactory.getStorage(StorageTypes.S3);
-        filesToDelete.forEach(file => {
-            storage.deleteFile(file._id.toHexString());
-        });
-
+        storage.deleteFile('', id);
         await File.deleteMany({
             ownerId: id
         });
