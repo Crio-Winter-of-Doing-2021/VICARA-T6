@@ -56,7 +56,7 @@ router.post(
 
                         //Get presigned url
                         const key = folderName + "/" + s3FileName;
-                        const url = s3.getFileUrl(key, 60);
+                        const url = s3.getFileUrl(key, 60, s3FileName);
 
                         res.status(200).send({ url });
                     }
