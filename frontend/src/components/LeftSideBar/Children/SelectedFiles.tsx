@@ -30,10 +30,12 @@ export default function SelectedFiles(props: any) {
 
   useEffect(() => {
     async function fetchFileDetails() {
-      const { data } = await Axios.get(`/browse/file/${currentFolderID}`);
+      if (currentFolderID !== 'search') {
+        const { data } = await Axios.get(`/browse/file/${currentFolderID}`);
 
-      if (data?.directory === false) {
-        disableClipboardActions(true);
+        if (data?.directory === false) {
+          disableClipboardActions(true);
+        }
       }
     }
 

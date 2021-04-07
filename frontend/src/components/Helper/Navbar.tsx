@@ -13,8 +13,9 @@ interface fields {
 
 export default function Navbar() {
   const history = useHistory();
+  const { searchText, setSearch } = useSearchContext();
+
   const { handleSubmit, register } = useForm();
-  const { setSearch } = useSearchContext();
 
   const handSignOut = async () => {
     await Axios.post('/users/signout');
@@ -57,6 +58,7 @@ export default function Navbar() {
                           className="h-full border-none focus:ring-0 focus:shadow-none text-gray-700 outline-none border-transparent focus:outline-none focus:border-none ring-offset-0 w-72rem"
                           placeholder="Search Files and Folders"
                           name="search"
+                          defaultValue={searchText}
                         />
                       </form>
                     </div>
