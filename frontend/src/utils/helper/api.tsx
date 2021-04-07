@@ -62,19 +62,21 @@ export const uploadFiles = async (
   const options = {
     cancelToken: source.token,
     onUploadProgress: (progressEvent: any) => {
-      console.log(progressEvent);
-      // const progress = progressEvent.loaded / progressEvent.total;
+      const progress = (
+        (progressEvent.loaded / progressEvent.total) *
+        100
+      ).toFixed(2);
 
       // check if we already displayed a toast
-      // if (toastId.current === null) {
-      //   toastId.current = toast('Upload in Progress', {
-      //     progress: progress > 90 ? 90 : progress
-      //   });
-      // } else {
-      //   toast.update(toastId.current, {
-      //     progress: progress > 90 ? 90 : progress
-      //   });
-      // }
+      if (toastId.current === null) {
+        toast.update(toastId.current, {
+          render: `Upload in Progress ${progress} %`
+        });
+      } else {
+        toast.update(toastId.current, {
+          render: `Upload in Progress ${progress} %`
+        });
+      }
     }
   };
 
@@ -154,17 +156,21 @@ export const uploadFolders = async (
     const uploadDirectoryOptions = {
       cancelToken: source.token,
       onUploadProgress: (progressEvent: any) => {
-        // const progress = progressEvent.loaded / progressEvent.total;
-        // // check if we already displayed a toast
-        // if (toastId.current === null) {
-        //   toastId.current = toast('Upload in Progress', {
-        //     progress: progress > 90 ? 90 : progress
-        //   });
-        // } else {
-        //   toast.update(toastId.current, {
-        //     progress: progress > 90 ? 90 : progress
-        //   });
-        // }
+        const progress = (
+          (progressEvent.loaded / progressEvent.total) *
+          100
+        ).toFixed(2);
+
+        // check if we already displayed a toast
+        if (toastId.current === null) {
+          toast.update(toastId.current, {
+            render: `Upload in Progress ${progress} %`
+          });
+        } else {
+          toast.update(toastId.current, {
+            render: `Upload in Progress ${progress} %`
+          });
+        }
       }
     };
 
