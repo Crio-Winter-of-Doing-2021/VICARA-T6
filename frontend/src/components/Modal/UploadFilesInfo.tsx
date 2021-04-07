@@ -33,7 +33,9 @@ export default function UploadFilesInfo(props: any) {
         <>
           <div className="absolute right-4 top-3">
             <button onClick={closeModal}>
-              <AiOutlineCloseCircle />
+              <span className="hover:bg-gray-200 rounded-3xl cursor-pointer flex justify-center py-2 px-2">
+                <AiOutlineCloseCircle />
+              </span>
             </button>
           </div>
           <div className="flex flex-col px-5 py-10 h-80vh w-54rem justify-center">

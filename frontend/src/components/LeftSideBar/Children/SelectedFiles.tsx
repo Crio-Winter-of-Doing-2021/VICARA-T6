@@ -33,7 +33,7 @@ export default function SelectedFiles(props: any) {
       if (currentFolderID !== 'search') {
         const { data } = await Axios.get(`/browse/file/${currentFolderID}`);
 
-        if (data?.directory === false) {
+        if (data?.isDirectory === false) {
           disableClipboardActions(true);
         }
       }

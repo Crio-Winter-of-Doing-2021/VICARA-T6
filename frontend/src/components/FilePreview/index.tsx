@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { viewFile } from '../../utils/helper/api';
+import { useEffect, useRef, useState } from 'react';
+import { downloadFile, viewFile } from '../../utils/helper/api';
 import { BsDownload } from 'react-icons/bs';
 import { saveAs } from 'file-saver';
 import Pdf from './children/Pdf';
@@ -34,12 +34,35 @@ export default function FilePreview(props: any) {
   const fileData: FilesSchmea = props.data;
   const [isLoading, setLoading] = useState(true);
   const [blob, setBlob] = useState<any>(null);
+  const toastId: any = useRef(null);
+
+  const supportedFilesArr = [
+    'application/pdf',
+    'audio',
+    'text',
+    'json',
+    'image',
+    'video'
+  ];
+  const [previewSupported, togglePreview] = useState(false);
 
   useEffect(() => {
     async function fetchMyAPI() {
-      if (blob === null) {
-        const { data } = await viewFile(fileData?.id);
-        setBlob(data);
+      for (let i = 0; i < supportedFilesArr.length; i++) {
+        if (props.data.mimetype.includes(supportedFilesArr[i])) {
+          togglePreview(true);
+
+          if (blob === null) {
+            const { data } = await viewFile(fileData?.id);
+            setBlob(data);
+            setLoading(false);
+          }
+
+          break;
+        }
+      }
+
+      if (!previewSupported) {
         setLoading(false);
       }
     }
@@ -47,9 +70,13 @@ export default function FilePreview(props: any) {
     fetchMyAPI();
   }, [props]);
 
-  const DownloadFile = () => {
-    const blobFile = new Blob([blob]);
-    saveAs(blobFile, fileData.fileName);
+  const DownloadFile = async () => {
+    if (previewSupported) {
+      const blobFile = new Blob([blob]);
+      saveAs(blobFile, fileData.fileName);
+    } else {
+      await downloadFile(toastId, fileData?.id, fileData.fileName);
+    }
   };
 
   if (isLoading) {
@@ -74,8 +101,7 @@ export default function FilePreview(props: any) {
     );
   } else if (
     fileData.mimetype.includes('text') ||
-    fileData.mimetype.includes('json') ||
-    fileData.mimetype.includes('octet-stream')
+    fileData.mimetype.includes('json')
   ) {
     return (
       <BasePreviewLayout download={DownloadFile}>

@@ -82,7 +82,9 @@ export default function RenameModal(props: any) {
         <>
           <div className="absolute right-4 top-3">
             <button onClick={closeModal}>
-              <AiOutlineCloseCircle />
+              <span className="hover:bg-gray-200 rounded-3xl cursor-pointer flex justify-center py-2 px-2">
+                <AiOutlineCloseCircle />
+              </span>
             </button>
           </div>
           <div className="flex flex-col px-5 py-5 h-64 w-96">

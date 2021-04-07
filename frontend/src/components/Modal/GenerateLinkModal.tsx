@@ -70,7 +70,9 @@ export default function GenerateLinkModal(props: any) {
         <>
           <div className="absolute right-4 top-3">
             <button onClick={closeModal}>
-              <AiOutlineCloseCircle />
+              <span className="hover:bg-gray-200 rounded-3xl cursor-pointer flex justify-center py-2 px-2">
+                <AiOutlineCloseCircle size={16} />
+              </span>
             </button>
           </div>
           <div className="flex flex-col px-5 py-5 w-96 h-80">
