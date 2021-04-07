@@ -77,8 +77,8 @@ async function copyFolderUtility(
             //     Key: ownerId + "/" + new_file._id.toString(),
             // };
             //Send the delete request
-            const src = process.env.AWS_BUCKET_NAME + "/" + ownerId + "/" + fileID;
-            const dest = ownerId + "/" + new_file._id.toString();
+            const src = fileID;
+            const dest = new_file._id.toString();
             try {
                 await s3.copyFile(src, dest, ownerId);
             } catch (error) {
@@ -124,8 +124,8 @@ async function copyFileUtility(
         //         process.env.S3_BUCKET_NAME + "/" + ownerId + "/" + existingFile._id,
         //     Key: ownerId + "/" + new_file._id.toString(),
         // };
-        const src = process.env.AWS_BUCKET_NAME + "/" + ownerId + "/" + existingFile._id;
-        const dest = ownerId + "/" + new_file._id.toString();
+        const src = existingFile._id.toString();
+        const dest = new_file._id.toString();
         console.log('PRINTING_SRC_AND_DEST_IN_COPY_FILES');
         console.log({src, dest});
         await s3.copyFile(src, dest, ownerId);

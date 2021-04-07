@@ -17,7 +17,7 @@ const createMiddleware = {
         console.log({ folderIDs });
         const s3 = StorageFactory.getStorage(StorageTypes.S3);
 
-        let parentFolderString = `${ownerId}/${new Date().toISOString()}`;
+        let parentFolderString = `${new Date().toISOString()}`;
 
         for (let i = 0; i < folderIDs.length; i++) {
             const result = await File.findById(folderIDs[i]);
@@ -53,7 +53,7 @@ const createMiddleware = {
                     //         process.env.S3_BUCKET_NAME + "/" + ownerId + "/" + fileKey,
                     //     Key: parentFolderString + "/" + folderPath + fileName,
                     // };
-                    const src = process.env.AWS_BUCKET_NAME + "/" + ownerId + "/" + fileKey;
+                    const src = fileKey;
                     const dest = parentFolderString + "/" + folderPath + fileName;
                     await s3.copyFile(src, dest, ownerId);
                 }
@@ -65,7 +65,7 @@ const createMiddleware = {
                 //     Key: parentFolderString + "/" + result.name,
                 // };
 
-                const src = process.env.AWS_BUCKET_NAME + "/" + ownerId + "/" + result!._id;
+                const src = result!._id.toString();
                 const dest = parentFolderString + "/" + result!.fileName;
                 console.log('PRINTING_SRC_AND_DEST_IN_DIR_MIDDLEWARE');
                 console.log({src, dest});
