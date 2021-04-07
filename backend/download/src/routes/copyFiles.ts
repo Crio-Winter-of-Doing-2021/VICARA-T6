@@ -1,4 +1,4 @@
-import express from "express";
+import express, {Request, Response} from "express";
 
 import {File, FileDoc} from '../models/file.model';
 import {traverseDirectory} from "../util/traverseDirectoryHelper";
@@ -26,7 +26,8 @@ async function copyFolderUtility(
     let directoryMapper = {} as any;
     //Traverse the children and get their IDs
     await traverseDirectory(folder_id, folderString, directoryStructure, true);
-
+    console.log('COPY_FILE_AFTER_TRAVERSE_DIR');
+    console.log(JSON.stringify(directoryStructure, null, 2));
     //Root folder
     let tempExisting = directoryStructure[0] as FileDoc;
     const fileID = tempExisting._id;
@@ -89,8 +90,8 @@ async function copyFolderUtility(
         console.log("Duplicate File Created in DB");
         directoryMapper[fileID] = new_file._id;
     }
-
-    console.log(directoryMapper);
+    console.log('DIR_MAPPER_AFTER_FOR_LOOP');
+    console.log(JSON.stringify(directoryMapper, null, 2));
 
     return Promise.resolve();
 }
@@ -120,7 +121,7 @@ async function copyFileUtility(
         //         process.env.S3_BUCKET_NAME + "/" + ownerId + "/" + existingFile._id,
         //     Key: ownerId + "/" + new_file._id.toString(),
         // };
-        const src = process.env.S3_BUCKET_NAME + "/" + ownerId + "/" + existingFile._id;
+        const src = process.env.AWS_BUCKET_NAME + "/" + ownerId + "/" + existingFile._id;
         const dest = ownerId + "/" + new_file._id.toString();
         await s3.copyFile(src, dest, ownerId);
     } else {
@@ -131,12 +132,12 @@ async function copyFileUtility(
 }
 
 router.post("/api/downloads/copyfiles",
-    async (req, res, next) => {
+    async (req: Request, res: Response) => {
         let { foldersList, parentId } = req.body;
         const ownerId = req.currentUser!.id;
 
         const fList = Object.entries(foldersList);
-        console.log({fList, parentId});
+        console.log(JSON.stringify({fList, parentId}, null, 2));
 
         for (let i = 0; i < fList.length; i++) {
             const fileDetails = fList[i];
