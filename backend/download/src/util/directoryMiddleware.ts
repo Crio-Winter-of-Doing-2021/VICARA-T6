@@ -67,6 +67,8 @@ const createMiddleware = {
 
                 const src = process.env.AWS_BUCKET_NAME + "/" + ownerId + "/" + result!._id;
                 const dest = parentFolderString + "/" + result!.fileName;
+                console.log('PRINTING_SRC_AND_DEST_IN_DIR_MIDDLEWARE');
+                console.log({src, dest});
                 await s3.copyFile(src, dest, ownerId);
             }
         }
