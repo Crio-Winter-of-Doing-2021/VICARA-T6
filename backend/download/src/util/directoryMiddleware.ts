@@ -73,7 +73,7 @@ const createMiddleware = {
             }
         }
 
-        req.folderName = `${ownerId}/${parentFolderString}`;
+        req.folderName = parentFolderString;
         next();
     },
 };
