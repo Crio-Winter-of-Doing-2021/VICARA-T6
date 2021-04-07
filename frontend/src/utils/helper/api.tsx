@@ -237,7 +237,7 @@ export const downloadFolder = (toastId: any, folderIds: string[]) => {
   console.log({ folderIds });
 
   Axios.post('/downloads/folder', { folder: folderIds })
-    .then((response: any) => (window.location.href = response.data.url))
+    .then((response: any) => (window.open(response.data.url, '_blank')))
     .then(() => {
       toast.update(toastId.current, {
         render: 'Download successfull',

@@ -29,7 +29,7 @@ export default function GenerateLinkModal(props: any) {
     setLoading(true);
 
     try {
-      const result = await Axios.get(`/shareable_link?id=${id}`);
+      const result = await Axios.get(`/downloads/shareurl/${id}`);
       console.log(result);
       if (result.data.url) {
         setShareableURL(result.data.url);
