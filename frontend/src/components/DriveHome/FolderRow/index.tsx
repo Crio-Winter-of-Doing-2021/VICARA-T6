@@ -69,8 +69,8 @@ export default function FolderRow({
   const [showRenameModal, setIsOpenRenameModal] = useState(false);
   const [showLinkModal, setIsOpenLinkModal] = useState(false);
 
-  const starMutation = useMutation((fileID: any) => {
-    const result = Axios.patch(`/browse/star/${fileID}`);
+  const starMutation = useMutation(async (fileID: any) => {
+    const result = await Axios.patch(`/browse/star/${fileID}`);
     setFilesCounter(filesCounter + 1);
     return result;
   });
@@ -80,7 +80,7 @@ export default function FolderRow({
     show(e);
   };
 
-  const handleDelete = (
+  const handleDelete = async (
     fileID: string,
     isDirectory: boolean,
     toastID: any,
@@ -97,10 +97,12 @@ export default function FolderRow({
     }
 
     if (isDirectory) {
-      deleteFolder(toastID, fileID, fileName);
+      await deleteFolder(toastID, fileID, fileName);
     } else {
-      deleteFile(toastID, fileID, fileName);
+      await deleteFile(toastID, fileID, fileName);
     }
+
+    setFilesCounter(filesCounter + 1);
   };
 
   return (
