@@ -34,7 +34,7 @@ function SignUp() {
     } catch (error) {
       setError('custom', {
         type: 'manual',
-        message: error.response.data.errors[0].message
+        message: error.response.data.err
       });
     }
   };
