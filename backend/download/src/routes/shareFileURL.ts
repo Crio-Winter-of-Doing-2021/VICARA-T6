@@ -87,7 +87,7 @@ router.get("/api/downloads/shareurl/:id",
 
                 return zipper.zipToS3File(
                     {
-                        s3FolderName: parentFolderString,
+                        s3FolderName: `${ownerId}/${parentFolderString}`,
                         startKey: null, // optional
                         s3ZipFileName: s3FileName,
                         recursive: true,
