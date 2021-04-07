@@ -1,7 +1,7 @@
 export abstract class StorageModel {
     abstract downloadFile(key: string, ownerId: string, fileName: string): Promise<any>;
     abstract copyFile(key: string, newName: string, ownerId: string): Promise<any>;
-    abstract getFileUrl(key: string, expireTime: number, downloadFileName: string): string;
+    abstract getFileUrl(key: string, expireTime: number, downloadFileName: string, ownerId: string): string;
 }
 
 export interface FileUploadRequest {

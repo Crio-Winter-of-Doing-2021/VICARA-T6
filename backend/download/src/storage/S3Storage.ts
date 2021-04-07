@@ -58,10 +58,10 @@ export class S3Storage extends StorageModel {
         return this.client.copyObject(copyParams).promise();
     }
 
-    public getFileUrl(key: string, expireTime: number, downloadFileName: string) {
+    public getFileUrl(key: string, expireTime: number, downloadFileName: string, ownerId: string) {
         const downloadFileParams = {
             Bucket: this.bucketName,
-            Key: key,
+            Key: `${ownerId}/${key}`,
             Expires: expireTime,
             ResponseContentDisposition: `attachment; filename = ${downloadFileName}`,
         };

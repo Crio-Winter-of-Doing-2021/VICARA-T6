@@ -105,7 +105,8 @@ router.get("/api/downloads/shareurl/:id",
                             const url = s3.getFileUrl(
                                 key,
                                 expiryTime,
-                                s3FileName
+                                s3FileName,
+                                ownerId
                                 );
                             console.log(url);
 
@@ -125,13 +126,14 @@ router.get("/api/downloads/shareurl/:id",
                 // .catch((error) => res.status(500).send({ error }));
             } else {
                 try {
-                    const key = ownerId + "/" + fileId;
+                    const key = fileId;
 
                     //Get presigned url
                     const url = s3.getFileUrl(
                         key,
                         expiryTime,
-                        fileName
+                        fileName,
+                        ownerId
                         );
 
                     await File.findByIdAndUpdate(fileId, {
