@@ -36,7 +36,7 @@ router.post(
 
             zipper.zipToS3File(
                 {
-                    s3FolderName: folderName,
+                    s3FolderName: `${ownerId}/${folderName}`,
                     startKey: null, // optional
                     s3ZipFileName: s3FileName,
                     recursive: true,
