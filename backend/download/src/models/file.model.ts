@@ -8,6 +8,12 @@ interface FileAttrs {
     ownerId: string;
 }
 
+interface ShareObj {
+    url: string,
+    expiryTime: number,
+    generatedAt: Date,
+}
+
 interface DirAttrs {
     fileName: string;
     isDirectory: boolean;
@@ -23,6 +29,7 @@ export interface FileDoc extends mongoose.Document {
     ownerId: string;
     fileSize: number;
     starred: boolean;
+    share?: ShareObj;
     updatedAt?: Date;
     createdAt?: Date;
 }
