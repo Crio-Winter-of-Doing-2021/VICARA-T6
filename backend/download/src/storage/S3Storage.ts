@@ -53,7 +53,7 @@ export class S3Storage extends StorageModel {
         const copyParams = {
             Bucket: this.bucketName,
             CopySource: `${this.bucketName}/${ownerId}/${key}`,
-            Key: newName
+            Key: `${ownerId}/${newName}`
         };
         return this.client.copyObject(copyParams).promise();
     }
