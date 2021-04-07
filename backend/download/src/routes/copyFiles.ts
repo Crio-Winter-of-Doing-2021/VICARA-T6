@@ -103,6 +103,9 @@ async function copyFileUtility(
 ): Promise<void> {
     const existingFile = await File.findById(fileId);
 
+    console.log('COPY_FILES_EXISTING_FILE_IN_UTILITY');
+    console.log({existingFile});
+
     if (existingFile) {
         let tempExisting = existingFile;
         tempExisting = JSON.parse(JSON.stringify(tempExisting));
@@ -123,6 +126,8 @@ async function copyFileUtility(
         // };
         const src = process.env.AWS_BUCKET_NAME + "/" + ownerId + "/" + existingFile._id;
         const dest = ownerId + "/" + new_file._id.toString();
+        console.log('PRINTING_SRC_AND_DEST_IN_COPY_FILES');
+        console.log({src, dest});
         await s3.copyFile(src, dest, ownerId);
     } else {
         return Promise.reject();
