@@ -32,6 +32,8 @@ const createMiddleware = {
 
                 const directoryStructure: DirectoryStructure[] = [];
                 await traverseDirectory(folderIDs[i], folderString, directoryStructure);
+                console.log('DIR_STRUCTURE');
+                console.log({directoryStructure});
 
                 for (let i = 0; i < directoryStructure.length; i++) {
                     const {

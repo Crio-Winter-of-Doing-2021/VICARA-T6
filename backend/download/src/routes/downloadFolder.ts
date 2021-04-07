@@ -17,7 +17,7 @@ const config = {
 
 const zipper = new S3Zipper(config);
 
-router.get(
+router.post(
     "/api/downloads/folder",
     createMiddleware.directory,
     async (req: any, res: Response) => {
@@ -26,6 +26,8 @@ router.get(
         const s3FileName = "folders.zip";
         const s3 = StorageFactory.getStorage(StorageTypes.S3);
         const { folderName } = req;
+
+        console.log(`FOLDER_NAME:::: ${folderName}`);
 
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -46,11 +48,11 @@ router.get(
                         var lastFile = result.zippedFiles[result.zippedFiles.length - 1];
                         if (lastFile) console.log("last key ", lastFile.Key); // next time start from here
 
-                        const downloadFolderParams = {
-                            Bucket: process.env.S3_BUCKET_NAME,
-                            Key: folderName + "/" + s3FileName,
-                            Expires: 60,
-                        };
+                        // const downloadFolderParams = {
+                        //     Bucket: process.env.S3_BUCKET_NAME,
+                        //     Key: folderName + "/" + s3FileName,
+                        //     Expires: 60,
+                        // };
 
                         //Get presigned url
                         const key = folderName + "/" + s3FileName;
