@@ -18,7 +18,10 @@ router.post("/api/files/upload",
         console.log('INITIAL_STORAGE');
         console.log({availableStorage});
 
-        const busboy = new Busboy({headers: req.headers});
+        const busboy = new Busboy({
+            headers: req.headers,
+            highWaterMark: 10 * 1024 * 1024,
+        });
 
         let filesCount = 0,
             finished = false;
@@ -84,7 +87,12 @@ router.post("/api/files/upload",
                         await new_file.save();
                         availableStorage -= smeter.bytes;
                         if (availableStorage < 0) {
-                            availableStorage = 0;
+                            response.push({
+                                name: 'Upload Restricted',
+                                status: 'Failure',
+                                message: 'You have exceeded your storage limit'
+                            });
+                            return res.send(response);
                         }
                         console.log('AVAILABLE_STORAGE_UPDATED_TO');
                         console.log({availableStorage});
