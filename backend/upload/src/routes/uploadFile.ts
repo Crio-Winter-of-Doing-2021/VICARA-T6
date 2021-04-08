@@ -5,13 +5,16 @@ import meter from 'stream-meter';
 import {File} from '../models/file.model';
 import { StorageFactory } from '../storage/Storage.factory';
 import { StorageTypes } from '../storage/Storage.model';
+import { getAvailableStorage } from '../util/getStorage';
 
 const router = express.Router();
 
 router.post("/api/files/upload",
     async (req: Request, res: Response) => {
         const ownerId = req.currentUser!.id;
-        let response: {}[] = [];
+        const response: {}[] = [];
+
+        const availableStorage = await getAvailableStorage(ownerId);
 
         const busboy = new Busboy({headers: req.headers});
 
@@ -62,7 +65,15 @@ router.post("/api/files/upload",
                         mimetype,
                     });
                     const s3 = StorageFactory.getStorage(StorageTypes.S3);
-                    const smeter = meter();
+                    const smeter = meter(availableStorage);
+                    smeter.on("error", () => {
+                        response.push({
+                            name: 'Upload Restricted',
+                            status: 'Failure',
+                            message: 'You have exceeded your storage limit'
+                        });
+                        return res.send(response);
+                    });
                     const {writeStream, promise: uploadPromise} = s3.uploadFile(new_file._id.toHexString(), ownerId);
                     try {
                         file.pipe(smeter).pipe(writeStream);

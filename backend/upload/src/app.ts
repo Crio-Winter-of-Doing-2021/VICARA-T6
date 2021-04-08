@@ -18,7 +18,6 @@ app.use(cookieSession({
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'none'
 }));
-// const whitelist = ['http://localhost:3000', 'https://vigorous-dijkstra-746efd.netlify.app'];
 app.use(cors({
     origin: true,
     credentials: true

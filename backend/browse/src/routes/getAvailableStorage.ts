@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get("/api/browse/storage", async (req: Request, res: Response) => {
   const ownerId = req.currentUser!.id;
-  const totalAllotedSize = 1024 * 1024 * 1024;
+  const TOTAL_ALLOTTED_SIZE = 1024 * 1024 * 1024;
 
   const totalUsedSize = await File.aggregate([
     {
@@ -31,7 +31,7 @@ router.get("/api/browse/storage", async (req: Request, res: Response) => {
   ]);
 
   return res.send({
-    totalAllotedSize,
+    TOTAL_ALLOTTED_SIZE,
     totalUsedSize: totalUsedSize?.[0]?.total ?? 0,
   });
 });
