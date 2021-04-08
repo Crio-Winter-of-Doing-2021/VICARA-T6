@@ -1,0 +1,27 @@
+import * as stream from "stream";
+
+export abstract class StorageModel {
+    abstract uploadFile(key: string, ownerId: string):
+        { writeStream: stream.PassThrough; promise: Promise<any> };
+    abstract deleteFile(key: string, ownerId: string): Promise<any>;
+}
+
+export interface FileUploadRequest {
+    fileName: string;
+    parentId: string;
+}
+
+export interface SaveFileFailed extends FileUploadRequest {
+    errCode: number;
+    error: string;
+}
+
+export interface DeleteFileFailed {
+    name: string;
+    status: string;
+    message: string;
+}
+
+export enum StorageTypes {
+    S3
+}
