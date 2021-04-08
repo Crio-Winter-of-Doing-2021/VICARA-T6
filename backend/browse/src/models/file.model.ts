@@ -25,6 +25,7 @@ export interface FileDoc extends mongoose.Document {
     fileSize: number;
     starred: boolean;
     updatedAt: Date;
+    createdAt: Date;
 }
 
 interface FileModel extends mongoose.Model<FileDoc> {

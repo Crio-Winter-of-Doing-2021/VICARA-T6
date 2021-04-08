@@ -13,16 +13,12 @@ router.get("/api/browse/recent", async (req: Request, res: Response) => {
     .limit(10);
 
   const recentFilesResult = result.filter((file: FileDoc) => {
-    const fileUpdationDate: Date = new Date(file.updatedAt);
+    const fileUpdationDate: Date = new Date(file.createdAt);
     const diff: number =
       Math.abs(currentTime.valueOf() - fileUpdationDate.valueOf()) / 1000 / 60;
 
     //files which came under 10 minutes
-    if (diff <= 10) {
-      return true;
-    }
-
-    return false;
+    return diff <= 10;
   });
 
   return res.status(200).json({ recentFilesResult });
