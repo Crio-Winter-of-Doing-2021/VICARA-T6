@@ -15,7 +15,6 @@ metadata:
 spec:
   tls:
     - hosts:
-        - my-apps.me
         - www.my-apps.me
       secretName: vicara-prod-tls
 
