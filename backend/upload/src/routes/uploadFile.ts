@@ -65,7 +65,7 @@ router.post("/api/files/upload",
                         mimetype,
                     });
                     const s3 = StorageFactory.getStorage(StorageTypes.S3);
-                    const smeter = meter(availableStorage);
+                    const smeter = meter();
                     smeter.on("error", () => {
                         response.push({
                             name: 'Upload Restricted',
