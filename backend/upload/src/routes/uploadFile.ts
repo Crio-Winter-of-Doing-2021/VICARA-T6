@@ -83,6 +83,9 @@ router.post("/api/files/upload",
                         new_file.fileSize = smeter.bytes;
                         await new_file.save();
                         availableStorage -= smeter.bytes;
+                        if (availableStorage < 0) {
+                            availableStorage = 0;
+                        }
                         console.log('AVAILABLE_STORAGE_UPDATED_TO');
                         console.log({availableStorage});
                     } catch (err) {
