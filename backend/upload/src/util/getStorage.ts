@@ -1,7 +1,7 @@
 import {File} from "../models/file.model";
 
 export const getAvailableStorage = async (ownerId: string) => {
-    const TOTAL_ALLOTTED_SIZE = 1024 * 1024 * 10;
+    const TOTAL_ALLOTTED_SIZE = 1024 * 1024 * 100;
     const totalUsedSize = await File.aggregate([
         {
             $match: {

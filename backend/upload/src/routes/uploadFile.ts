@@ -14,7 +14,9 @@ router.post("/api/files/upload",
         const ownerId = req.currentUser!.id;
         const response: {}[] = [];
 
-        const availableStorage = await getAvailableStorage(ownerId);
+        let availableStorage = await getAvailableStorage(ownerId);
+        console.log('INITIAL_STORAGE');
+        console.log({availableStorage});
 
         const busboy = new Busboy({headers: req.headers});
 
@@ -65,8 +67,8 @@ router.post("/api/files/upload",
                         mimetype,
                     });
                     const s3 = StorageFactory.getStorage(StorageTypes.S3);
-                    const smeter = meter();
-                    smeter.on("error", () => {
+                    const smeter = meter(availableStorage);
+                    smeter.on("error", function (e) {
                         response.push({
                             name: 'Upload Restricted',
                             status: 'Failure',
@@ -80,6 +82,9 @@ router.post("/api/files/upload",
                         const result = await uploadPromise;
                         new_file.fileSize = smeter.bytes;
                         await new_file.save();
+                        availableStorage -= smeter.bytes;
+                        console.log('AVAILABLE_STORAGE_UPDATED_TO');
+                        console.log({availableStorage});
                     } catch (err) {
                         response.push({
                             name: new_file.fileName,
