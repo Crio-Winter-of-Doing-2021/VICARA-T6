@@ -25,7 +25,7 @@ function SearchMain() {
   const history = useHistory();
 
   const { searchText, setSearch } = useSearchContext();
-  const { data, refetch } = useSearch({ searchText });
+  const { data, status, refetch } = useSearch({ searchText });
 
   useEffect(() => {
     const queryParams = new URLSearchParams(history.location.search);
