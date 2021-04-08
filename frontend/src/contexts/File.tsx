@@ -4,6 +4,8 @@ import { useHistory } from 'react-router-dom';
 type ContextProps = {
   copiedFiles?: any;
   filesCounter?: any;
+  displayType?: string;
+  switchDisplayType?: any;
   emptyClipboard?: any;
   setFilesCounter?: any;
   changeParentFolder?: any;
@@ -19,6 +21,7 @@ export const useFileContext = () => useContext(FileContext);
 export const FileContextProvider = (props: any) => {
   const [copiedFiles, copyNewFile] = useState({});
   const [parentFolderIDofSelectedFile, setParentFolderID] = useState(null);
+  const [displayType, setDisplayType] = useState('detailed');
   const [filesCounter, setFilesCounter] = useState(0);
   const history = useHistory();
 
@@ -26,6 +29,14 @@ export const FileContextProvider = (props: any) => {
   const changeParentFolder = useCallback((folderID: string) => {
     history.push('/' + folderID);
   }, []);
+
+  const switchDisplayType = () => {
+    if (displayType === 'detailed') {
+      setDisplayType('list');
+    } else {
+      setDisplayType('detailed');
+    }
+  };
 
   const selectTheCurrentFile = (
     id: string,
@@ -93,6 +104,8 @@ export const FileContextProvider = (props: any) => {
         copiedFiles,
         filesCounter,
         setFilesCounter,
+        displayType,
+        switchDisplayType,
         emptyClipboard,
         changeParentFolder,
         selectTheCurrentFile,
