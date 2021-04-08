@@ -18,6 +18,7 @@ router.post("/api/files/upload",
         console.log('INITIAL_STORAGE');
         console.log({availableStorage});
 
+
         const busboy = new Busboy({
             headers: req.headers,
             highWaterMark: 10 * 1024 * 1024,
