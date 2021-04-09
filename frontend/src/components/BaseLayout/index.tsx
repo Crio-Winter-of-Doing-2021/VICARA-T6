@@ -13,9 +13,9 @@ function BaseLayout(props: any) {
   return (
     <>
       <SearchContextProvider>
-        <Navbar />
-        <QueryClientProvider client={queryClient}>
-          <FileContextProvider>
+        <FileContextProvider>
+          <Navbar />
+          <QueryClientProvider client={queryClient}>
             <ToastContainer
               position="bottom-right"
               newestOnTop={true}
@@ -25,8 +25,8 @@ function BaseLayout(props: any) {
               autoClose={false}
             />
             {props.children}
-          </FileContextProvider>
-        </QueryClientProvider>
+          </QueryClientProvider>
+        </FileContextProvider>
       </SearchContextProvider>
     </>
   );

@@ -60,7 +60,7 @@ export default function DirectoryRouter({
   }, [currentFolderID]);
 
   return (
-    <div className="px-10 py-4 flex justify-between items-center border-b border-gray-200 ml-10">
+    <div className="px-10 py-4 flex justify-between items-center border-b border-gray-200 ml-10 sm:ml-0">
       <div className="flex">
         {data?.reversedAncestors?.map(({ id, fileName }, index) => {
           return (
@@ -103,7 +103,7 @@ export default function DirectoryRouter({
         })}
       </div>
       <div>
-        <button onClick={() => switchDisplayType()} className="">
+        <button onClick={() => switchDisplayType()} className="sm:hidden">
           <span className="hover:bg-gray-200 rounded-3xl cursor-pointer flex justify-center py-2 px-2">
             {displayType === 'detailed' && <BiDetail size={20} />}
             {displayType === 'list' && <AiOutlineUnorderedList size={20} />}

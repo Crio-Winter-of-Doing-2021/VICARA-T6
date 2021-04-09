@@ -6,11 +6,14 @@ module.exports = {
       sans: ['Poppins']
     },
     screens: {
-      sm: { min: '640px', max: '767px' },
-      md: { min: '768px', max: '1023px' },
-      lg: { min: '1024px', max: '1279px' },
-      xl: { min: '1280px', max: '1535px' },
-      '2xl': { min: '1536px' }
+      xs: { max: '480px' },
+      sm: { max: '767px' },
+      md: { max: '1023px' },
+      // lg: { min: '1024px', max: '1279px' },
+      lg: { max: '1280px' },
+      xl: { max: '1536px' },
+      // xl: { min: '1280px', max: '1535px' },
+      '2xl': { max: '1780px' }
     }
   },
   plugins: [require('@tailwindcss/forms')]

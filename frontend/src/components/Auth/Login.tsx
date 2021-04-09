@@ -36,7 +36,7 @@ function Login() {
 
       setError('custom', {
         type: 'manual',
-        message: error.response.data.err
+        message: error?.response?.data?.err
       });
     }
   };
@@ -44,7 +44,7 @@ function Login() {
   return (
     <div className="xl:w-8/12 lg:w-5/12 md:w-4/12 sm:w-full px-10 pb-10 pt-3 md:shadow-none md:p-6 rounded-md flex dark:text-white dark:bg-gray-800 bg-white shadow-lg flex-col items-center justify-center">
       <div className="pt-6 pb-3">
-        <img className="h-14 w-auto" src={logo} />
+        <img className="h-14 w-auto" src={logo} alt="logo" />
       </div>
       <h1 className="font-sans my-4 text-2xl">Welcome</h1>
       <p className="text-sm">Login to continue to FDrive</p>

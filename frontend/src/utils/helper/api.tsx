@@ -261,7 +261,7 @@ export const downloadFolder = (toastId: any, folderIds: string[]) => {
 };
 
 export const deleteFile = async (toastId: any, id: string, name: string) => {
-  toastId.current = toast.error('Deleting ' + name);
+  toastId.current = toast('Deleting ' + name);
 
   await Axios.delete(`/files/delete/${id}`)
     .then((response) => console.log(response))
@@ -282,7 +282,7 @@ export const deleteFile = async (toastId: any, id: string, name: string) => {
 };
 
 export const deleteFolder = async (toastId: any, id: string, name: string) => {
-  toastId.current = toast.error('Deleting ' + name);
+  toastId.current = toast('Deleting ' + name);
 
   await Axios.delete(`/folders/delete/${id}`)
     .then((response) => console.log(response))

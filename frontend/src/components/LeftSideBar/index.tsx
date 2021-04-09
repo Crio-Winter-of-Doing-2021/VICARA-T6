@@ -51,17 +51,14 @@ function DropDownCoponent(props: any) {
 
   return (
     <div className="min-w-300">
-      <a
-        href="#"
-        className={`flex items-center p-2 text-gray-500 transition-colors rounded-md dark:text-light hover:bg-yellow-100 dark:hover:bg-yellow-600 ${
+      <button
+        className={`w-full flex items-center p-2 text-gray-500 transition-colors rounded-md dark:text-light hover:bg-yellow-100 dark:hover:bg-yellow-600 ${
           isOpen && 'bg-yellow-100 dark:bg-yellow-600'
         }`}
         onClick={(e) => {
           e.preventDefault();
           changeOpen(!isOpen);
         }}
-        role="button"
-        aria-haspopup="true"
         // :aria-expanded="(open || isActive) ? 'true' : 'false'"
       >
         <span className="" aria-hidden="true">
@@ -71,7 +68,7 @@ function DropDownCoponent(props: any) {
         <span className="ml-auto" aria-hidden="true">
           <CounterComponent color={props.color} counter={props.counter ?? 0} />
         </span>
-      </a>
+      </button>
       <div
         role="menu"
         className={`${!isOpen && 'hidden'} pl-2`}

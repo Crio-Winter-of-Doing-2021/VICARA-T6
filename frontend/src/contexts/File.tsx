@@ -7,6 +7,8 @@ type ContextProps = {
   displayType?: string;
   switchDisplayType?: any;
   emptyClipboard?: any;
+  displayNavbar?: boolean;
+  toggleNavbar?: any;
   setFilesCounter?: any;
   changeParentFolder?: any;
   selectTheCurrentFile?: any;
@@ -21,8 +23,9 @@ export const useFileContext = () => useContext(FileContext);
 export const FileContextProvider = (props: any) => {
   const [copiedFiles, copyNewFile] = useState({});
   const [parentFolderIDofSelectedFile, setParentFolderID] = useState(null);
-  const [displayType, setDisplayType] = useState('detailed');
+  const [displayType, setDisplayType] = useState('list');
   const [filesCounter, setFilesCounter] = useState(0);
+  const [displayNavbar, setNavbar] = useState(false);
   const history = useHistory();
 
   // Changes the URL Parameter ID
@@ -98,6 +101,10 @@ export const FileContextProvider = (props: any) => {
     setParentFolderID(null);
   };
 
+  const toggleNavbar = () => {
+    setNavbar(!displayNavbar);
+  };
+
   return (
     <FileContext.Provider
       value={{
@@ -105,7 +112,9 @@ export const FileContextProvider = (props: any) => {
         filesCounter,
         setFilesCounter,
         displayType,
+        displayNavbar,
         switchDisplayType,
+        toggleNavbar,
         emptyClipboard,
         changeParentFolder,
         selectTheCurrentFile,

@@ -15,7 +15,7 @@ export default function FolderTable({ files }: FolderTableProps) {
     console.log('FOLDER TABLE: I GOT RENDERED');
   }, []);
 
-  const { copiedFiles, selectTheCurrentFile } = useFileContext();
+  const { copiedFiles, selectTheCurrentFile, displayType } = useFileContext();
   const [selectedFile, setSelectedFile] = useState(null);
   const [sortAscending, setOrderOfFields] = useState(true);
 
@@ -34,10 +34,66 @@ export default function FolderTable({ files }: FolderTableProps) {
     );
   }
 
+  if (displayType === 'list') {
+    return (
+      <div className="-my-2 py-2 overflow-x-auto sm:px-2">
+        <div className="align-middle inline-block w-full overflow-hidden bg-white shadow-dashboard px-2 pt-3 rounded-bl-lg rounded-br-lg">
+          <table className="w-full">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm leading-4 text-blue-500 tracking-wider 2xl:w-6/12">
+                  <span className="flex justify-between">
+                    Name
+                    <span
+                      className={`hover:bg-gray-200 rounded-3xl cursor-pointer py-2 px-2 right-1 transform duration-200 ${
+                        sortAscending ? 'rotate-0' : 'rotate-180'
+                      }`}
+                      onClick={() => setOrderOfFields(!sortAscending)}
+                    >
+                      <BsArrowDown />
+                    </span>
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white">
+              {files
+                .sort((a: any, b: any) => {
+                  // Sort files
+                  if (sortAscending) {
+                    return a.fileName > b.fileName ? 1 : -1;
+                  } else {
+                    return a.fileName < b.fileName ? 1 : -1;
+                  }
+                })
+                .sort((a: any, b: any) => b.isDirectory - a.isDirectory) // Sort directories
+                .map((file: FilesSchmea) => {
+                  const fileExists: boolean =
+                    copiedFiles[file.id]?.selected ?? false;
+
+                  return (
+                    <FolderRow
+                      key={file.id + file.fileName}
+                      file={file}
+                      fileSelected={selectedFile === file.id}
+                      selectFile={setTheClickedFileAsSelected}
+                      addNewFileToCopy={selectTheCurrentFile}
+                      fileInClipboard={fileExists}
+                      disableSelection={fileExists && file.isDirectory}
+                    />
+                  );
+                })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-      <div className="align-middle inline-block min-w-full overflow-hidden bg-white shadow-dashboard px-8 pt-3 rounded-bl-lg rounded-br-lg">
-        <table className="w-80vw">
+    <div className="-my-2 py-2 overflow-x-auto lg:-mx-8 lg:px-8 sm:hidden">
+      <div className="align-middle inline-block w-full overflow-hidden bg-white shadow-dashboard px-8 pt-3 rounded-bl-lg rounded-br-lg">
+        <table className="w-full">
           <thead>
             <tr>
               <th className="px-6 py-3 border-b-2 border-gray-200 text-left text-sm leading-4 text-blue-500 tracking-wider"></th>

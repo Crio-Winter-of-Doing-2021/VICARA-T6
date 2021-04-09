@@ -26,7 +26,7 @@ function useFiles({ currentFolderID }: FileProps) {
 function DriveMain() {
   const history = useHistory();
 
-  const { filesCounter } = useFileContext();
+  const { displayNavbar, filesCounter } = useFileContext();
 
   // Get the folder ID from the URL
   const currentFolderID = history.location.pathname.replace('/', '');
@@ -55,8 +55,14 @@ function DriveMain() {
   return (
     <>
       <div className="flex">
-        <LeftSideBar />
-        <div>
+        <div
+          className={`
+          ${displayNavbar ? 'block' : 'sm:translate-l-300 sm:hidden block'} 
+          border-r-2 border-gray-300 bg-gray-100 bg-opacity-10`}
+        >
+          <LeftSideBar />
+        </div>
+        <div className="w-full">
           <DragAndDrop disabled={data?.isDirectory === false ?? false} />
           <DirectoryRouter currentFolderID={currentFolderID} />
 

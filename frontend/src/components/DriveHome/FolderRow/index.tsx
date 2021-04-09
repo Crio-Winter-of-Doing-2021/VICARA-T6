@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { useState, useRef } from 'react';
-import { BsThreeDots, BsDownload } from 'react-icons/bs';
+import { BsThreeDots, BsDownload, BsThreeDotsVertical } from 'react-icons/bs';
 import { RiDeleteBin5Line } from 'react-icons/ri';
 import { AiOutlineShareAlt, AiOutlineStar } from 'react-icons/ai';
 import { HiOutlinePencilAlt, HiEye } from 'react-icons/hi';
@@ -58,7 +58,8 @@ export default function FolderRow({
   const {
     filesCounter,
     setFilesCounter,
-    changeParentFolder
+    changeParentFolder,
+    displayType
   } = useFileContext();
 
   const MENU_ID = fileID;
@@ -105,6 +106,156 @@ export default function FolderRow({
     setFilesCounter(filesCounter + 1);
   };
 
+  if (displayType === 'list') {
+    return (
+      <>
+        <tr
+          className={`${fileSelected && 'bg-yellow-50'}`}
+          onDoubleClick={() => {
+            !disableSelection && changeParentFolder(fileID);
+          }}
+          onContextMenu={(e) => displayMenu(e, fileID)}
+        >
+          <td className="py-4 pr-0 pl-2 ml-2 border-b border-gray-200 flex items-center">
+            <div className="flex justify-start items-start">
+              <div className="bg-white border-2 rounded border-gray-200 w-5 h-5 justify-center items-center mr-4 xs:mr-2 focus-within:border-blue-500 flex">
+                <input
+                  type="checkbox"
+                  className="opacity-0 absolute"
+                  onClick={() =>
+                    addNewFileToCopy(
+                      fileID,
+                      fileName,
+                      isDirectory,
+                      fileInClipboard,
+                      parentId
+                    )
+                  }
+                />
+                <svg
+                  className={`fill-current w-3 h-3 text-blue-500 pointer-events-none ${
+                    fileInClipboard ? 'block' : 'hidden'
+                  }`}
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M0 11l2-2 5 5L18 3l2 2L7 18z" />
+                </svg>
+              </div>
+            </div>
+            <div className="flex justify-start items-start mr-5 xs:mr-4">
+              <img
+                className="mr-8 xs:mr-6"
+                height={30}
+                width={30}
+                src={fileMapper(fileName, isDirectory)}
+                alt="file-img"
+              />
+            </div>
+            <div className="w-full">
+              <div className="text-md mb-2 leading-5 text-blue-900 overflow-ellipsis overflow-hidden whitespace-nowrap sm:w-56">
+                {fileName}
+              </div>
+              <div className="text-sm w-full xs:flex xs:flex-col">
+                <span className="w-full mr-4">
+                  Modified {format(new Date(updatedAt), 'LLL d, yy  H:mm')}
+                </span>
+                <span>Size {(fileSize && prettyBytes(fileSize)) ?? '-'}</span>
+              </div>
+            </div>
+            <div className="w-full text-right">
+              <button
+                className="mr-4 px-2 py-2 rounded-full text-gray-500 transition duration-300 hover:bg-gray-200 hover:text-gray-700 focus:outline-none"
+                onClick={(e) => displayMenu(e, fileID)}
+              >
+                <BsThreeDotsVertical />
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <Menu id={MENU_ID}>
+          <>
+            {disableSelection && (
+              <Item disabled={true}>
+                <HiEye className="mr-2" />
+                Cannot View Selected Directory
+              </Item>
+            )}
+          </>
+
+          <>
+            {!disableSelection && (
+              <Item onClick={() => changeParentFolder(fileID)}>
+                <HiEye className="mr-2" />
+                View
+              </Item>
+            )}
+          </>
+          <Separator />
+          <Item onClick={() => setIsOpenRenameModal(true)}>
+            <HiOutlinePencilAlt className="mr-2" />
+            Rename
+          </Item>
+          <Separator />
+          <Item onClick={() => starMutation.mutate(fileID)}>
+            <AiOutlineStar className="mr-2" />
+            {starred ? 'Remove starred' : 'Add to Starred'}
+          </Item>
+          <Item onClick={() => setIsOpenLinkModal(true)}>
+            <AiOutlineShareAlt className="mr-2" />
+            Generate sharable link
+          </Item>
+          <Separator />
+          {!isDirectory && (
+            <>
+              <Item onClick={() => downloadFile(toastID, fileID, fileName)}>
+                <BsDownload className="mr-2" />
+                Download
+              </Item>
+              <Item
+                onClick={() => handleDelete(fileID, false, toastID, fileName)}
+              >
+                <RiDeleteBin5Line className="mr-2" />
+                Delete
+              </Item>
+            </>
+          )}
+          {isDirectory && (
+            <>
+              <Item onClick={() => downloadFolder(toastID, [fileID])}>
+                <BsDownload className="mr-2" />
+                Download
+              </Item>
+              <Item
+                onClick={() => handleDelete(fileID, true, toastID, fileName)}
+              >
+                <RiDeleteBin5Line className="mr-2" />
+                Delete
+              </Item>
+            </>
+          )}
+        </Menu>
+
+        <GenerateLinkModal
+          modalIsOpen={showLinkModal}
+          setIsOpenModal={setIsOpenLinkModal}
+          name={fileName}
+          id={fileID}
+          isDirectory={isDirectory}
+          parent={parentId}
+        />
+
+        <RenameModal
+          modalIsOpen={showRenameModal}
+          setIsOpenModal={setIsOpenRenameModal}
+          name={fileName}
+          id={fileID}
+          parent={parentId}
+        />
+      </>
+    );
+  }
+
   return (
     <>
       <tr
@@ -149,6 +300,7 @@ export default function FolderRow({
               height={20}
               width={20}
               src={fileMapper(fileName, isDirectory)}
+              alt="file-img"
             />
             <div className="text-sm leading-5 text-blue-900 max-w-lg overflow-ellipsis overflow-hidden whitespace-nowrap">
               {fileName}

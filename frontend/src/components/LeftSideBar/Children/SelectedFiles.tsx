@@ -100,19 +100,12 @@ export default function SelectedFiles(props: any) {
 
     for (let i = 0; i < fileList.length; i++) {
       const file: any = fileList[i];
+      console.log({ file });
 
       if (file.isDirectory) {
-        await deleteFolder(toastId, file.id, file.name);
+        await deleteFolder(toastId, file.id, file.fileName);
       } else {
-        await deleteFile(toastId, file.id, file.name);
-      }
-
-      if (toastId.current == null) {
-        toast.update(toastId.current, {
-          render: 'Deletion successfull',
-          type: toast.TYPE.INFO,
-          autoClose: 1000
-        });
+        await deleteFile(toastId, file.id, file.fileName);
       }
     }
 
