@@ -2,7 +2,7 @@ import express, {Request, Response} from "express";
 import Busboy from 'busboy';
 import meter from 'stream-meter';
 
-import {File} from '../models/file.model';
+import { File } from '../models/file.model';
 import { StorageFactory } from '../storage/Storage.factory';
 import { StorageTypes } from '../storage/Storage.model';
 import { getAvailableStorage } from '../util/getStorage';
@@ -15,17 +15,12 @@ router.post("/api/files/upload",
         const response: {}[] = [];
 
         let availableStorage = await getAvailableStorage(ownerId);
-        console.log('INITIAL_STORAGE');
-        console.log({availableStorage});
-
-
         const busboy = new Busboy({
             headers: req.headers,
             highWaterMark: 10 * 1024 * 1024,
         });
 
-        let filesCount = 0,
-            finished = false;
+        let filesCount = 0, finished = false;
 
         busboy.on(
             "file",
@@ -44,25 +39,12 @@ router.post("/api/files/upload",
                     ownerId,
                 });
 
+                file.on("end", function () {});
+
+                file.on("data", function (data: any) {});
+
                 if (result === null) {
                     ++filesCount;
-                } else {
-                    response.push({
-                        name: result.fileName,
-                        status: "Failure",
-                        message: "Filename already exists",
-                    });
-                }
-
-                file.on("end", function () {
-                    // res.json({ msg: "ENDED" })
-                });
-
-                file.on("data", function (data: any) {
-                    // console.log("DATA FOUND");
-                });
-
-                if (result === null) {
                     const new_file = File.buildFile({
                         fileName,
                         isDirectory: false,
@@ -83,7 +65,7 @@ router.post("/api/files/upload",
                     const {writeStream, promise: uploadPromise} = s3.uploadFile(new_file._id.toHexString(), ownerId);
                     try {
                         file.pipe(smeter).pipe(writeStream);
-                        const result = await uploadPromise;
+                        await uploadPromise;
                         new_file.fileSize = smeter.bytes;
                         await new_file.save();
                         availableStorage -= smeter.bytes;
@@ -110,8 +92,13 @@ router.post("/api/files/upload",
                         status: "Success",
                         message: "File upload successfully",
                     });
+                } else {
+                    response.push({
+                        name: result.fileName,
+                        status: "Failure",
+                        message: "Filename already exists",
+                    });
                 }
-
                 if (filesCount === 0 && finished) {
                     res.send(response);
                 }
@@ -119,19 +106,15 @@ router.post("/api/files/upload",
         );
 
         busboy.on("finish", function () {
-            // send response
             finished = true;
-
             if (filesCount === 0 && finished) {
                 res.send(response);
             }
         });
 
-        busboy.on("end", function () {
-            // console.log("WHO ENDED ME");
-        });
+        busboy.on("end", function () {});
 
-        req.pipe(busboy); // Pipe it trough busboy
+        req.pipe(busboy);
     }
 );
 
