@@ -18,7 +18,7 @@ export default function Navbar() {
   const { searchText, setSearch } = useSearchContext();
   const { toggleNavbar } = useFileContext();
 
-  const { handleSubmit, register } = useForm();
+  const { handleSubmit, register, setValue } = useForm();
 
   const handSignOut = async () => {
     await Axios.post('/users/signout');
@@ -26,7 +26,8 @@ export default function Navbar() {
   };
 
   const onSubmit = (values: fields) => {
-    const { search } = values;
+    let { search } = values;
+
     setSearch(search);
     if (search === '') {
       history.push('/');
@@ -64,6 +65,11 @@ export default function Navbar() {
                           placeholder="Search Files and Folders"
                           name="search"
                           defaultValue={searchText}
+                          onChange={(e) =>
+                            setValue('search', e.target.value, {
+                              shouldValidate: false
+                            })
+                          }
                         />
                       </form>
                     </div>

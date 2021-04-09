@@ -46,7 +46,7 @@ function SearchMain() {
   }
 
   return (
-    <div className="mt-2">
+    <div className="mt-2 w-full">
       {data?.searchFilesResult?.length > 0 && (
         <FolderTable files={data.searchFilesResult} />
       )}
