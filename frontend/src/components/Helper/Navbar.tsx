@@ -36,7 +36,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-md bg-bottom bg-color-grey border-solid border-b-2">
+    <nav className="bg-white dark:bg-clay-darkest dark:text-white shadow-md bg-bottom bg-color-grey border-solid border-b-2">
       <div className="max-w-full mx-auto px-8 sm:px-6">
         <div className="relative flex items-center justify-between h-16">
           <div className="flex-1 flex items-center justify-left sm:items-stretch sm:justify-start">
@@ -96,7 +96,7 @@ export default function Navbar() {
         <div className="px-2 pt-2 pb-3 space-y-1">
           <form className="h-full w-full" onSubmit={handleSubmit(onSubmit)}>
             <input
-              className="bg-gray-50 text-white px-3 py-2 rounded-md text-sm font-medium w-full text-gray-700 outline-none border-transparent focus:outline-none focus:border-none ring-offset-0 border border-gray-300"
+              className="bg-gray-50 px-3 py-2 rounded-md text-sm font-medium w-full text-gray-700 outline-none border-transparent focus:outline-none focus:border-none ring-offset-0 border border-gray-300"
               aria-current="page"
               ref={register}
               placeholder="Search Files and Folders"

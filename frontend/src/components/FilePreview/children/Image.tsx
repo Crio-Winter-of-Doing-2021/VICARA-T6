@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react';
 
 interface ImageProps {
   blob: any;
+  mimetype: string;
 }
 
 export default function Image(props: ImageProps) {
   const [imageUrl, setImageUrl] = useState('');
 
   useEffect(() => {
+    console.log({ props });
     const blob = new Blob([props.blob], {
-      type: 'image/png',
+      type: props.mimetype,
       endings: 'native'
     });
     const fileReaderInstance = new FileReader();

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { BsArrowDown } from 'react-icons/bs';
-import { ImFilesEmpty } from 'react-icons/im';
+import { VscFolderOpened } from 'react-icons/vsc';
 
 import FilesSchmea from '../../../utils/interfaces/FilesSchema';
 import { useFileContext } from '../../../contexts/File';
@@ -26,8 +26,8 @@ export default function FolderTable({ files }: FolderTableProps) {
   if (files?.length === 0) {
     return (
       <div className="px-10 py-40 overflow-x-auto flex justify-center items-center flex-col">
-        <div className="bg-gray-200 rounded-lg px-10 py-20 flex justify-center items-center flex-col">
-          <ImFilesEmpty size={40} className="mb-5" />
+        <div className="bg-gray-100 rounded-lg px-10 py-20 flex justify-center items-center flex-col">
+          <VscFolderOpened size={60} className="mb-5" />
           No files present in this folder
         </div>
       </div>

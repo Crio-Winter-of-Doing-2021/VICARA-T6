@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import prettyBytes from 'pretty-bytes';
 
+import { useFileContext } from '../../../contexts/File';
 import Axios from '../../../config/axios';
 
 function useAvailableStorage() {
@@ -13,13 +14,18 @@ function useAvailableStorage() {
 
 export default function AvailableStorage() {
   const [percentUsed, setPercent] = useState(0);
-  const { data } = useAvailableStorage();
+  const { data, refetch } = useAvailableStorage();
+  const { filesCounter } = useFileContext();
 
   useEffect(() => {
     setPercent(
       Math.floor((data?.totalUsedSize / data?.TOTAL_ALLOTTED_SIZE) * 100)
     );
   }, [data]);
+
+  useEffect(() => {
+    refetch();
+  }, [filesCounter]);
 
   return (
     <div>

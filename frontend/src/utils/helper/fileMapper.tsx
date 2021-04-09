@@ -7,6 +7,7 @@ const fileExtensionsMapper = [
   'json',
   'ppt',
   'png',
+  'svg',
   'pdf',
   'mp3',
   'mp4',
@@ -28,7 +29,7 @@ export default function fileMapper(
     return require('../../assets/FileIcons/folder.png').default;
   } else {
     for (let i = 0; i < fileExtensionsMapper.length; i++) {
-      if (extension?.includes(fileExtensionsMapper[i])) {
+      if (extension?.toLocaleLowerCase()?.includes(fileExtensionsMapper[i])) {
         return require(`../../assets/FileIcons/${fileExtensionsMapper[i]}.png`)
           .default;
       }

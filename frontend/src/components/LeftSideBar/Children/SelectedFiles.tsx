@@ -18,6 +18,8 @@ export default function SelectedFiles(props: any) {
   const [clipboardDisabled, disableClipboardActions] = useState(false);
 
   const {
+    filesCounter,
+    setFilesCounter,
     copiedFiles,
     emptyClipboard,
     removeFileFromClipboard,
@@ -63,35 +65,69 @@ export default function SelectedFiles(props: any) {
 
       const copiedFilesArr = Object.keys(copiedFiles);
 
-      await Axios.patch('/browse/move', {
-        parentId: currentFolderID,
-        foldersList: copiedFilesArr
-      });
+      try {
+        await Axios.patch('/browse/move', {
+          parentId: currentFolderID,
+          foldersList: copiedFilesArr
+        });
 
-      toast.update(toastId.current, {
-        render: 'Move successfull',
-        type: toast.TYPE.INFO,
-        autoClose: 1000
-      });
+        toast.update(toastId.current, {
+          render: 'Move successfull',
+          type: toast.TYPE.INFO,
+          autoClose: 1000
+        });
+      } catch (error) {
+        if (error.response.status === 500) {
+          toast.update(toastId.current, {
+            render: 'Duplicate files not moved',
+            type: toast.TYPE.ERROR,
+            autoClose: 1000
+          });
+        } else {
+          toast.update(toastId.current, {
+            render: error?.response?.data?.err ?? 'Move Unsuccessful',
+            type: toast.TYPE.ERROR,
+            autoClose: 1000
+          });
+        }
+      }
     }
 
+    setFilesCounter(filesCounter + 1);
     emptyClipboard();
   }
 
   async function copyHere() {
     if (parentFolderIDofSelectedFile !== currentFolderID) {
       toastId.current = toast('Copying files');
-      await Axios.post('/downloads/copyfiles', {
-        parentId: currentFolderID,
-        foldersList: copiedFiles
-      });
-      toast.update(toastId.current, {
-        render: 'Copy successfull',
-        type: toast.TYPE.INFO,
-        autoClose: 1000
-      });
+      try {
+        await Axios.post('/downloads/copyfiles', {
+          parentId: currentFolderID,
+          foldersList: copiedFiles
+        });
+        toast.update(toastId.current, {
+          render: 'Copy successfull',
+          type: toast.TYPE.INFO,
+          autoClose: 1000
+        });
+      } catch (error) {
+        if (error.response.status === 500) {
+          toast.update(toastId.current, {
+            render: 'Duplicate files not copied',
+            type: toast.TYPE.ERROR,
+            autoClose: 1000
+          });
+        } else {
+          toast.update(toastId.current, {
+            render: error?.response?.data?.err ?? 'Copy Unsuccessful',
+            type: toast.TYPE.ERROR,
+            autoClose: 1000
+          });
+        }
+      }
     }
 
+    setFilesCounter(filesCounter + 1);
     emptyClipboard();
   }
 
@@ -109,6 +145,7 @@ export default function SelectedFiles(props: any) {
       }
     }
 
+    setFilesCounter(filesCounter + 1);
     emptyClipboard();
   }
 

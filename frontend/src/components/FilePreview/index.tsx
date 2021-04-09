@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { downloadFile, viewFile } from '../../utils/helper/api';
-import { BsDownload } from 'react-icons/bs';
+import { BsDownload, BsEyeSlash } from 'react-icons/bs';
 import { saveAs } from 'file-saver';
 import Pdf from './children/Pdf';
 import Audio from './children/Audio';
@@ -66,7 +66,7 @@ export default function FilePreview(props: any) {
         setLoading(false);
       }
     }
-
+    console.log(props.data.mimetype);
     fetchMyAPI();
   }, [props]);
 
@@ -111,7 +111,7 @@ export default function FilePreview(props: any) {
   } else if (fileData.mimetype.includes('image')) {
     return (
       <BasePreviewLayout download={DownloadFile}>
-        <Image blob={blob} />
+        <Image mimetype={props.data.mimetype} blob={blob} />
       </BasePreviewLayout>
     );
   } else if (fileData.mimetype.includes('video')) {
@@ -124,9 +124,13 @@ export default function FilePreview(props: any) {
 
   return (
     <div>
-      <div className="flex justify-center item-center">
-        <div className="flex flex-col justify-between items-center h-36">
-          File preview not supported
+      <div className="px-10 py-40 overflow-x-auto flex justify-center items-center flex-col">
+        <div className="bg-gray-100 rounded-lg px-10 py-10 flex justify-center items-center flex-col text-center">
+          <BsEyeSlash size={60} className="mb-5" />
+          <p className="mb-5">
+            File Preview not supported, <br /> Don't worry you can still
+            download the file
+          </p>
           <button
             className="ml-2 text-sm mb-10 block mr-4 px-5 py-2 border-green-500 border text-green-500 rounded transition duration-150 hover:bg-green-700 hover:text-white focus:outline-none "
             onClick={() => DownloadFile()}
