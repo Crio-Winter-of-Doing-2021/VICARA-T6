@@ -83,7 +83,7 @@ export default function Navbar() {
                 >
                   <span className="flex items-center">
                     <RiLogoutCircleLine className="mr-1" />
-                    Log Out
+                    <span className="sm:hidden">Log Out</span>
                   </span>
                 </button>
               </div>
