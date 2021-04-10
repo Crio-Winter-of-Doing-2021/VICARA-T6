@@ -68,9 +68,16 @@ function DragAndDrop(props: any) {
   if (props.disabled) {
     return (
       <div>
-        <div className="border-2 border-dotted bg-gray-200 opacity-100 border-black px-10 py-12 mx-8 my-5 flex justify-center items-center flex-col">
+        <div className="border-2 border-dotted bg-gray-200 opacity-100 border-black px-10 py-12 mx-8 my-5 flex justify-center items-center flex-col sm:hidden">
           <input disabled={true} />
           <p className="text-lg">Cannot upload inside a file</p>
+        </div>
+        <div className="hidden sm:block">
+          <div className="flex justify-center items-center mx-10 mt-4">
+            <button className="rounded-lg border-2 border-gray-500 hover:bg-gray-100 text-gray-500 font-bold py-2 px-4 w-full inline-flex items-center">
+              <span className="ml-2">Upload Document Disabled</span>
+            </button>
+          </div>
         </div>
       </div>
     );

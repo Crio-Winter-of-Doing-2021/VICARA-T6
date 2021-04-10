@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import Axios from '../../config/axios';
 import { toast } from 'react-toastify';
 import { useFileContext } from '../../contexts/File';
+import { useMediaQuery } from '../../utils/helper/mediaQueryHook';
 
 const customStyles = {
   overlay: {
@@ -20,11 +21,31 @@ const customStyles = {
   }
 };
 
+const responsiveStyles = {
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.15)'
+  },
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    height: '100%',
+    padding: '10px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+};
+
 interface renameModalProps {
   name?: string;
 }
 
 export default function RenameModal(props: any) {
+  const isMobileDevice = useMediaQuery('(min-width: 500px)');
   const { handleSubmit, setError, register, errors } = useForm({
     defaultValues: {
       name: props.name
@@ -76,7 +97,7 @@ export default function RenameModal(props: any) {
       <Modal
         isOpen={props.modalIsOpen}
         onRequestClose={closeModal}
-        style={customStyles}
+        style={isMobileDevice ? customStyles : responsiveStyles}
         ariaHideApp={false}
       >
         <>

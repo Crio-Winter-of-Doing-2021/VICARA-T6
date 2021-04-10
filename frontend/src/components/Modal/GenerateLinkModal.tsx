@@ -5,6 +5,7 @@ import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { FiCopy } from 'react-icons/fi';
 import Axios from '../../config/axios';
 import { toast } from 'react-toastify';
+import { useMediaQuery } from '../../utils/helper/mediaQueryHook';
 
 const customStyles = {
   overlay: {
@@ -20,10 +21,30 @@ const customStyles = {
   }
 };
 
+const responsiveStyles = {
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.15)'
+  },
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    height: '100%',
+    padding: '10px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+};
+
 export default function GenerateLinkModal(props: any) {
   const toastId: any = useRef(null);
   const [shareableURL, setShareableURL] = useState(null);
   const [isLoading, setLoading] = useState(false);
+  const isMobileDevice = useMediaQuery('(min-width: 500px)');
 
   const getShareableLink = async (id: string) => {
     setLoading(true);
@@ -64,14 +85,14 @@ export default function GenerateLinkModal(props: any) {
       <Modal
         isOpen={props.modalIsOpen}
         onRequestClose={closeModal}
-        style={customStyles}
+        style={isMobileDevice ? customStyles : responsiveStyles}
         ariaHideApp={false}
       >
-        <>
-          <div className="absolute right-4 top-3">
+        <div>
+          <div className="absolute right-3 top-3">
             <button onClick={closeModal}>
               <span className="hover:bg-gray-200 rounded-3xl cursor-pointer flex justify-center py-2 px-2">
-                <AiOutlineCloseCircle size={16} />
+                <AiOutlineCloseCircle size={20} />
               </span>
             </button>
           </div>
@@ -134,7 +155,7 @@ export default function GenerateLinkModal(props: any) {
               </div>
             </div>
           </div>
-        </>
+        </div>
       </Modal>
     </div>
   );
