@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { useQuery } from 'react-query';
 
 import { AiOutlineUnorderedList } from 'react-icons/ai';
+import { RiArrowRightSLine } from 'react-icons/ri';
+import { BsArrowLeftShort } from 'react-icons/bs';
 import { BiDetail } from 'react-icons/bi';
 import Axios from '../../config/axios';
 import { useFileContext } from '../../contexts/File';
@@ -24,15 +26,19 @@ function useParentDirectories(currentFolderID: string) {
 
 const FolderHeader = (props: any) => {
   return (
-    <>
+    <div className="flex justify-items-center items-center">
       <button
         className="hover:bg-gray-200 px-2 py-1 rounded"
         onClick={() => props.changeParentFolder()}
       >
         <span>{props.fileName}</span>
       </button>
-      {props.displayArrow && <span className="ml-2 mr-2 py-1"> &gt; </span>}
-    </>
+      {props.displayArrow && (
+        <span className="ml-2 mr-2 py-1">
+          <RiArrowRightSLine />{' '}
+        </span>
+      )}
+    </div>
   );
 };
 
@@ -61,7 +67,7 @@ export default function DirectoryRouter({
 
   return (
     <div className="px-10 py-4 flex justify-between items-center border-b border-gray-200 ml-10 sm:ml-0">
-      <div className="flex">
+      <div className="flex sm:hidden">
         {data?.reversedAncestors?.map(({ id, fileName }, index) => {
           return (
             <>
@@ -97,6 +103,33 @@ export default function DirectoryRouter({
                       displayArrow={data.reversedAncestors.length - 1 !== index}
                     />
                   )}
+              </div>
+            </>
+          );
+        })}
+      </div>
+      <div className="hidden sm:flex">
+        {data?.reversedAncestors?.map(({ id, fileName }, index) => {
+          return (
+            <>
+              <div key={id} className="flex justify-items-center items-center">
+                {/* PREVIOUS ITEM */}
+
+                {index === data?.reversedAncestors.length - 2 && (
+                  <button onClick={() => changeParentFolder(id)}>
+                    <BsArrowLeftShort size={25} />
+                  </button>
+                )}
+
+                {/* Current Parent */}
+                {index === data?.reversedAncestors.length - 1 && (
+                  <FolderHeader
+                    id={id}
+                    changeParentFolder={() => changeParentFolder(id)}
+                    fileName={fileName}
+                    displayArrow={data.reversedAncestors.length - 1 !== index}
+                  />
+                )}
               </div>
             </>
           );
