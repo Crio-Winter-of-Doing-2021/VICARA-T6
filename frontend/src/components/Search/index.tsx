@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useQuery } from 'react-query';
+import { VscSearchStop } from 'react-icons/vsc';
 import { withRouter, useHistory } from 'react-router-dom';
 import { useSearchContext } from '../../contexts/SearchFiles';
 import Loader from 'react-loader-spinner';
@@ -42,7 +43,19 @@ function SearchMain() {
   }
 
   if (data?.searchFilesResult?.length === 0) {
-    return <div className="mt-4 ml-2">No results to display</div>;
+    return (
+      <div className="w-full flex justify-items-center items-center">
+        <div className="px-10 py-40 overflow-x-auto w-full flex justify-center items-center flex-col">
+          <div className="bg-gray-100 rounded-lg px-10 py-10 flex justify-center items-center flex-col text-center">
+            <VscSearchStop size={60} className="mb-5" />
+            <p className="mb-5">
+              Search result not found, <br /> Try looking for a file you know
+              exists 😁
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
