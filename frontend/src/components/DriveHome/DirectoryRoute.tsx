@@ -70,7 +70,7 @@ export default function DirectoryRouter({
       <div className="flex sm:hidden">
         {data?.reversedAncestors?.map(({ id, fileName }, index) => {
           return (
-            <div key={id}>
+            <div key={id} className="flex">
               {/* INDEX >= 0 && INDEX <= MAXFOLDERLIMIT */}
               {index < maxFolderLimit && (
                 <FolderHeader
