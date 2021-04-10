@@ -70,10 +70,31 @@ export default function DirectoryRouter({
       <div className="flex sm:hidden">
         {data?.reversedAncestors?.map(({ id, fileName }, index) => {
           return (
-            <>
-              <div key={id}>
-                {/* INDEX >= 0 && INDEX <= MAXFOLDERLIMIT */}
-                {index < maxFolderLimit && (
+            <div key={id}>
+              {/* INDEX >= 0 && INDEX <= MAXFOLDERLIMIT */}
+              {index < maxFolderLimit && (
+                <FolderHeader
+                  id={id}
+                  changeParentFolder={() => changeParentFolder(id)}
+                  fileName={fileName}
+                  displayArrow={data.reversedAncestors.length - 1 !== index}
+                />
+              )}
+
+              {/* INDEX > MAXFOLDERLIMIT && INDEX < TOTALFOLDERS - MAXFOLDERLIMIT */}
+              {index >= maxFolderLimit &&
+                index < data?.reversedAncestors.length - maxFolderLimit && (
+                  <span>.</span>
+                )}
+
+              {index > maxFolderLimit &&
+                index === data?.reversedAncestors.length - maxFolderLimit && (
+                  <span className="ml-2 mr-2 py-1"> &gt; </span>
+                )}
+
+              {/* INDEX > TOTALFOLDERS - MAXFOLDERLIMIT */}
+              {index >= maxFolderLimit &&
+                index >= data?.reversedAncestors.length - maxFolderLimit && (
                   <FolderHeader
                     id={id}
                     changeParentFolder={() => changeParentFolder(id)}
@@ -81,57 +102,32 @@ export default function DirectoryRouter({
                     displayArrow={data.reversedAncestors.length - 1 !== index}
                   />
                 )}
-
-                {/* INDEX > MAXFOLDERLIMIT && INDEX < TOTALFOLDERS - MAXFOLDERLIMIT */}
-                {index >= maxFolderLimit &&
-                  index < data?.reversedAncestors.length - maxFolderLimit && (
-                    <span>.</span>
-                  )}
-
-                {index > maxFolderLimit &&
-                  index === data?.reversedAncestors.length - maxFolderLimit && (
-                    <span className="ml-2 mr-2 py-1"> &gt; </span>
-                  )}
-
-                {/* INDEX > TOTALFOLDERS - MAXFOLDERLIMIT */}
-                {index >= maxFolderLimit &&
-                  index >= data?.reversedAncestors.length - maxFolderLimit && (
-                    <FolderHeader
-                      id={id}
-                      changeParentFolder={() => changeParentFolder(id)}
-                      fileName={fileName}
-                      displayArrow={data.reversedAncestors.length - 1 !== index}
-                    />
-                  )}
-              </div>
-            </>
+            </div>
           );
         })}
       </div>
       <div className="hidden sm:flex">
         {data?.reversedAncestors?.map(({ id, fileName }, index) => {
           return (
-            <>
-              <div key={id} className="flex justify-items-center items-center">
-                {/* PREVIOUS ITEM */}
+            <div key={id} className="flex justify-items-center items-center">
+              {/* PREVIOUS ITEM */}
 
-                {index === data?.reversedAncestors.length - 2 && (
-                  <button onClick={() => changeParentFolder(id)}>
-                    <BsArrowLeftShort size={25} />
-                  </button>
-                )}
+              {index === data?.reversedAncestors.length - 2 && (
+                <button onClick={() => changeParentFolder(id)}>
+                  <BsArrowLeftShort size={25} />
+                </button>
+              )}
 
-                {/* Current Parent */}
-                {index === data?.reversedAncestors.length - 1 && (
-                  <FolderHeader
-                    id={id}
-                    changeParentFolder={() => changeParentFolder(id)}
-                    fileName={fileName}
-                    displayArrow={data.reversedAncestors.length - 1 !== index}
-                  />
-                )}
-              </div>
-            </>
+              {/* Current Parent */}
+              {index === data?.reversedAncestors.length - 1 && (
+                <FolderHeader
+                  id={id}
+                  changeParentFolder={() => changeParentFolder(id)}
+                  fileName={fileName}
+                  displayArrow={data.reversedAncestors.length - 1 !== index}
+                />
+              )}
+            </div>
           );
         })}
       </div>
