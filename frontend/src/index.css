@@ -41,6 +41,10 @@
     width: 72rem;
   }
 
+  .w-90vw {
+    width: 90vw;
+  }
+
   .max-w-80vw {
     max-width: 78vw;
   }

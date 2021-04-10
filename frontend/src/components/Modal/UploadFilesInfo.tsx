@@ -1,5 +1,6 @@
 import Modal from 'react-modal';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
+import { useMediaQuery } from '../../utils/helper/mediaQueryHook';
 
 const customStyles = {
   overlay: {
@@ -15,8 +16,26 @@ const customStyles = {
   }
 };
 
+const responsiveStyles = {
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.15)'
+  },
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    height: '100%',
+    padding: '10px'
+  }
+};
+
 export default function UploadFilesInfo(props: any) {
   const response = props.data;
+
+  const isMobileDevice = useMediaQuery('(min-width: 500px)');
 
   function closeModal() {
     props.setIsOpenModal(false);
@@ -27,7 +46,7 @@ export default function UploadFilesInfo(props: any) {
       <Modal
         isOpen={props.modalIsOpen}
         onRequestClose={closeModal}
-        style={customStyles}
+        style={isMobileDevice ? customStyles : responsiveStyles}
         ariaHideApp={false}
       >
         <>
@@ -38,11 +57,11 @@ export default function UploadFilesInfo(props: any) {
               </span>
             </button>
           </div>
-          <div className="flex flex-col px-5 py-10 h-80vh w-54rem justify-center">
+          <div className="flex flex-col px-5 py-10 sm:w-96 h-80vh w-54rem mt-10">
             <div className="flex justify-center flex-col items-center h-inherit">
-              <h2 className="text-lg mb-10">Upload File Status</h2>
+              <h2 className="text-lg sm:mb-0 mb-10">Upload File Status</h2>
               <br />
-              <div className="h-inherit">
+              <div className="h-inherit sm:hidden">
                 <table className="w-48rem">
                   <thead>
                     <tr>
@@ -94,6 +113,39 @@ export default function UploadFilesInfo(props: any) {
                     })}
                   </tbody>
                 </table>
+              </div>
+              <div className="h-full hidden sm:block">
+                <div className="w-full">
+                  <section>
+                    {response?.map((file, index) => {
+                      return (
+                        <details className="my-2 w-90vw ml-5" key={index}>
+                          <summary>
+                            {file.status === 'Failure' && (
+                              <span className="relative inline-block font-semibold text-red-900 leading-tight my-2">
+                                <span className="relative text-s">
+                                  {file.name}
+                                </span>
+                              </span>
+                            )}
+                            {file.status === 'Success' && (
+                              <span className="relative inline-block font-semibold text-green-900 leading-tight my-2">
+                                <span className="relative text-s">
+                                  {file.name}
+                                </span>
+                              </span>
+                            )}
+                          </summary>
+                          <span className="relative inline-block px-3 py-1 font-semibold leading-tight my-4">
+                            <span className="relative text-s">
+                              {file.message}
+                            </span>
+                          </span>
+                        </details>
+                      );
+                    })}
+                  </section>
+                </div>
               </div>
             </div>
           </div>
