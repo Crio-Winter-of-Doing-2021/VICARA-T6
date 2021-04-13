@@ -1,0 +1,14 @@
+.form-label {
+  position: relative;
+  pointer-events: none;
+  top: 40px;
+  left: 16px;
+  transition: 0.25s ease-in-out top;
+}
+
+.form-label-active {
+  top: 12px;
+  background-color: white;
+  width: fit-content;
+  padding: 2px 4px;
+}
