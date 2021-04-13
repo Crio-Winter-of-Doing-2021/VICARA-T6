@@ -15,7 +15,7 @@ interface fields {
 
 export default function Navbar() {
   const history = useHistory();
-  const { searchText, setSearch } = useSearchContext();
+  const { searchText } = useSearchContext();
   const { toggleNavbar } = useFileContext();
 
   const { handleSubmit, register, setValue } = useForm();
@@ -28,7 +28,6 @@ export default function Navbar() {
   const onSubmit = (values: fields) => {
     let { search } = values;
 
-    setSearch(search);
     if (search === '') {
       history.push('/');
     } else {

@@ -14,24 +14,31 @@ interface SearchProps {
 }
 
 function useSearch({ searchText }: SearchProps) {
-  return useQuery('search', async () => {
-    if (searchText !== '') {
+  return useQuery(
+    'search',
+    async () => {
       const { data } = await Axios.get(`/browse/search?text=${searchText}`);
       return data;
-    }
-  });
+    },
+    { enabled: searchText !== '' }
+  );
 }
 
 function SearchMain() {
   const history = useHistory();
-
   const { searchText, setSearch } = useSearchContext();
   const { data, status, refetch } = useSearch({ searchText });
 
   useEffect(() => {
     const queryParams = new URLSearchParams(history.location.search);
+    console.log(queryParams.get('text'));
     setSearch(queryParams.get('text'));
-    refetch();
+  }, [history.location.search]);
+
+  useEffect(() => {
+    if (searchText !== '') {
+      refetch();
+    }
   }, [searchText]);
 
   if (status === 'loading') {
