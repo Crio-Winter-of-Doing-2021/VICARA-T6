@@ -83,7 +83,7 @@ function SignUp() {
                 errors.password &&
                 'border-red-400 focus:border-red-600 focus:border-4'
               }`}
-              type="text"
+              type="password"
               name="password"
               ref={register({ required: 'Required' })}
             />
