@@ -12,8 +12,8 @@ const queryClient = new QueryClient();
 function BaseLayout(props: any) {
   return (
     <>
-      <SearchContextProvider>
-        <FileContextProvider>
+      <FileContextProvider>
+        <SearchContextProvider>
           <Navbar />
           <QueryClientProvider client={queryClient}>
             <ToastContainer
@@ -26,8 +26,8 @@ function BaseLayout(props: any) {
             />
             {props.children}
           </QueryClientProvider>
-        </FileContextProvider>
-      </SearchContextProvider>
+        </SearchContextProvider>
+      </FileContextProvider>
     </>
   );
 }
