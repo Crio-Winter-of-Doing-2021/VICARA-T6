@@ -1,0 +1,59 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .max-w-175 {
+    max-width: 175px;
+  }
+
+  .min-w-225 {
+    min-width: 225px;
+  }
+
+  .min-w-300 {
+    min-width: 300px;
+  }
+
+  .h-50vh {
+    height: 50vh;
+  }
+
+  .h-80vh {
+    height: 78vh;
+  }
+
+  .h-90vh {
+    height: 90vh;
+  }
+
+  .w-48rem {
+    width: 48rem;
+  }
+
+  .w-54rem {
+    width: 54rem;
+  }
+
+  .w-72rem {
+    width: 72rem;
+  }
+
+  .w-90vw {
+    width: 90vw;
+  }
+
+  .max-w-80vw {
+    max-width: 78vw;
+  }
+
+  .h-inherit {
+    height: inherit;
+  }
+
+  .translate-l-300 {
+    transform: translate(-325px, 0px);
+  }
+}
