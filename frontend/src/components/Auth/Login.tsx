@@ -98,6 +98,7 @@ function Login() {
           <div className="mt-2 text-red-500">
             {errors.custom && errors?.custom?.message}
           </div>
+
           <div className="my-5 flex flex-col">
             <input
               type="submit"
@@ -106,8 +107,12 @@ function Login() {
             />
           </div>
         </form>
+        <label className="text-sm text-gray-500">
+          Please enable 3rd party cookies to login
+        </label>
+        <div className="mt-2" />
         <div>
-          <p className="text-sm">
+          <p className="text-s">
             Don&apos;t have an account?{' '}
             <Link to="/auth/signup" className="text-blue-700">
               Create One

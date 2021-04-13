@@ -143,6 +143,10 @@ function SignUp() {
             />
           </div>
         </form>
+        <label className="text-sm text-gray-500">
+          Please enable 3rd party cookies to login
+        </label>
+        <div className="mt-2" />
         <div>
           <p className="text-sm">
             Already have an account?{' '}
