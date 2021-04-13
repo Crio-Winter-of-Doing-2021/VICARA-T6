@@ -1,26 +1,31 @@
 import { useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { withRouter, useHistory } from 'react-router-dom';
+import Loader from 'react-loader-spinner';
 
 import Axios from '../../config/axios';
 import { useFileContext } from '../../contexts/File';
 
+import ErrorPage from '../404Page';
 import DragAndDrop from '../DragNDrop/index';
 import DirectoryRouter from './DirectoryRoute';
 import FolderTable from './FolderTable';
 import LeftSideBar from '../LeftSideBar';
 import FilePreview from '../FilePreview';
-import Loader from 'react-loader-spinner';
 
 interface FileProps {
   currentFolderID: string;
 }
 
 function useFiles({ currentFolderID }: FileProps) {
-  return useQuery('files', async () => {
-    const { data } = await Axios.get(`/browse/file/${currentFolderID}`);
-    return data;
-  });
+  return useQuery(
+    'files',
+    async () => {
+      const { data } = await Axios.get(`/browse/file/${currentFolderID}`);
+      return data;
+    },
+    { retry: false }
+  );
 }
 
 function DriveMain() {
@@ -69,6 +74,8 @@ function DriveMain() {
           {data?.isDirectory && <FolderTable files={data.children} />}
 
           {data?.isDirectory === false && <FilePreview data={data} />}
+
+          {data === undefined && <ErrorPage />}
         </div>
       </div>
     </>

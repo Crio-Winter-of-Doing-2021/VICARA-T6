@@ -18,10 +18,16 @@ interface DirectoryRouteProps {
 }
 
 function useParentDirectories(currentFolderID: string) {
-  return useQuery('directoryLists', async () => {
-    const { data } = await Axios.get(`/browse/ancestors?id=${currentFolderID}`);
-    return data;
-  });
+  return useQuery(
+    'directoryLists',
+    async () => {
+      const { data } = await Axios.get(
+        `/browse/ancestors?id=${currentFolderID}`
+      );
+      return data;
+    },
+    { retry: false }
+  );
 }
 
 const FolderHeader = (props: any) => {
