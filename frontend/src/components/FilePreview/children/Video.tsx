@@ -1,16 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 
 interface VideoProps {
   blob: any;
 }
 
-export default function Video(props: VideoProps) {
+export const VideoComponent = memo(function Video(props: VideoProps) {
   const [videoSrc, setVideoSrc] = useState('');
+  const [isMounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const url = URL.createObjectURL(props.blob);
-    setVideoSrc(url);
+    setMounted(true); // note this flag denote mount status
+    return () => {
+      setMounted(false);
+    }; // use effect cleanup to set flag false, if unmounted
   }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      const url = URL.createObjectURL(props.blob);
+      setVideoSrc(url);
+    }
+  }, [isMounted]);
 
   return (
     <div>
@@ -19,4 +29,4 @@ export default function Video(props: VideoProps) {
       )}
     </div>
   );
-}
+});

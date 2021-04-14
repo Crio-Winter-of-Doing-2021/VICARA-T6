@@ -11,21 +11,17 @@ import DragAndDrop from '../DragNDrop/index';
 import DirectoryRouter from './DirectoryRoute';
 import FolderTable from './FolderTable';
 import LeftSideBar from '../LeftSideBar';
-import FilePreview from '../FilePreview';
+import { FilePreviewComponent } from '../FilePreview';
 
 interface FileProps {
   currentFolderID: string;
 }
 
 function useFiles({ currentFolderID }: FileProps) {
-  return useQuery(
-    'files',
-    async () => {
-      const { data } = await Axios.get(`/browse/file/${currentFolderID}`);
-      return data;
-    },
-    { retry: false }
-  );
+  return useQuery('files', async () => {
+    const { data } = await Axios.get(`/browse/file/${currentFolderID}`);
+    return data;
+  });
 }
 
 function DriveMain() {
@@ -73,7 +69,7 @@ function DriveMain() {
 
           {data?.isDirectory && <FolderTable files={data.children} />}
 
-          {data?.isDirectory === false && <FilePreview data={data} />}
+          {data?.isDirectory === false && <FilePreviewComponent data={data} />}
 
           {data === undefined && <ErrorPage />}
         </div>

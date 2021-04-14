@@ -72,7 +72,7 @@ export default function DirectoryRouter({
   }, [currentFolderID]);
 
   return (
-    <div className="px-10 py-4 flex justify-between items-center border-b border-gray-200 ml-10 sm:ml-0">
+    <div className="px-10 py-4 flex justify-between items-center border-b border-gray-200">
       <div className="flex sm:hidden">
         {data?.reversedAncestors?.map(({ id, fileName }, index) => {
           return (

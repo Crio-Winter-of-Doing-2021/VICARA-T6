@@ -1,17 +1,27 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 
 interface AudioProps {
   blob: any;
   metadata: string;
 }
 
-export default function Audio(props: AudioProps) {
+export const AudioComponent = memo(function Audio(props: AudioProps) {
   const [audioSrc, setAudioSrc] = useState('');
+  const [isMounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const url = URL.createObjectURL(props.blob);
-    setAudioSrc(url);
+    setMounted(true); // note this flag denote mount status
+    return () => {
+      setMounted(false);
+    }; // use effect cleanup to set flag false, if unmounted
   }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      const url = URL.createObjectURL(props.blob);
+      setAudioSrc(url);
+    }
+  }, [isMounted]);
 
   return (
     <div>
@@ -20,4 +30,4 @@ export default function Audio(props: AudioProps) {
       </audio>
     </div>
   );
-}
+});

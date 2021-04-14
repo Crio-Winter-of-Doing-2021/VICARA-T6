@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, memo } from 'react';
 import { downloadFile, viewFile } from '../../utils/helper/api';
 import { BsDownload, BsEyeSlash } from 'react-icons/bs';
 import { saveAs } from 'file-saver';
-import Pdf from './children/Pdf';
-import Audio from './children/Audio';
-import Text from './children/Text';
-import Image from './children/Image';
-import Video from './children/Video';
+import { PdfComponent } from './children/Pdf';
+import { AudioComponent } from './children/Audio';
+import { TextComponent } from './children/Text';
+import { ImageComponent } from './children/Image';
+import { VideoComponent } from './children/Video';
 import Loader from 'react-loader-spinner';
 import FilesSchmea from '../../utils/interfaces/FilesSchema';
 
@@ -29,7 +29,7 @@ const BasePreviewLayout = (props: any) => {
   );
 };
 
-export default function FilePreview(props: any) {
+export const FilePreviewComponent = memo(function FilePreview(props: any) {
   // const [fileType, setFileT] = useState(null);
   const fileData: FilesSchmea = props.data;
   const [isLoading, setLoading] = useState(true);
@@ -47,17 +47,19 @@ export default function FilePreview(props: any) {
   const [previewSupported, togglePreview] = useState(false);
 
   useEffect(() => {
+    setBlob(null);
+    setLoading(true);
+    togglePreview(false);
+
     async function fetchMyAPI() {
+      console.log({ props, blob });
+
       for (let i = 0; i < supportedFilesArr.length; i++) {
         if (props.data.mimetype.includes(supportedFilesArr[i])) {
+          const { data } = await viewFile(fileData?.id);
+          setBlob(data);
           togglePreview(true);
-
-          if (blob === null) {
-            const { data } = await viewFile(fileData?.id);
-            setBlob(data);
-            setLoading(false);
-          }
-
+          setLoading(false);
           break;
         }
       }
@@ -66,6 +68,7 @@ export default function FilePreview(props: any) {
         setLoading(false);
       }
     }
+
     console.log(props.data.mimetype);
     fetchMyAPI();
   }, [props]);
@@ -90,13 +93,13 @@ export default function FilePreview(props: any) {
   if (fileData.mimetype === 'application/pdf') {
     return (
       <BasePreviewLayout download={DownloadFile}>
-        <Pdf blob={blob} />
+        <PdfComponent blob={blob} />
       </BasePreviewLayout>
     );
   } else if (fileData.mimetype.includes('audio')) {
     return (
       <BasePreviewLayout download={DownloadFile}>
-        <Audio blob={blob} metadata={fileData.mimetype} />
+        <AudioComponent blob={blob} metadata={fileData.mimetype} />
       </BasePreviewLayout>
     );
   } else if (
@@ -105,19 +108,19 @@ export default function FilePreview(props: any) {
   ) {
     return (
       <BasePreviewLayout download={DownloadFile}>
-        <Text blob={blob} />
+        <TextComponent blob={blob} />
       </BasePreviewLayout>
     );
   } else if (fileData.mimetype.includes('image')) {
     return (
       <BasePreviewLayout download={DownloadFile}>
-        <Image mimetype={props.data.mimetype} blob={blob} />
+        <ImageComponent mimetype={props.data.mimetype} blob={blob} />
       </BasePreviewLayout>
     );
   } else if (fileData.mimetype.includes('video')) {
     return (
       <BasePreviewLayout download={DownloadFile}>
-        <Video blob={blob} />
+        <VideoComponent blob={blob} />
       </BasePreviewLayout>
     );
   }
@@ -144,4 +147,4 @@ export default function FilePreview(props: any) {
       </div>
     </div>
   );
-}
+});

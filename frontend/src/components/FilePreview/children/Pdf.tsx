@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { Document, pdfjs, Page } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -7,19 +7,30 @@ interface PdfProps {
   blob: any;
 }
 
-export default function Pdf(props: PdfProps) {
+export const PdfComponent = memo(function Pdf(props: PdfProps) {
   const [pdfTotalPages, setPdfTotalPages] = useState(0);
   const [currentPdfPage, setNextPdfPage] = useState(1);
   const [pdfData, setPdfData] = useState('');
 
+  const [isMounted, setMounted] = useState(false);
+
   useEffect(() => {
-    const fileReaderInstance = new FileReader();
-    fileReaderInstance.readAsDataURL(props.blob);
-    fileReaderInstance.onload = () => {
-      const base64Pdf: any = fileReaderInstance.result;
-      setPdfData(base64Pdf.toString());
-    };
+    setMounted(true); // note this flag denote mount status
+    return () => {
+      setMounted(false);
+    }; // use effect cleanup to set flag false, if unmounted
   }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      const fileReaderInstance = new FileReader();
+      fileReaderInstance.readAsDataURL(props.blob);
+      fileReaderInstance.onload = () => {
+        const base64Pdf: any = fileReaderInstance.result;
+        setPdfData(base64Pdf.toString());
+      };
+    }
+  }, [isMounted]);
 
   return (
     <div className="flex justify-center items-center flex-col border-black border-2 w-min">
@@ -51,4 +62,4 @@ export default function Pdf(props: PdfProps) {
       </Document>
     </div>
   );
-}
+});
